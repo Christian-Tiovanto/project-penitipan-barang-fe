@@ -1,36 +1,24 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
+import { createBrowserRouter, RouterProvider } from 'react-router'
 import './App.css'
+import ReactDOM from 'react-dom/client'
 
-function App() {
-  const [count, setCount] = useState(0)
-
+function Tes() {
   return (
     <>
-    <button type="button" className="btn">Base class</button>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
+    <h1>Test asdf</h1>
     </>
   )
 }
+const router = createBrowserRouter([{
+  path:"/",
+  Component:Tes}])
+function App() {
 
+  return <RouterProvider router={router}></RouterProvider>
+}
+const root:any = document.getElementById("root");
+
+ReactDOM.createRoot(root).render(
+  <RouterProvider router={router} />
+);
 export default App
