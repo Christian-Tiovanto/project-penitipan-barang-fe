@@ -1,24 +1,24 @@
-import { createBrowserRouter, RouterProvider } from 'react-router'
-import './App.css'
-import ReactDOM from 'react-dom/client'
+import { createBrowserRouter, RouterProvider } from "react-router";
+import "./App.css";
+import MainLayout from "./layouts/layouts";
 
-function Tes() {
+function ExampleRouting() {
   return (
     <>
-    <h1>Test asdf</h1>
+      <h1>tes</h1>
     </>
-  )
+  );
 }
-const router = createBrowserRouter([{
-  path:"/",
-  Component:Tes}])
+
+const router = createBrowserRouter([
+  {
+    path: "/",
+    Component: MainLayout,
+    children: [{ path: "example", Component: ExampleRouting }],
+  },
+]);
 function App() {
-
-  return <RouterProvider router={router}></RouterProvider>
+  return <RouterProvider router={router}></RouterProvider>;
 }
-const root:any = document.getElementById("root");
 
-ReactDOM.createRoot(root).render(
-  <RouterProvider router={router} />
-);
-export default App
+export default App;
