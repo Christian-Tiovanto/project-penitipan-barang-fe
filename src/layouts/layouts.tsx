@@ -1,0 +1,125 @@
+import { useEffect, useRef } from "react";
+import { Outlet } from "react-router";
+
+export default function MainLayout() {
+  const wrapperRef = useRef<HTMLDivElement>(null);
+  const sidebarRef = useRef<HTMLDivElement>(null);
+  const toggleButtonRef = useRef<HTMLButtonElement>(null);
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      console.log("event.target");
+      console.log(event.target);
+      console.log(wrapperRef.current);
+      console.log(sidebarRef.current);
+      console.log(toggleButtonRef.current);
+      // Check if click is outside both sidebar and toggle button
+      if (
+        wrapperRef.current &&
+        sidebarRef.current &&
+        toggleButtonRef.current &&
+        !sidebarRef.current.contains(event.target as Node) &&
+        !toggleButtonRef.current.contains(event.target as Node)
+      ) {
+        wrapperRef.current.classList.remove("toggled");
+      }
+    };
+    const handleToggle = () => {
+      if (wrapperRef.current) {
+        wrapperRef.current.classList.toggle("toggled");
+      }
+    };
+
+    const toggleButton = toggleButtonRef.current;
+    if (toggleButton) {
+      toggleButton.addEventListener("click", handleToggle);
+    }
+    document.addEventListener("mousedown", handleClickOutside);
+    // Cleanup
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+      if (toggleButton) {
+        toggleButton.removeEventListener("click", handleToggle);
+      }
+    };
+  }, []);
+
+  return (
+    <>
+      <div id="wrapper" ref={wrapperRef}>
+        <div className="primary-bg" id="sidebar-wrapper" ref={sidebarRef}>
+          <div className="list-group list-group-flush my-3">
+            <a
+              href="#"
+              className="list-group-item list-group-item-action bg-transparent primary-text active"
+            >
+              <i className="fas fa-tachometer-alt me-2"></i>Dashboard
+            </a>
+            <a
+              href="#"
+              className="list-group-item list-group-item-action bg-transparent primary-text fw-bold"
+            >
+              <i className="fas fa-project-diagram me-2"></i>Projects
+            </a>
+            <a
+              href="#"
+              className="list-group-item list-group-item-action bg-transparent primary-text fw-bold"
+            >
+              <i className="fas fa-chart-line me-2"></i>Analytics
+            </a>
+            <a
+              href="#"
+              className="list-group-item list-group-item-action bg-transparent primary-text fw-bold"
+            >
+              <i className="fas fa-paperclip me-2"></i>Reports
+            </a>
+            <a
+              href="#"
+              className="list-group-item list-group-item-action bg-transparent primary-text fw-bold"
+            >
+              <i className="fas fa-shopping-cart me-2"></i>Store Mng
+            </a>
+            <a
+              href="#"
+              className="list-group-item list-group-item-action bg-transparent primary-text fw-bold"
+            >
+              <i className="fas fa-gift me-2"></i>Products
+            </a>
+            <a
+              href="#"
+              className="list-group-item list-group-item-action bg-transparent primary-text fw-bold"
+            >
+              <i className="fas fa-comment-dots me-2"></i>Chat
+            </a>
+            <a
+              href="#"
+              className="list-group-item list-group-item-action bg-transparent primary-text fw-bold"
+            >
+              <i className="fas fa-map-marker-alt me-2"></i>Outlet
+            </a>
+            <a
+              href="#"
+              className="list-group-item list-group-item-action bg-transparent text-danger fw-bold"
+            >
+              <i className="fas fa-power-off me-2"></i>Logout
+            </a>
+          </div>
+        </div>
+        <div id="page-content-wrapper">
+          <nav className="navbar fixed-top shadow-sm navbar-light bg-white px-4 ">
+            <div className="d-flex align-items-center">
+              <i
+                className="fas fa-align-left secondary-text fs-4 me-3"
+                id="menu-toggle"
+                ref={toggleButtonRef}
+              ></i>
+            </div>
+          </nav>
+          <main className="px-4">
+            <Outlet />
+          </main>
+        </div>
+      </div>
+    </>
+  );
+}
