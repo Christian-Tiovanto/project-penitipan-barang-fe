@@ -1,6 +1,8 @@
 import { createBrowserRouter, RouterProvider } from "react-router";
 import "./App.css";
 import MainLayout from "./layouts/layouts";
+import { ReportInPage } from "./features/report/report-in";
+import DatePicker from "./components/date-picker";
 
 function ExampleRouting() {
   return (
@@ -11,10 +13,17 @@ function ExampleRouting() {
 }
 
 const router = createBrowserRouter([
+  { path: "tes", Component: DatePicker },
   {
     path: "/",
     Component: MainLayout,
-    children: [{ path: "example", Component: ExampleRouting }],
+    children: [
+      { path: "example", Component: ExampleRouting },
+      {
+        path: "report",
+        children: [{ path: "transaction-in", Component: ReportInPage }],
+      },
+    ],
   },
 ]);
 function App() {

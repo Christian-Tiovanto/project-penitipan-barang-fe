@@ -8,12 +8,6 @@ export default function MainLayout() {
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
-      console.log("event.target");
-      console.log(event.target);
-      console.log(wrapperRef.current);
-      console.log(sidebarRef.current);
-      console.log(toggleButtonRef.current);
-      // Check if click is outside both sidebar and toggle button
       if (
         wrapperRef.current &&
         sidebarRef.current &&
@@ -105,20 +99,20 @@ export default function MainLayout() {
             </a>
           </div>
         </div>
-        <div id="page-content-wrapper">
-          <nav className="navbar fixed-top shadow-sm navbar-light bg-white px-4 ">
-            <div className="d-flex align-items-center">
-              <i
-                className="fas fa-align-left secondary-text fs-4 me-3"
-                id="menu-toggle"
-                ref={toggleButtonRef}
-              ></i>
-            </div>
-          </nav>
-          <main className="px-4">
+        <nav className="navbar fixed-top shadow-sm navbar-light bg-white px-4 ">
+          <div className="d-flex align-items-center">
+            <i
+              className="fas fa-align-left secondary-text fs-4 me-3"
+              id="menu-toggle"
+              ref={toggleButtonRef}
+            ></i>
+          </div>
+        </nav>
+        <main id="page-content-wrapper" className="px-4 py-3">
+          <div id="page-container" className="bg-white px-4 py-4">
             <Outlet />
-          </main>
-        </div>
+          </div>
+        </main>
       </div>
     </>
   );
