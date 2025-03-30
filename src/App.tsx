@@ -13,7 +13,6 @@ function ExampleRouting() {
 }
 
 const router = createBrowserRouter([
-  { path: "tes", Component: DatePicker },
   {
     path: "/",
     Component: MainLayout,

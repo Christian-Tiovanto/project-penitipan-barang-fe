@@ -108,9 +108,11 @@ export default function MainLayout() {
             ></i>
           </div>
         </nav>
-        <main id="page-content-wrapper" className="px-4 py-3">
-          <div id="page-container" className="bg-white px-4 py-4">
-            <Outlet />
+        <main id="page-content-wrapper" className="py-3">
+          <div className="container-again px-4 py-3 w-100">
+            <div id="page-container" className="bg-white px-4 py-4">
+              <Outlet />
+            </div>
           </div>
         </main>
       </div>

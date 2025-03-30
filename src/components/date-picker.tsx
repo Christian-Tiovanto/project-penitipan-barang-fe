@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 
-const DatePicker = () => {
+const DatePicker = ({ titleText }: { titleText: string }) => {
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [showPicker, setShowPicker] = useState(false);
   const [currentMonth, setCurrentMonth] = useState(new Date().getMonth());
@@ -95,6 +95,7 @@ const DatePicker = () => {
 
   return (
     <div className="datepicker-container">
+      <p>{titleText}</p>
       <input
         type="text"
         className="date-input"
