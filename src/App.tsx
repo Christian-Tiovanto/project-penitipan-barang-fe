@@ -2,7 +2,6 @@ import { createBrowserRouter, RouterProvider } from "react-router";
 import "./App.css";
 import MainLayout from "./layouts/layouts";
 import { ReportInPage } from "./features/report/report-in";
-import DatePicker from "./components/date-picker";
 
 function ExampleRouting() {
   return (
