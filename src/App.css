@@ -8,7 +8,9 @@
 #root {
   height: 100%;
 }
-
+p {
+  margin: 0px !important;
+}
 body {
   background-color: var(--second-bg-color);
 }
