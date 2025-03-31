@@ -6,6 +6,7 @@ import DatePicker from "./components/date-picker";
 import { CreateUserPage, LoginPage, ChangePasswordPage, UserPage, ProfilePage, UpdateUserPage } from './features/auth'
 import { Component } from "react";
 import { MasterPage } from "./features/master";
+import { ReportOutPage } from "./features/report/report-out";
 
 
 function ExampleRouting() {
@@ -25,7 +26,10 @@ const router = createBrowserRouter([
       { path: "example", Component: ExampleRouting },
       {
         path: "report",
-        children: [{ path: "transaction-in", Component: ReportInPage }],
+        children: [
+          { path: "transaction-in", Component: ReportInPage },
+          { path: "transaction-out", Component: ReportOutPage },
+        ],
       },
       {
         path: "master",
