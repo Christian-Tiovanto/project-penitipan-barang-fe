@@ -131,7 +131,7 @@ const DatePicker = ({ id, titleText }: { id: string; titleText: string }) => {
             type="text"
             className="form-control third-bg border-0"
             placeholder="Select date"
-            value={selectedDate.toLocaleDateString("en-US", {
+            value={selectedDate.toLocaleDateString("en-GB", {
               year: "numeric",
               month: "2-digit",
               day: "2-digit",
