@@ -8,9 +8,6 @@
 #root {
   height: 100%;
 }
-p {
-  margin: 0px !important;
-}
 body {
   background-color: var(--second-bg-color);
 }
@@ -285,4 +282,9 @@ body {
     /* Pergi keluar layar ke kanan */
     opacity: 0;
   }
+}
+
+/* Mui Table */
+.mui-table-container p {
+  margin: 0px !important;
 }
