@@ -1,7 +1,8 @@
 import { useState } from "react";
 import DatePicker from "../../components/date-picker";
 import PagePaginationComponent from "../../components/pagination.tsx";
-import "./report-in.css";
+import { Table, ColumnConfig } from "../../components/table-component.tsx";
+import "./report.css";
 interface ITransactionOutData {
   product: {
     id: number;

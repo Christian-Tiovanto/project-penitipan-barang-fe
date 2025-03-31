@@ -1,7 +1,8 @@
 import { useState } from "react";
 import DatePicker from "../../components/date-picker";
 import PagePaginationComponent from "../../components/pagination.tsx";
-import "./report-in.css";
+import { Table, ColumnConfig } from "../../components/table-component.tsx";
+import "./report.css";
 interface ITransactionInData {
   product: {
     id: number;
@@ -36,6 +37,42 @@ export function ReportInPage() {
       unit: "Kg",
     },
   ];
+  const columns: ColumnConfig<ITransactionInData>[] = [
+    {
+      key: "product",
+      header: "Product",
+      render: (data) => data.product.name,
+    },
+    {
+      key: "customer",
+      header: "Customer",
+      render: (data) => data.customer.name,
+      headerStyle: { paddingLeft: "24px" },
+      cellStyle: { paddingLeft: "24px" },
+    },
+    {
+      key: "qty",
+      header: "Quantity",
+      render: (data) => data.qty,
+      headerStyle: { paddingLeft: "24px" },
+      cellStyle: { paddingLeft: "24px" },
+    },
+    {
+      key: "converted_qty",
+      header: "Quantity (Kg)",
+      render: (data) => data.converted_qty,
+      headerStyle: { paddingLeft: "24px" },
+      cellStyle: { paddingLeft: "24px" },
+    },
+    {
+      key: "unit",
+      header: "Unit",
+      render: (data) => data.unit,
+      headerStyle: { paddingLeft: "24px" },
+      cellStyle: { paddingLeft: "24px" },
+    },
+  ];
+  const columnWidths = ["30%", "20%", "20%", "20%", "10%"];
   return (
     <>
       <div className="container-fluid m-0 p-0">
@@ -54,44 +91,11 @@ export function ReportInPage() {
           </div>
         </div>
         <div className="product-in-list w-100 d-flex flex-column">
-          <div className="table-container w-100">
-            <table>
-              <colgroup>
-                <col width={"30%"} />
-                <col width={"20%"} />
-                <col width={"20%"} />
-                <col width={"20%"} />
-                <col width={"10%"} />
-              </colgroup>
-              <thead>
-                <tr>
-                  <th>Product</th>
-                  {["Customer", "Quantity", "Quantity (Kg)", "Unit"].map(
-                    (column) => (
-                      <th style={{ paddingLeft: "24px" }} key={column}>
-                        {column}
-                      </th>
-                    )
-                  )}
-                </tr>
-              </thead>
-              <tbody>
-                {TransactionInData.map((value, index) => (
-                  <tr>
-                    <td>{value.product.name}</td>
-                    <td style={{ paddingLeft: "24px" }}>
-                      {value.customer.name}
-                    </td>
-                    <td style={{ paddingLeft: "24px" }}>{value.qty}</td>
-                    <td style={{ paddingLeft: "24px" }}>
-                      {value.converted_qty}
-                    </td>
-                    <td style={{ paddingLeft: "24px" }}>{value.unit}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+          <Table
+            data={TransactionInData}
+            columns={columns}
+            columnWidths={columnWidths}
+          />
           <PagePaginationComponent
             selectedPageSize={selectedPageSize}
             setSelectedPageSize={(data: string) => setSelectedPageSize(data)}
