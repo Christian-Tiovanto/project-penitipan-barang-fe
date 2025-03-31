@@ -50,10 +50,10 @@ export default function MainLayout() {
               <i className="fas fa-tachometer-alt me-2"></i>Dashboard
             </a>
             <a
-              href="#"
+              href="/master"
               className="list-group-item list-group-item-action bg-transparent primary-text fw-bold"
             >
-              <i className="fas fa-project-diagram me-2"></i>Projects
+              <i className="fas fa-project-diagram me-2"></i>Master
             </a>
             <a
               href="#"
