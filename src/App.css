@@ -5,12 +5,14 @@
   --second-text-color: black;
   --third-bg-color: #f0f0f0;
 }
+
 #root {
   height: 100%;
 }
 body {
   background-color: var(--second-bg-color);
 }
+
 .primary-text {
   color: var(--main-text-color);
 }
@@ -97,6 +99,7 @@ body {
 .label {
   font-size: 16px;
 }
+
 /* Nav Layout Responsive */
 @media (min-width: 992px) {
   #sidebar-wrapper {
@@ -119,9 +122,11 @@ body {
   #wrapper.toggled #sidebar-wrapper {
     margin-left: -300px;
   }
+
   #wrapper.toggled #page-content-wrapper {
     padding-left: 0px;
   }
+
   .navbar {
     -webkit-transition: margin 0.25s ease-out;
     -moz-transition: margin 0.25s ease-out;
@@ -130,6 +135,7 @@ body {
     margin-left: 300px;
     background-color: wheat;
   }
+
   #wrapper.toggled .navbar {
     margin-left: 0px;
     background-color: wheat;
@@ -253,6 +259,40 @@ body {
   color: #fff;
 }
 
+
+/* CSS untuk Slide-In dan Slide-Out */
+@keyframes slideIn {
+  from {
+    transform: translateX(100%);
+    /* Mulai dari luar layar ke kanan */
+    opacity: 0;
+  }
+
+  to {
+    transform: translateX(0);
+    /* Posisi akhir di dalam layar */
+    opacity: 1;
+  }
+}
+
+@keyframes slideOut {
+  from {
+    transform: translateX(0);
+    /* Mulai dari posisi awal */
+    opacity: 1;
+  }
+
+  to {
+    transform: translateX(100%);
+    /* Pergi keluar layar ke kanan */
+    opacity: 0;
+  }
+}
+
+/* Mui Table */
+.mui-table-container p {
+  margin: 0px !important;
+
 /* Bootstrap custom */
 .form-floating > label::after {
   background-color: transparent !important;
@@ -272,4 +312,5 @@ body {
   .pagination-component {
     width: 100%;
   }
+
 }
