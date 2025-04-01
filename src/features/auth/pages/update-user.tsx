@@ -1,31 +1,35 @@
 import React, { useState, useEffect } from "react";
-import Breadcrumb from "../components/breadcrumb";
+import Breadcrumb from "../../../components/breadcrumb";
 import { FaSave, FaArrowLeft, FaEnvelope, FaLock, FaUser } from "react-icons/fa";
-import { Dropdown, InputField } from "../components/inputfield";
+import InputField from "../../../components/inputfield";
 import { useNavigate, useParams } from "react-router";
-import { getUserById } from "../services/login.service";
+import { getUserById, updateUserById } from "../services/login.service";
+import { useToast } from "../../../contexts/toastContexts";
+import Dropdown from "../../../components/dropdown";
 
 const UpdateUserForm: React.FC = () => {
-    const { id } = useParams<{ id: string }>();  // Ambil id dari URL
+    const navigate = useNavigate();
+    const { showToast } = useToast();
+
+    const { id } = useParams<{ id: string }>();
 
     const [form, setForm] = useState({
         email: "",
-        fullName: "",
-        password: "",
+        fullname: "",
+        // password: "",
         role: ""
     });
 
     const [errors, setErrors] = useState({
-        password: "",
+        // password: "",
         email: "",
-        fullName: "",
+        fullname: "",
         role: "",
     });
 
     useEffect(() => {
         if (id) {
-            // Misalnya kamu ingin melakukan fetch user berdasarkan id
-            const userId = parseInt(id, 10); // atau bisa juga pakai `Number(id)`
+            const userId = parseInt(id, 10);
             fetchUserById(userId);
         }
     }, []);
@@ -35,8 +39,8 @@ const UpdateUserForm: React.FC = () => {
             const userData = await getUserById(id);
             setForm({
                 email: userData.email || "",
-                fullName: userData.fullName || "",
-                password: userData.password || "",
+                fullname: userData.fullname || "",
+                // password: userData.password || "",
                 role: userData.role || "",
             });
         } catch (error) {
@@ -53,13 +57,13 @@ const UpdateUserForm: React.FC = () => {
             newErrors.email = "Invalid email format";
         }
 
-        if (!form.fullName.trim()) {
-            newErrors.fullName = "This field is required";
+        if (!form.fullname.trim()) {
+            newErrors.fullname = "This field is required";
         }
 
-        if (!form.password.trim()) {
-            newErrors.password = "This field is required";
-        }
+        // if (!form.password.trim()) {
+        //     newErrors.password = "This field is required";
+        // }
 
         if (!form.role) {
             newErrors.role = "Please select a category";
@@ -100,13 +104,22 @@ const UpdateUserForm: React.FC = () => {
         setForm({ ...form, [e.target.name]: e.target.value });
     };
 
-    const handleSubmit = (e: React.FormEvent) => {
-        e.preventDefault();
+    const handleSubmit = async (e: React.FormEvent) => {
+        try {
+            e.preventDefault();
 
 
-        if (validateForm()) {
-            console.log("User created successfully:", form);
+            if (validateForm()) {
+                const userId = parseInt(id || "0", 10);
+                await updateUserById(userId, form)
+                navigate("/master/user")
+                showToast("Data updated successfully!", "success");
+            }
+        } catch (error: any) {
+            const finalMessage = `Failed to update data.\n${error?.response?.data?.message || error?.message || "Unknown error"}`;
+            showToast(finalMessage, "danger");
         }
+
     };
 
     return (
@@ -128,12 +141,12 @@ const UpdateUserForm: React.FC = () => {
                     <InputField
                         label="Full Name *"
                         type="text"
-                        name="fullName"
-                        value={form.fullName}
+                        name="fullname"
+                        value={form.fullname}
                         onChange={handleChange}
                         onBlur={handleBlur}
-                        error={!!errors.fullName}
-                        errorMessage={errors.fullName}
+                        error={!!errors.fullname}
+                        errorMessage={errors.fullname}
                         icon={<FaUser />} />
                 </div>
             </div>
@@ -151,7 +164,7 @@ const UpdateUserForm: React.FC = () => {
                 error={!!errors.role}
                 errorMessage={errors.role}
             />
-
+            {/* 
             <InputField
                 label="Password *"
                 type="password"
@@ -162,9 +175,8 @@ const UpdateUserForm: React.FC = () => {
                 error={!!errors.password}
                 errorMessage={errors.password}
                 icon={<FaLock />}
-            />
+            /> */}
 
-            {/* Tombol Simpan */}
             <div className="text-end mt-3">
                 <button type="submit" className="btn btn-primary px-4">
                     Save <FaSave className="ms-2" />

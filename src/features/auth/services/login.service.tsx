@@ -27,9 +27,16 @@ export const logout = () => {
     Cookies.remove("auth_token");
 };
 
-export const register = async (email: string, fullName: string, password: string, role: string) => {
+export const register = async (email: string, fullname: string, password: string, role: string) => {
     try {
-        const response = await axios.post(`${API_URL}/api/v1/auth/register`, { email, fullName, password, role });
+        const token = Cookies.get("auth_token");
+        const response = await axios.post(`${API_URL}/api/v1/auth/register`, { email, fullname, password, role },
+            {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                },
+            }
+        );
 
         return response.data;
     } catch (error: any) {
@@ -39,8 +46,8 @@ export const register = async (email: string, fullName: string, password: string
 
 export const getAllUsers = async (pageSize: number, pageNo: number) => {
     try {
-        const token = Cookies.get("auth_token"); // Ambil token dari cookie
-        console.log(token)
+        const token = Cookies.get("auth_token");
+
         const response = await axios.get(`${API_URL}/api/v1/user?page_size=${pageSize}&page_no=${pageNo}`,
             {
                 headers: {
@@ -142,3 +149,20 @@ export const updateUserByIdToken = async (userData: any) => {
     }
 };
 
+export const deleteUserById = async (id: number) => {
+    try {
+        const token = Cookies.get("auth_token"); // Ambil token dari cookie
+
+        const response = await axios.delete(`${API_URL}/api/v1/user/${id}`,
+            {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                    "Content-Type": "application/json",
+                },
+            }
+        );
+        return response.data;
+    } catch (error: any) {
+        throw error.response?.data || "Delete User by id failed";
+    }
+};

@@ -1,63 +1,51 @@
-import React, { useEffect, useState } from "react";
-import Breadcrumb from "../components/breadcrumb";
+import React from "react";
+import Breadcrumb from "../../../components/breadcrumb";
 import { FaArrowLeft } from "react-icons/fa";
 import { useNavigate } from "react-router";
-import MuiTable from "../components/table";
-import { getAllUsers } from "../services/login.service";
+import MuiTable from "../../../components/table-mui";
+import { deleteUserById, getAllUsers } from "../services/login.service";
+import { useToast } from "../../../contexts/toastContexts";
 
 const UserPage: React.FC = () => {
   const navigate = useNavigate();
-  const [users, setUsers] = useState<any[]>([]);
-  const [loading, setLoading] = useState(true);
+  const { showToast } = useToast();
 
   const columns = [
     { field: "id", headerName: "ID" },
-    { field: "name", headerName: "Name" },
     { field: "email", headerName: "Email" },
+    { field: "fullname", headerName: "Full Name" },
+    { field: "role", headerName: "Role" },
   ];
 
-  // const users = await getAllUsers(10, 1);
+  const fetchTableData = async (pageNo: number, PageSize: number, searchQuery: string) => {
+    try {
+      const response = await getAllUsers(PageSize, pageNo);
 
-  useEffect(() => {
-    const fetchUsers = async () => {
-      try {
-        const response = await getAllUsers(10, 1);
-        console.log(response.data);
-        setUsers(response.data ?? []); // Ambil `data` yang berupa array
-      } catch (error) {
-        console.error("Error fetching users:", error);
-      } finally {
-        setLoading(false);
-      }
-    };
+      return {
+        data: response.data,
+        total: response.meta.total_count,
+      };
 
-    fetchUsers();
-  }, []);
-
-  if (loading) {
-    return <p>Loading...</p>;
-  }
-
-  // const users = [
-  //     { id: 1, name: "John Doe", email: "john@example.com" },
-  //     { id: 2, name: "Jane Smith", email: "jane@example.com" },
-  //     { id: 3, name: "John Doe", email: "john@example.com" },
-  //     { id: 4, name: "Jane Smith", email: "jane@example.com" },
-  //     { id: 5, name: "John Doe", email: "john@example.com" },
-  //     { id: 6, name: "Jane Smith", email: "jane@example.com" },
-  //     { id: 7, name: "John Doe", email: "john@example.com" },
-  //     { id: 8, name: "Jane Smith", email: "jane@example.com" },
-  //     { id: 9, name: "John Doe", email: "john@example.com" },
-  //     { id: 10, name: "Jane Smith", email: "jane@example.com" },
-  // ];
+    } catch (error) {
+      console.error("Error fetching data:", error);
+      return { data: [], total: 0 };
+    }
+  };
 
   const handleEdit = (row: any) => {
-    console.log("Edit user:", row);
     navigate(`/master/user/edit-user/${row.id}`);
   };
 
-  const handleDelete = (row: any) => {
-    console.log("Delete user:", row);
+  const handleDelete = async (row: any) => {
+    try {
+      await deleteUserById(row.id);
+      showToast("Data deleted successfully!", "success");
+
+    } catch (error: any) {
+      const finalMessage = `Failed to delete data.\n${error?.response?.data?.message || error?.message || "Unknown error"}`;
+      showToast(finalMessage, "danger");
+    }
+
   };
 
   const handleAdd = () => {
@@ -67,7 +55,6 @@ const UserPage: React.FC = () => {
 
   return (
     <div className="container mt-4">
-      {/* Header & Breadcrumb */}
       <div className="d-flex justify-content-between align-items-center p-3 mb-3">
         <Breadcrumb title="Master" items={["User"]} />
         <button
@@ -80,11 +67,10 @@ const UserPage: React.FC = () => {
         </button>
       </div>
 
-      {/* Card */}
       <div className="card shadow-lg border-0 rounded-4 p-4">
         <MuiTable
           columns={columns}
-          data={users}
+          fetchData={fetchTableData}
           onEdit={handleEdit}
           onDelete={handleDelete}
           onAdd={handleAdd}

@@ -1,10 +1,10 @@
 import React, { useState } from "react";
 import { FaEnvelope, FaLock } from "react-icons/fa";
-import { InputFieldLogin } from "../components/inputfield";
-import Button from "../components/loginbutton";
+import Button from "../../../components/loginbutton";
 import { MdLogin } from "react-icons/md";
 import { login, getToken } from "../services/login.service"; // Import service
 import { useNavigate } from "react-router";
+import InputFieldLogin from "../../../components/inputfieldlogin";
 
 const LoginPage: React.FC = () => {
     const navigate = useNavigate();

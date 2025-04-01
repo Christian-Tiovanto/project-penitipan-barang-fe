@@ -1,20 +1,18 @@
 import React, { useEffect, useState } from "react";
-import Breadcrumb from "../components/breadcrumb";
-import { FaSave, FaArrowLeft, FaEnvelope, FaLock, FaUser } from "react-icons/fa";
-import { Dropdown, InputField } from "../components/inputfield";
+import Breadcrumb from "../../../components/breadcrumb";
+import { FaSave, FaArrowLeft, FaEnvelope, FaUser } from "react-icons/fa";
+import InputField from "../../../components/inputfield";
 import { useNavigate } from "react-router";
 import { getUserByIdToken, updateUserByIdToken } from "../services/login.service";
-import Toaster from "../components/toster";
+import { useToast } from "../../../contexts/toastContexts";
+import Dropdown from "../../../components/dropdown";
 
 const ProfileForm: React.FC = () => {
-    const [showToast, setShowToast] = useState(false);
-    const [toastMessage, setToastMessage] = useState("");
-    const [toastVariant, setToastVariant] = useState<"success" | "danger" | "warning" | "info">("success");
-
+    const { showToast } = useToast();
     const [form, setForm] = useState({
         email: "",
         fullName: "",
-        role: ""
+        role: "",
     });
 
     const [errors, setErrors] = useState({
@@ -30,10 +28,9 @@ const ProfileForm: React.FC = () => {
     const fetchUserByIdToken = async () => {
         try {
             const userData = await getUserByIdToken();
-            console.log(userData);
             setForm({
                 email: userData.email || "",
-                fullName: userData.fullName || "",
+                fullName: userData.fullname || "",
                 role: userData.role || "",
             });
         } catch (error) {
@@ -53,10 +50,6 @@ const ProfileForm: React.FC = () => {
         if (!form.fullName.trim()) {
             newErrors.fullName = "This field is required";
         }
-
-        // if (!form.role) {
-        //     newErrors.role = "Please select a category";
-        // }
 
         setErrors(newErrors);
         return Object.keys(newErrors).length === 0;
@@ -88,7 +81,6 @@ const ProfileForm: React.FC = () => {
         }
     };
 
-
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         setForm({ ...form, [e.target.name]: e.target.value });
     };
@@ -97,26 +89,15 @@ const ProfileForm: React.FC = () => {
         try {
             e.preventDefault();
             if (validateForm()) {
-                console.log(form)
-                // const { fullName, ...requestData } = form;
-                // const updatedData = { ...requestData, fullname: fullName };
+                const { fullName, ...requestData } = form;
+                const updatedData = { ...requestData, fullname: fullName };
 
-                const response = await updateUserByIdToken(form);
-                console.log("User updated:", response);
+                await updateUserByIdToken(updatedData);
+                showToast("Data updated successfully!", "success");
             }
-        } catch (error) {
-            setToastMessage("Failed to update data.");
-            setToastVariant("danger");
-            setShowToast(true);  // Menampilkan toaster error
-
-            // setToastMessage("Data updated successfully!");
-            // setToastVariant("success");
-            // setShowToast(true);  // Menampilkan toaster
-
-            setTimeout(() => {
-                setShowToast(false); // Sembunyikan toaster setelah beberapa detik
-            }, 3000); // 3 detik
-            console.log(error);
+        } catch (error: any) {
+            const finalMessage = `Failed to update data.\n${error?.response?.data?.message || error?.message || "Unknown error"}`;
+            showToast(finalMessage, "danger");
         }
 
     };
@@ -163,20 +144,14 @@ const ProfileForm: React.FC = () => {
                 error={!!errors.role}
                 errorMessage={errors.role}
                 readOnly
+                icon={<FaUser />}
             />
 
-            {/* Tombol Simpan */}
             <div className="text-end mt-3">
                 <button type="submit" className="btn btn-primary px-4">
                     Save <FaSave className="ms-2" />
                 </button>
             </div>
-            <Toaster
-                message={toastMessage}
-                variant={toastVariant}  // Tipe toast (success atau danger)
-                show={showToast}
-                onClose={() => setShowToast(false)}  // Menutup toaster
-            />
         </form>
     );
 };
@@ -184,10 +159,8 @@ const ProfileForm: React.FC = () => {
 
 const ProfilePage: React.FC = () => {
     const navigate = useNavigate();
-
     return (
         <div className="container mt-4">
-            {/* Header & Breadcrumb */}
             <div className="d-flex justify-content-between align-items-center p-3 mb-3">
                 <Breadcrumb title="Master" items={["Profile"]} />
                 <button type="button" className="btn btn-outline-secondary px-4" onClick={() => navigate(-1)}>
@@ -196,7 +169,6 @@ const ProfilePage: React.FC = () => {
                 </button>
             </div>
 
-            {/* Card */}
             <div className="card shadow-lg border-0 rounded-4 p-4">
                 <ProfileForm />
             </div>
