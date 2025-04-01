@@ -22,6 +22,7 @@ import { ChargePage } from "./features/charge";
 import CreateCashFlow from "./features/cashflow/cashflow-page";
 import { ArReportPaidPage } from "./features/report/ar-report-paid";
 import { ArToPaidPage } from "./features/report/ar-to-paid";
+import { CustomerProductStockPage } from "./features/report/customer-product-stock";
 
 function ExampleRouting() {
   return <h1>tes</h1>;
@@ -41,6 +42,10 @@ const router = createBrowserRouter([
           { path: "transaction-out", element: <ReportOutPage /> },
           { path: "ar", element: <ArReportPaidPage /> },
           { path: "ar-to-paid", element: <ArToPaidPage /> },
+          {
+            path: "customer-product-stock",
+            element: <CustomerProductStockPage />,
+          },
         ],
       },
       {
