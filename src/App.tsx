@@ -8,6 +8,7 @@ import { ReportOutPage } from "./features/report/report-out";
 import { ToastProvider } from "./contexts/toastContexts";
 import { CreatePaymentMethodPage, PaymentMethodPage } from "./features/payment-method";
 import UpdatePaymentMethodPage from "./features/payment-method/pages/update-payment-method";
+import { ChargePage } from "./features/charge";
 
 function ExampleRouting() {
   return (
@@ -63,6 +64,10 @@ const router = createBrowserRouter([
       {
         path: "master/profile",
         element: <ProfilePage />
+      },
+      {
+        path: "master/charge",
+        element: <ChargePage />
       }
     ],
   },
