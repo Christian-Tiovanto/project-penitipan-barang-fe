@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { FaEnvelope, FaLock } from "react-icons/fa";
 import Button from "../../../components/loginbutton";
 import { MdLogin } from "react-icons/md";
-import { login, getToken } from "../services/login.service"; // Import service
+import { login, getToken } from "../services/auth.service"; // Import service
 import { useNavigate } from "react-router";
 import InputFieldLogin from "../../../components/inputfieldlogin";
 

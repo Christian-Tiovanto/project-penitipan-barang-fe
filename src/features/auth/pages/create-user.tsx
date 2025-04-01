@@ -3,7 +3,7 @@ import Breadcrumb from "../../../components/breadcrumb";
 import { FaSave, FaArrowLeft, FaEnvelope, FaLock, FaUser } from "react-icons/fa";
 import InputField from "../../../components/inputfield";
 import { useNavigate } from "react-router";
-import { register } from "../services/login.service";
+import { register } from "../services/auth.service";
 import { useToast } from "../../../contexts/toastContexts";
 import Dropdown from "../../../components/dropdown";
 

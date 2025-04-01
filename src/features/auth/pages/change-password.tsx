@@ -4,7 +4,7 @@ import { FaSave, FaArrowLeft, FaEnvelope, FaLock, FaUser } from "react-icons/fa"
 import InputField from "../../../components/inputfield";
 import { useNavigate } from "react-router";
 import { FaUnlock } from "react-icons/fa6";
-import { getUserByIdToken } from "../services/login.service";
+import { getUserByIdToken } from "../services/auth.service";
 import { useToast } from "../../../contexts/toastContexts";
 
 const ChangePasswordForm: React.FC = () => {

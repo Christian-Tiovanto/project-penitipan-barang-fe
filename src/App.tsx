@@ -6,6 +6,8 @@ import { CreateUserPage, LoginPage, ChangePasswordPage, UserPage, ProfilePage, U
 import { MasterPage } from "./features/master";
 import { ReportOutPage } from "./features/report/report-out";
 import { ToastProvider } from "./contexts/toastContexts";
+import { CreatePaymentMethodPage, PaymentMethodPage } from "./features/payment-method";
+import UpdatePaymentMethodPage from "./features/payment-method/pages/update-payment-method";
 
 function ExampleRouting() {
   return (
@@ -37,6 +39,18 @@ const router = createBrowserRouter([
       {
         path: "master/user",
         element: <UserPage />
+      },
+      {
+        path: "master/payment-method",
+        element: <PaymentMethodPage />
+      },
+      {
+        path: "master/payment-method/create-payment-method",
+        element: <CreatePaymentMethodPage />
+      },
+      {
+        path: "master/payment-method/edit-payment-method/:id",
+        element: <UpdatePaymentMethodPage />
       },
       {
         path: "master/user/create-user",
