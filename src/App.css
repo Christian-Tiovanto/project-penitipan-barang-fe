@@ -39,6 +39,15 @@ body {
 .third-bg {
   background-color: var(--third-bg-color) !important;
 }
+.gray-text {
+  color: rgba(0, 0, 0, 0.54);
+}
+.gray {
+  background-color: rgba(0, 0, 0, 0.06) !important;
+}
+.cyan {
+  background-color: rgb(0, 188, 212) !important;
+}
 
 #sidebar-wrapper {
   position: fixed;
@@ -214,7 +223,6 @@ body {
   background: mediumpurple;
   color: #fff;
 }
-
 .datepicker-header {
   display: flex;
   align-items: center;
@@ -315,4 +323,12 @@ body {
   .pagination-component {
     width: 100%;
   }
+}
+
+/* Cashflow */
+.navbar-cashflow {
+  max-height: 48px;
+  min-height: 48px;
+  box-shadow: 0 2px 4px -1px rgba(0, 0, 0, 0.2), 0 4px 5px 0 rgba(0, 0, 0, 0.14),
+    0 1px 10px 0 rgba(0, 0, 0, 0.12);
 }
