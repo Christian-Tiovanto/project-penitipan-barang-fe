@@ -20,6 +20,7 @@ import {
 import UpdatePaymentMethodPage from "./features/payment-method/pages/update-payment-method";
 import { ChargePage } from "./features/charge";
 import CreateCashFlow from "./features/cashflow/cashflow-page";
+import { ArReportPaidPage } from "./features/report/ar-report-paid";
 
 function ExampleRouting() {
   return <h1>tes</h1>;
@@ -37,6 +38,7 @@ const router = createBrowserRouter([
         children: [
           { path: "transaction-in", element: <ReportInPage /> },
           { path: "transaction-out", element: <ReportOutPage /> },
+          { path: "ar", element: <ArReportPaidPage /> },
         ],
       },
       {
