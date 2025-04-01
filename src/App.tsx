@@ -23,6 +23,7 @@ import CreateCashFlow from "./features/cashflow/cashflow-page";
 import { ArReportPaidPage } from "./features/report/ar-report-paid";
 import { ArToPaidPage } from "./features/report/ar-to-paid";
 import { CustomerProductStockPage } from "./features/report/customer-product-stock";
+import { InvoiceProductStockPage } from "./features/report/invoice-product-stock";
 
 function ExampleRouting() {
   return <h1>tes</h1>;
@@ -45,6 +46,10 @@ const router = createBrowserRouter([
           {
             path: "customer-product-stock",
             element: <CustomerProductStockPage />,
+          },
+          {
+            path: "invoice-product-stock",
+            element: <InvoiceProductStockPage />,
           },
         ],
       },
