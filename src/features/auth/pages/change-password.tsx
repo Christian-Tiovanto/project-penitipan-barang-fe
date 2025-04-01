@@ -1,14 +1,17 @@
-import React, { useState } from "react";
-import Breadcrumb from "../components/breadcrumb";
+import React, { useEffect, useState } from "react";
+import Breadcrumb from "../../../components/breadcrumb";
 import { FaSave, FaArrowLeft, FaEnvelope, FaLock, FaUser } from "react-icons/fa";
-import { InputField } from "../components/inputfield";
+import InputField from "../../../components/inputfield";
 import { useNavigate } from "react-router";
 import { FaUnlock } from "react-icons/fa6";
+import { getUserByIdToken } from "../services/auth.service";
+import { useToast } from "../../../contexts/toastContexts";
 
 const ChangePasswordForm: React.FC = () => {
+    const { showToast } = useToast();
     const [form, setForm] = useState({
-        email: "Christianto@gmail.com",
-        fullName: "Christianto vanto",
+        email: "",
+        fullName: "",
         oldPassword: "",
         newPassword: "",
         confirmNewPassword: "",
@@ -19,6 +22,25 @@ const ChangePasswordForm: React.FC = () => {
         newPassword: "",
         confirmNewPassword: "",
     });
+
+    useEffect(() => {
+        fetchUserByIdToken();
+    }, []);
+
+    const fetchUserByIdToken = async () => {
+        try {
+            const userData = await getUserByIdToken();
+            setForm({
+                email: userData.email || "",
+                fullName: userData.fullname || "",
+                oldPassword: "",
+                newPassword: "",
+                confirmNewPassword: "",
+            });
+        } catch (error) {
+            console.error("Error fetching user:", error);
+        }
+    };
 
     const handleBlur = (e: React.FocusEvent<HTMLInputElement>) => {
         const { name, value } = e.target;
@@ -127,7 +149,6 @@ const ChangePasswordPage: React.FC = () => {
 
     return (
         <div className="container mt-4">
-            {/* Header & Breadcrumb */}
             <div className="d-flex justify-content-between align-items-center p-3 mb-3">
                 <Breadcrumb title="Master" items={["Change Password"]} />
                 <button type="button" className="btn btn-outline-secondary px-4" onClick={() => navigate(-1)}>
@@ -136,7 +157,6 @@ const ChangePasswordPage: React.FC = () => {
                 </button>
             </div>
 
-            {/* Card */}
             <div className="card shadow-lg border-0 rounded-4 p-4">
                 <ChangePasswordForm />
             </div>

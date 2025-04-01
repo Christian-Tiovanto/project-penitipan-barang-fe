@@ -32,7 +32,14 @@ const Toaster: React.FC<ToasterProps> = ({ message, variant = "success", show, o
         >
             <div className={`toast show bg-${variant} text-white`} role="alert">
                 <div className="toast-body d-flex justify-content-between">
-                    {message}
+                    <span>
+                        {message.split("\n").map((line, index) => (
+                            <React.Fragment key={index}>
+                                {line}
+                                <br />
+                            </React.Fragment>
+                        ))}
+                    </span>
                     <button
                         type="button"
                         className="btn-close btn-close-white ms-2"

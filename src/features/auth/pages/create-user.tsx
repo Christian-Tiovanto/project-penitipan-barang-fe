@@ -1,13 +1,19 @@
 import React, { useState } from "react";
-import Breadcrumb from "../components/breadcrumb";
+import Breadcrumb from "../../../components/breadcrumb";
 import { FaSave, FaArrowLeft, FaEnvelope, FaLock, FaUser } from "react-icons/fa";
-import { Dropdown, InputField } from "../components/inputfield";
+import InputField from "../../../components/inputfield";
 import { useNavigate } from "react-router";
+import { register } from "../services/auth.service";
+import { useToast } from "../../../contexts/toastContexts";
+import Dropdown from "../../../components/dropdown";
 
 const CreateUserForm: React.FC = () => {
+    const navigate = useNavigate();
+    const { showToast } = useToast();
+
     const [form, setForm] = useState({
         email: "",
-        fullName: "",
+        fullname: "",
         password: "",
         confirmPassword: "",
         role: ""
@@ -17,7 +23,7 @@ const CreateUserForm: React.FC = () => {
         password: "",
         confirmPassword: "",
         email: "",
-        fullName: "",
+        fullname: "",
         role: "",
     });
 
@@ -30,8 +36,8 @@ const CreateUserForm: React.FC = () => {
             newErrors.email = "Invalid email format";
         }
 
-        if (!form.fullName.trim()) {
-            newErrors.fullName = "This field is required";
+        if (!form.fullname.trim()) {
+            newErrors.fullname = "This field is required";
         }
 
         if (!form.password.trim()) {
@@ -83,13 +89,20 @@ const CreateUserForm: React.FC = () => {
         setForm({ ...form, [e.target.name]: e.target.value });
     };
 
-    const handleSubmit = (e: React.FormEvent) => {
-        e.preventDefault();
+    const handleSubmit = async (e: React.FormEvent) => {
+        try {
+            e.preventDefault();
 
-
-        if (validateForm()) {
-            console.log("User created successfully:", form);
+            if (validateForm()) {
+                await register(form.email, form.fullname, form.password, form.role)
+                navigate("/master/user")
+                showToast("Data added successfully!", "success");
+            }
+        } catch (error: any) {
+            const finalMessage = `Failed to add data.\n${error?.response?.data?.message || error?.message || "Unknown error"}`;
+            showToast(finalMessage, "danger");
         }
+
     };
 
     return (
@@ -111,12 +124,12 @@ const CreateUserForm: React.FC = () => {
                     <InputField
                         label="Full Name *"
                         type="text"
-                        name="fullName"
-                        value={form.fullName}
+                        name="fullname"
+                        value={form.fullname}
                         onChange={handleChange}
                         onBlur={handleBlur}
-                        error={!!errors.fullName}
-                        errorMessage={errors.fullName}
+                        error={!!errors.fullname}
+                        errorMessage={errors.fullname}
                         icon={<FaUser />} />
                 </div>
             </div>
@@ -159,7 +172,6 @@ const CreateUserForm: React.FC = () => {
                 icon={<FaLock />}
             />
 
-            {/* Tombol Simpan */}
             <div className="text-end mt-3">
                 <button type="submit" className="btn btn-primary px-4">
                     Save <FaSave className="ms-2" />
@@ -175,7 +187,6 @@ const CreateUserPage: React.FC = () => {
 
     return (
         <div className="container mt-4">
-            {/* Header & Breadcrumb */}
             <div className="d-flex justify-content-between align-items-center p-3 mb-3">
                 <Breadcrumb title="Master" items={["User", "Create User"]} />
                 <button type="button" className="btn btn-outline-secondary px-4" onClick={() => navigate(-1)}>
@@ -184,7 +195,6 @@ const CreateUserPage: React.FC = () => {
                 </button>
             </div>
 
-            {/* Card */}
             <div className="card shadow-lg border-0 rounded-4 p-4">
                 <CreateUserForm />
             </div>

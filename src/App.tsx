@@ -1,4 +1,4 @@
-import { createBrowserRouter, RouterProvider } from "react-router";
+import { createBrowserRouter, RouterProvider } from "react-router"; // Import yang benar dari react-router-dom
 import "./App.css";
 import MainLayout from "./layouts/layouts";
 import { ReportInPage } from "./features/report/report-in";
@@ -12,62 +12,83 @@ import {
 } from "./features/auth";
 import { MasterPage } from "./features/master";
 import { ReportOutPage } from "./features/report/report-out";
+import { CreateUserPage, LoginPage, ChangePasswordPage, UserPage, ProfilePage, UpdateUserPage } from './features/auth'
+import { MasterPage } from "./features/master";
+import { ReportOutPage } from "./features/report/report-out";
+import { ToastProvider } from "./contexts/toastContexts";
+import { CreatePaymentMethodPage, PaymentMethodPage } from "./features/payment-method";
+import UpdatePaymentMethodPage from "./features/payment-method/pages/update-payment-method";
+
 
 function ExampleRouting() {
   return (
-    <>
-      <h1>tes</h1>
-    </>
+    <h1>tes</h1>
   );
 }
 
 const router = createBrowserRouter([
   {
     path: "/",
-    Component: MainLayout,
+    element: <MainLayout />, // Gunakan element bukan Component
     children: [
-      { path: "example", Component: ExampleRouting },
+      { path: "example", element: <ExampleRouting /> },
       {
         path: "report",
         children: [
-          { path: "transaction-in", Component: ReportInPage },
-          { path: "transaction-out", Component: ReportOutPage },
+          { path: "transaction-in", element: <ReportInPage /> },
+          { path: "transaction-out", element: <ReportOutPage /> },
         ],
       },
       {
         path: "master",
-        Component: MasterPage,
+        element: <MasterPage />,
       },
       {
         path: "master/change-password",
-        Component: ChangePasswordPage,
+        element: <ChangePasswordPage />
       },
       {
         path: "master/user",
-        Component: UserPage,
+        element: <UserPage />
+      },
+      {
+        path: "master/payment-method",
+        element: <PaymentMethodPage />
+      },
+      {
+        path: "master/payment-method/create-payment-method",
+        element: <CreatePaymentMethodPage />
+      },
+      {
+        path: "master/payment-method/edit-payment-method/:id",
+        element: <UpdatePaymentMethodPage />
       },
       {
         path: "master/user/create-user",
-        Component: CreateUserPage,
+        element: <CreateUserPage />
       },
       {
         path: "master/user/edit-user/:id",
-        Component: UpdateUserPage,
+        element: <UpdateUserPage />
       },
       {
         path: "master/profile",
-        Component: ProfilePage,
-      },
+        element: <ProfilePage />
+      }
     ],
   },
   {
     path: "login",
-    Component: LoginPage,
-  },
+    element: <LoginPage />,
+  }
 ]);
 
 function App() {
-  return <RouterProvider router={router}></RouterProvider>;
+  return (
+    <ToastProvider> {/* Wrap the entire app with ToastProvider */}
+      <RouterProvider router={router} />
+    </ToastProvider>
+  );
 }
-// const root: any = document.getElementById("root");
+
 export default App;

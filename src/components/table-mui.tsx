@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   Table,
   TableBody,
@@ -13,6 +13,7 @@ import {
   Button,
   TextField,
   InputAdornment,
+  CircularProgress,
 } from "@mui/material";
 import {
   Edit as EditIcon,
@@ -28,39 +29,57 @@ interface Column {
 
 interface Props {
   columns: Column[];
-  data: any[];
+  fetchData: (page: number, rowsPerPage: number, searchQuery: string) => Promise<{ data: any[], total: number }>;
   onEdit?: (row: any) => void;
   onDelete?: (row: any) => void;
   onAdd?: () => void;
 }
 
-const MuiTable: React.FC<Props> = ({
-  columns,
-  data,
-  onEdit,
-  onDelete,
-  onAdd,
-}) => {
+const MuiTable: React.FC<Props> = ({ columns, fetchData, onEdit, onDelete, onAdd }) => {
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(5);
   const [searchQuery, setSearchQuery] = useState("");
+  const [data, setData] = useState<any[]>([]);
+  const [totalRows, setTotalRows] = useState(0);
+  const [loading, setLoading] = useState(false);
+
+  const loadData = async () => {
+    setLoading(true);
+    try {
+      const result = await fetchData(page, rowsPerPage, searchQuery);
+      setData(result.data);
+      setTotalRows(result.total);
+    } catch (error) {
+      console.error("Failed to fetch data:", error);
+    }
+    setLoading(false);
+  };
+
+  useEffect(() => {
+    loadData();
+  }, [page, rowsPerPage, searchQuery]);
 
   const handleChangePage = (_: unknown, newPage: number) => {
     setPage(newPage);
   };
 
-  const handleChangeRowsPerPage = (
-    event: React.ChangeEvent<HTMLInputElement>
-  ) => {
+  const handleChangeRowsPerPage = (event: React.ChangeEvent<HTMLInputElement>) => {
     setRowsPerPage(parseInt(event.target.value, 10));
     setPage(0);
   };
 
-  const filteredData = data.filter((row) =>
-    columns.some((col) =>
-      String(row[col.field]).toLowerCase().includes(searchQuery.toLowerCase())
-    )
-  );
+  const handleDelete = async (row: any) => {
+    try {
+      if (onDelete) {
+        await onDelete(row); // Panggil onDelete hanya jika tidak undefined
+      }
+
+      // Reload data setelah berhasil menghapus
+      loadData();
+    } catch (error) {
+      console.error("Failed to delete data:", error);
+    }
+  };
 
   return (
     <div className="mui-table-container">
@@ -77,12 +96,7 @@ const MuiTable: React.FC<Props> = ({
             color="primary"
             startIcon={<AddIcon />}
             onClick={onAdd}
-            sx={{
-              textTransform: "none",
-              fontSize: "0.9rem",
-              padding: "8px 16px",
-              mb: { xs: 2, sm: 0 },
-            }}
+            sx={{ textTransform: "none", fontSize: "0.9rem", padding: "8px 16px", mb: { xs: 2, sm: 0 } }}
           >
             Add New
           </Button>
@@ -102,49 +116,47 @@ const MuiTable: React.FC<Props> = ({
             }}
           />
         </Box>
-        <Table>
-          <TableHead>
-            <TableRow>
-              {columns.map((col) => (
-                <TableCell key={col.field}>
-                  <b>{col.headerName}</b>
+        {loading ? (
+          <Box display="flex" justifyContent="center" py={3}>
+            <CircularProgress />
+          </Box>
+        ) : (
+          <Table>
+            <TableHead>
+              <TableRow>
+                {columns.map((col) => (
+                  <TableCell key={col.field}>
+                    <b>{col.headerName}</b>
+                  </TableCell>
+                ))}
+                <TableCell>
+                  <b>Actions</b>
                 </TableCell>
-              ))}
-              <TableCell>
-                <b>Actions</b>
-              </TableCell>
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {filteredData
-              .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-              .map((row) => (
+              </TableRow>
+            </TableHead>
+            <TableBody>
+              {data.map((row) => (
                 <TableRow key={row.id}>
                   {columns.map((col) => (
                     <TableCell key={col.field}>{row[col.field]}</TableCell>
                   ))}
                   <TableCell>
-                    <IconButton
-                      color="primary"
-                      onClick={() => onEdit && onEdit(row)}
-                    >
+                    <IconButton color="primary" onClick={() => onEdit && onEdit(row)}>
                       <EditIcon />
                     </IconButton>
-                    <IconButton
-                      sx={{ color: "red" }}
-                      onClick={() => onDelete && onDelete(row)}
-                    >
+                    <IconButton sx={{ color: "red" }} onClick={() => handleDelete(row)}>
                       <DeleteIcon />
                     </IconButton>
                   </TableCell>
                 </TableRow>
               ))}
-          </TableBody>
-        </Table>
+            </TableBody>
+          </Table>
+        )}
         <TablePagination
           sx={{ fontSize: "1.1rem" }}
           component="div"
-          count={filteredData.length}
+          count={totalRows}
           page={page}
           rowsPerPage={rowsPerPage}
           onPageChange={handleChangePage}

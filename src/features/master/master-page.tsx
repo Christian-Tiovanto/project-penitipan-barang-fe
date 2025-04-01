@@ -1,12 +1,19 @@
 import React from "react";
 import { useNavigate } from "react-router";
 import MenuItem from "./components/menu-item";
-import { FaUser, FaLock, FaUserPlus } from "react-icons/fa";
+import { FaUser, FaLock, FaUserPlus, FaMoneyBillAlt, FaBalanceScale, FaMoneyCheckAlt } from "react-icons/fa";
+import { FaBox, FaClipboardUser, FaCreditCard } from "react-icons/fa6";
 
 const menuItems = [
     { label: "Profile", path: "/master/profile", icon: <FaUser className="me-2" /> },
     { label: "Change Password", path: "/master/change-password", icon: <FaLock className="me-2" /> },
     { label: "User", path: "/master/user", icon: <FaUserPlus className="me-2" /> },
+    { label: "Product", path: "/master/product", icon: <FaBox className="me-2" /> },
+    { label: "Product Unit", path: "/master/product-unit", icon: <FaBalanceScale className="me-2" /> },
+    { label: "Customer", path: "/master/customer", icon: <FaClipboardUser className="me-2" /> },
+    { label: "Customer Payment", path: "/master/customer-payment", icon: <FaCreditCard className="me-2" /> },
+    { label: "Payment Method", path: "/master/payment-method", icon: <FaMoneyBillAlt className="me-2" /> },
+    { label: "Charge", path: "/master/charge", icon: <FaMoneyCheckAlt className="me-2" /> },
 ];
 
 const MasterPage: React.FC = () => {
