@@ -258,8 +258,10 @@ body {
   background: mediumpurple;
   color: #fff;
 }
-
-
+.datepicker-time-container {
+  max-height: 50px !important;
+  min-height: 0px !important;
+}
 /* CSS untuk Slide-In dan Slide-Out */
 @keyframes slideIn {
   from {
@@ -292,6 +294,7 @@ body {
 /* Mui Table */
 .mui-table-container p {
   margin: 0px !important;
+}
 
 /* Bootstrap custom */
 .form-floating > label::after {
@@ -312,5 +315,4 @@ body {
   .pagination-component {
     width: 100%;
   }
-
 }

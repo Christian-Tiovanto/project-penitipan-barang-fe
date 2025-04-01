@@ -2,18 +2,26 @@ import { createBrowserRouter, RouterProvider } from "react-router"; // Import ya
 import "./App.css";
 import MainLayout from "./layouts/layouts";
 import { ReportInPage } from "./features/report/report-in";
-import { CreateUserPage, LoginPage, ChangePasswordPage, UserPage, ProfilePage, UpdateUserPage } from './features/auth'
+import {
+  CreateUserPage,
+  LoginPage,
+  ChangePasswordPage,
+  UserPage,
+  ProfilePage,
+  UpdateUserPage,
+} from "./features/auth";
 import { MasterPage } from "./features/master";
 import { ReportOutPage } from "./features/report/report-out";
 import { ToastProvider } from "./contexts/toastContexts";
-import { CreatePaymentMethodPage, PaymentMethodPage } from "./features/payment-method";
+import {
+  CreatePaymentMethodPage,
+  PaymentMethodPage,
+} from "./features/payment-method";
 import UpdatePaymentMethodPage from "./features/payment-method/pages/update-payment-method";
 import { ChargePage } from "./features/charge";
 
 function ExampleRouting() {
-  return (
-    <h1>tes</h1>
-  );
+  return <h1>tes</h1>;
 }
 
 const router = createBrowserRouter([
@@ -35,31 +43,31 @@ const router = createBrowserRouter([
       },
       {
         path: "master/change-password",
-        element: <ChangePasswordPage />
+        element: <ChangePasswordPage />,
       },
       {
         path: "master/user",
-        element: <UserPage />
+        element: <UserPage />,
       },
       {
         path: "master/payment-method",
-        element: <PaymentMethodPage />
+        element: <PaymentMethodPage />,
       },
       {
         path: "master/payment-method/create-payment-method",
-        element: <CreatePaymentMethodPage />
+        element: <CreatePaymentMethodPage />,
       },
       {
         path: "master/payment-method/edit-payment-method/:id",
-        element: <UpdatePaymentMethodPage />
+        element: <UpdatePaymentMethodPage />,
       },
       {
         path: "master/user/create-user",
-        element: <CreateUserPage />
+        element: <CreateUserPage />,
       },
       {
         path: "master/user/edit-user/:id",
-        element: <UpdateUserPage />
+        element: <UpdateUserPage />,
       },
       {
         path: "master/profile",
@@ -74,12 +82,14 @@ const router = createBrowserRouter([
   {
     path: "login",
     element: <LoginPage />,
-  }
+  },
 ]);
 
 function App() {
   return (
-    <ToastProvider> {/* Wrap the entire app with ToastProvider */}
+    <ToastProvider>
+      {" "}
+      {/* Wrap the entire app with ToastProvider */}
       <RouterProvider router={router} />
     </ToastProvider>
   );
