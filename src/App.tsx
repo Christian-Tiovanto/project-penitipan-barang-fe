@@ -19,16 +19,19 @@ import {
 } from "./features/payment-method";
 import UpdatePaymentMethodPage from "./features/payment-method/pages/update-payment-method";
 import { ChargePage } from "./features/charge";
+
 import UpdateProductUnitPage from "./features/product-unit/pages/update-product-unit";
 import { CreateProductUnitPage, ProductUnitPage } from "./features/product-unit";
 import { CreateProductPage, ProductPage } from "./features/product";
 import UpdateProductPage from "./features/product/pages/update-product";
+import CreateCashFlow from "./features/cashflow/cashflow-page";
 
 function ExampleRouting() {
   return <h1>tes</h1>;
 }
 
 const router = createBrowserRouter([
+  { path: "create-cashflow", element: <CreateCashFlow /> },
   {
     path: "/",
     element: <MainLayout />, // Gunakan element bukan Component
@@ -75,7 +78,7 @@ const router = createBrowserRouter([
       },
       {
         path: "master/profile",
-        element: <ProfilePage />
+        element: <ProfilePage />,
       },
       {
         path: "master/charge",
