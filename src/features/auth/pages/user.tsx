@@ -3,7 +3,7 @@ import Breadcrumb from "../../../components/breadcrumb";
 import { FaArrowLeft } from "react-icons/fa";
 import { useNavigate } from "react-router";
 import MuiTable from "../../../components/table-mui";
-import { deleteUserById, getAllUsers } from "../services/login.service";
+import { deleteUserById, getAllUsers } from "../services/auth.service";
 import { useToast } from "../../../contexts/toastContexts";
 
 const UserPage: React.FC = () => {
