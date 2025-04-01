@@ -3,13 +3,16 @@
   --main-text-color: white;
   --second-bg-color: #f3f4f7;
   --second-text-color: black;
+  --third-bg-color: #f0f0f0;
 }
+
 #root {
   height: 100%;
 }
 body {
   background-color: var(--second-bg-color);
 }
+
 .primary-text {
   color: var(--main-text-color);
 }
@@ -28,6 +31,13 @@ body {
 
 .rounded-full {
   border-radius: 100%;
+}
+
+.third-text {
+  color: var(--third-bg-color);
+}
+.third-bg {
+  background-color: var(--third-bg-color) !important;
 }
 
 #sidebar-wrapper {
@@ -85,6 +95,11 @@ body {
 .navbar {
   height: 64px;
 }
+
+.label {
+  font-size: 16px;
+}
+
 /* Nav Layout Responsive */
 @media (min-width: 992px) {
   #sidebar-wrapper {
@@ -107,9 +122,11 @@ body {
   #wrapper.toggled #sidebar-wrapper {
     margin-left: -300px;
   }
+
   #wrapper.toggled #page-content-wrapper {
     padding-left: 0px;
   }
+
   .navbar {
     -webkit-transition: margin 0.25s ease-out;
     -moz-transition: margin 0.25s ease-out;
@@ -118,35 +135,28 @@ body {
     margin-left: 300px;
     background-color: wheat;
   }
+
   #wrapper.toggled .navbar {
     margin-left: 0px;
     background-color: wheat;
   }
 }
 
-/* Date Input */
-.date-input {
-  min-width: 100%;
-  padding: 10px;
-  box-sizing: border-box;
-  font-size: 1rem;
-  border-radius: 5px;
-  border: 1px solid #eee;
-}
-
 /* datepicker styles */
 
 .datepicker-container {
-  min-width: 100%;
+  border-radius: 5px;
+  background-color: var(--third-bg-color);
+  border: 1px solid #eee;
   position: relative;
   margin: auto;
-  z-index: 1;
+  flex: 1;
 }
 
 .datepicker {
+  z-index: 8;
   position: absolute;
   top: 100%;
-  z-index: 100;
   margin-top: 2px;
   background: #fff;
   padding: 10px;
@@ -247,4 +257,60 @@ body {
 .datepicker-footer button.apply {
   background: mediumpurple;
   color: #fff;
+}
+
+
+/* CSS untuk Slide-In dan Slide-Out */
+@keyframes slideIn {
+  from {
+    transform: translateX(100%);
+    /* Mulai dari luar layar ke kanan */
+    opacity: 0;
+  }
+
+  to {
+    transform: translateX(0);
+    /* Posisi akhir di dalam layar */
+    opacity: 1;
+  }
+}
+
+@keyframes slideOut {
+  from {
+    transform: translateX(0);
+    /* Mulai dari posisi awal */
+    opacity: 1;
+  }
+
+  to {
+    transform: translateX(100%);
+    /* Pergi keluar layar ke kanan */
+    opacity: 0;
+  }
+}
+
+/* Mui Table */
+.mui-table-container p {
+  margin: 0px !important;
+
+/* Bootstrap custom */
+.form-floating > label::after {
+  background-color: transparent !important;
+}
+
+/* Pagination Component */
+.pagination-dropdown-item {
+  padding: 10px;
+}
+
+.pagination-component {
+  width: 350px;
+}
+
+/* Responsive */
+@media (min-width: 576px) {
+  .pagination-component {
+    width: 100%;
+  }
+
 }

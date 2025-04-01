@@ -1,10 +1,14 @@
 import { useState, useEffect } from "react";
+import { FaCalendarDay } from "react-icons/fa6";
 
-const DatePicker = ({ titleText }: { titleText: string }) => {
+const DatePicker = ({ id, titleText }: { id: string; titleText: string }) => {
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [showPicker, setShowPicker] = useState(false);
   const [currentMonth, setCurrentMonth] = useState(new Date().getMonth());
   const [currentYear, setCurrentYear] = useState(new Date().getFullYear());
+  const [originalDate, setOriginalDate] = useState(new Date());
+  const [originalMonth, setOriginalMonth] = useState(new Date().getMonth());
+  const [originalYear, setOriginalYear] = useState(new Date().getFullYear());
 
   const months = [
     "January",
@@ -92,22 +96,54 @@ const DatePicker = ({ titleText }: { titleText: string }) => {
       if (currentMonth === 0) setCurrentYear((y) => y - 1);
     }
   };
+  // Modified showPicker handler
+  const togglePicker = (show: boolean) => {
+    if (show) {
+      // Store original values when opening picker
+      setOriginalDate(selectedDate);
+      setOriginalMonth(currentMonth);
+      setOriginalYear(currentYear);
+    }
+    setShowPicker(show);
+  };
+
+  // Modified cancel handler
+  const handleCancel = () => {
+    // Reset to original values
+    setSelectedDate(originalDate);
+    setCurrentMonth(originalMonth);
+    setCurrentYear(originalYear);
+    setShowPicker(false);
+    console.log("again");
+    console.log(showPicker);
+  };
 
   return (
-    <div className="datepicker-container">
-      <p>{titleText}</p>
-      <input
-        type="text"
-        className="date-input"
-        placeholder="Select date"
-        value={selectedDate.toLocaleDateString("en-US", {
-          year: "numeric",
-          month: "2-digit",
-          day: "2-digit",
-        })}
-        onClick={() => setShowPicker(true)}
-        readOnly
-      />
+    <div className="datepicker-container mb-3">
+      <div
+        className="container-input-date d-flex justify-content-start align-items-center ps-3"
+        onClick={() => togglePicker(true)}
+      >
+        <FaCalendarDay />
+        <div className="form-floating">
+          <input
+            id={id}
+            type="text"
+            className="form-control third-bg border-0"
+            placeholder="Select date"
+            value={selectedDate.toLocaleDateString("en-GB", {
+              year: "numeric",
+              month: "2-digit",
+              day: "2-digit",
+            })}
+            onClick={() => togglePicker(true)}
+            readOnly
+          />
+          <label htmlFor={id} className="label">
+            {titleText}
+          </label>
+        </div>
+      </div>
       <div className="datepicker" hidden={!showPicker}>
         <div className="datepicker-header">
           <button className="prev" onClick={() => navigateMonth("prev")}>
@@ -160,7 +196,7 @@ const DatePicker = ({ titleText }: { titleText: string }) => {
         </div>
 
         <div className="datepicker-footer">
-          <button className="cancel" onClick={() => setShowPicker(false)}>
+          <button className="cancel" onClick={handleCancel}>
             Cancel
           </button>
           <button className="apply" onClick={() => setShowPicker(false)}>
