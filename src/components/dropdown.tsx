@@ -35,6 +35,10 @@ const Dropdown: React.FC<DropdownProps> = ({
                     onChange={onChange}
                     onBlur={onBlur}
                     disabled={readOnly}
+                    style={{
+                        maxHeight: '200px',  // Menentukan tinggi maksimal dropdown
+                        overflowY: 'auto',   // Mengaktifkan scroll vertikal
+                    }}
                 >
                     <option value="" disabled>Select one</option>
                     {options.map((option) => (

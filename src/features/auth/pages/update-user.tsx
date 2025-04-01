@@ -66,7 +66,7 @@ const UpdateUserForm: React.FC = () => {
         // }
 
         if (!form.role) {
-            newErrors.role = "Please select a category";
+            newErrors.role = "Please Select a Role";
         }
 
         setErrors(newErrors);
@@ -89,7 +89,7 @@ const UpdateUserForm: React.FC = () => {
         if (!e.target.value) {
             setErrors((prevErrors) => ({
                 ...prevErrors,
-                role: "Please Select A Role",
+                role: "Please Select a Role",
             }));
         } else {
             setErrors((prevErrors) => ({
@@ -163,6 +163,7 @@ const UpdateUserForm: React.FC = () => {
                 onBlur={handleDropdownBlur}
                 error={!!errors.role}
                 errorMessage={errors.role}
+                icon={<FaUser />}
             />
             {/* 
             <InputField

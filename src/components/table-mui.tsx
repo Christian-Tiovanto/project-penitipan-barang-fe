@@ -71,10 +71,9 @@ const MuiTable: React.FC<Props> = ({ columns, fetchData, onEdit, onDelete, onAdd
   const handleDelete = async (row: any) => {
     try {
       if (onDelete) {
-        await onDelete(row); // Panggil onDelete hanya jika tidak undefined
+        await onDelete(row);
       }
 
-      // Reload data setelah berhasil menghapus
       loadData();
     } catch (error) {
       console.error("Failed to delete data:", error);
@@ -137,9 +136,10 @@ const MuiTable: React.FC<Props> = ({ columns, fetchData, onEdit, onDelete, onAdd
             <TableBody>
               {data.map((row) => (
                 <TableRow key={row.id}>
-                  {columns.map((col) => (
-                    <TableCell key={col.field}>{row[col.field]}</TableCell>
-                  ))}
+                  {columns.map((col) => {
+                    const value = col.field.split('.').reduce((acc, part) => acc && acc[part], row);
+                    return <TableCell key={col.field}>{value}</TableCell>;
+                  })}
                   <TableCell>
                     <IconButton color="primary" onClick={() => onEdit && onEdit(row)}>
                       <EditIcon />

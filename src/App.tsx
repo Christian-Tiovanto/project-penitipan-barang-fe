@@ -19,6 +19,11 @@ import {
 } from "./features/payment-method";
 import UpdatePaymentMethodPage from "./features/payment-method/pages/update-payment-method";
 import { ChargePage } from "./features/charge";
+
+import UpdateProductUnitPage from "./features/product-unit/pages/update-product-unit";
+import { CreateProductUnitPage, ProductUnitPage } from "./features/product-unit";
+import { CreateProductPage, ProductPage } from "./features/product";
+import UpdateProductPage from "./features/product/pages/update-product";
 import CreateCashFlow from "./features/cashflow/cashflow-page";
 
 function ExampleRouting() {
@@ -77,7 +82,31 @@ const router = createBrowserRouter([
       },
       {
         path: "master/charge",
-        element: <ChargePage />,
+        element: <ChargePage />
+      },
+      {
+        path: "master/product-unit",
+        element: <ProductUnitPage />,
+      },
+      {
+        path: "master/product-unit/create-product-unit",
+        element: <CreateProductUnitPage />,
+      },
+      {
+        path: "master/product-unit/edit-product-unit/:id",
+        element: <UpdateProductUnitPage />,
+      },
+      {
+        path: "master/product",
+        element: <ProductPage />,
+      },
+      {
+        path: "master/product/create-product",
+        element: <CreateProductPage />,
+      },
+      {
+        path: "master/product/edit-product/:id",
+        element: <UpdateProductPage />,
       },
     ],
   },
