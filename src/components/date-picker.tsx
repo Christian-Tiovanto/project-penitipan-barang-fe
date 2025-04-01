@@ -1,7 +1,16 @@
 import { useState, useEffect } from "react";
 import { FaCalendarDay } from "react-icons/fa6";
-
-const DatePicker = ({ id, titleText }: { id: string; titleText: string }) => {
+const DatePicker = ({
+  idDatePicker,
+  titleText,
+  datetime,
+  idDatePickerTime,
+}: {
+  idDatePicker: string;
+  titleText: string;
+  datetime: boolean;
+  idDatePickerTime?: string;
+}) => {
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [showPicker, setShowPicker] = useState(false);
   const [currentMonth, setCurrentMonth] = useState(new Date().getMonth());
@@ -127,7 +136,7 @@ const DatePicker = ({ id, titleText }: { id: string; titleText: string }) => {
         <FaCalendarDay />
         <div className="form-floating">
           <input
-            id={id}
+            id={idDatePicker}
             type="text"
             className="form-control third-bg border-0"
             placeholder="Select date"
@@ -139,7 +148,7 @@ const DatePicker = ({ id, titleText }: { id: string; titleText: string }) => {
             onClick={() => togglePicker(true)}
             readOnly
           />
-          <label htmlFor={id} className="label">
+          <label htmlFor={idDatePicker} className="label">
             {titleText}
           </label>
         </div>
@@ -195,6 +204,27 @@ const DatePicker = ({ id, titleText }: { id: string; titleText: string }) => {
           ))}
         </div>
 
+        <div
+          className={`datepicker-time w-100 justify-content-between align-items-center border-top ${
+            datetime ? "d-flex" : "d-none"
+          }`}
+        >
+          <div className="form-floating w-100 d-flex align-items-center">
+            <input
+              id={idDatePickerTime}
+              type="time"
+              className="form-control w-100 datepicker-time-container border-0 pb-0 pt-0 "
+              value={"00:00"}
+            />
+            <label
+              htmlFor="date-picker"
+              className="label fs-6 fw-light d-flex align-items-center pb-4"
+            >
+              Time
+            </label>
+          </div>
+          <span>WIB</span>
+        </div>
         <div className="datepicker-footer">
           <button className="cancel" onClick={handleCancel}>
             Cancel

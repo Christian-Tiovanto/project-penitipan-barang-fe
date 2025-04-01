@@ -113,14 +113,16 @@ export function ReportInPage() {
         <div className="row">
           <div className="col-md-6 position-relative">
             <DatePicker
-              id="tanggal-awal-masuk-barang"
+              idDatePicker="tanggal-awal-masuk-barang"
               titleText="Tanggal Awal"
+              datetime={false}
             />
           </div>
           <div className="col-md-6 position-relative">
             <DatePicker
-              id="tanggal-akhir-masuk-barang"
+              idDatePicker="tanggal-akhir-masuk-barang"
               titleText="Tanggal Akhir"
+              datetime={false}
             />
           </div>
         </div>
