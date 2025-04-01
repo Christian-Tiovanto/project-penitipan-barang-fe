@@ -259,7 +259,6 @@ body {
   color: #fff;
 }
 
-
 /* CSS untuk Slide-In dan Slide-Out */
 @keyframes slideIn {
   from {
@@ -292,6 +291,7 @@ body {
 /* Mui Table */
 .mui-table-container p {
   margin: 0px !important;
+}
 
 /* Bootstrap custom */
 .form-floating > label::after {
@@ -312,5 +312,4 @@ body {
   .pagination-component {
     width: 100%;
   }
-
 }

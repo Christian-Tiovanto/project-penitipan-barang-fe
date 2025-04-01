@@ -2,12 +2,16 @@ import { createBrowserRouter, RouterProvider } from "react-router";
 import "./App.css";
 import MainLayout from "./layouts/layouts";
 import { ReportInPage } from "./features/report/report-in";
-import DatePicker from "./components/date-picker";
-import { CreateUserPage, LoginPage, ChangePasswordPage, UserPage, ProfilePage, UpdateUserPage } from './features/auth'
-import { Component } from "react";
+import {
+  CreateUserPage,
+  LoginPage,
+  ChangePasswordPage,
+  UserPage,
+  ProfilePage,
+  UpdateUserPage,
+} from "./features/auth";
 import { MasterPage } from "./features/master";
 import { ReportOutPage } from "./features/report/report-out";
-
 
 function ExampleRouting() {
   return (
@@ -16,7 +20,6 @@ function ExampleRouting() {
     </>
   );
 }
-
 
 const router = createBrowserRouter([
   {
@@ -37,30 +40,30 @@ const router = createBrowserRouter([
       },
       {
         path: "master/change-password",
-        Component: ChangePasswordPage
+        Component: ChangePasswordPage,
       },
       {
         path: "master/user",
-        Component: UserPage
+        Component: UserPage,
       },
       {
         path: "master/user/create-user",
-        Component: CreateUserPage
+        Component: CreateUserPage,
       },
       {
         path: "master/user/edit-user/:id",
-        Component: UpdateUserPage
+        Component: UpdateUserPage,
       },
       {
         path: "master/profile",
-        Component: ProfilePage
-      }
+        Component: ProfilePage,
+      },
     ],
   },
   {
     path: "login",
     Component: LoginPage,
-  }
+  },
 ]);
 
 function App() {

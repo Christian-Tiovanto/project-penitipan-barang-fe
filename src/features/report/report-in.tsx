@@ -1,9 +1,19 @@
 import { useState } from "react";
 import DatePicker from "../../components/date-picker";
-import PagePaginationComponent from "../../components/pagination.tsx";
-import { Table, ColumnConfig } from "../../components/table-component.tsx";
-import "./report.css";
+import {
+  Paper,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TablePagination,
+  TableRow,
+} from "@mui/material";
+
+import { ColumnConfig } from "../../components/table-component";
 interface ITransactionInData {
+  id: number;
   product: {
     id: number;
     name: string;
@@ -17,9 +27,23 @@ interface ITransactionInData {
   unit: string;
 }
 export function ReportInPage() {
-  const [selectedPageSize, setSelectedPageSize] = useState("All");
+  const [page, setPage] = useState(0);
+  const [rowsPerPage, setRowsPerPage] = useState(5);
+  const [searchQuery, setSearchQuery] = useState("");
+  const handleChangePage = (_: unknown, newPage: number) => {
+    setPage(newPage);
+  };
+
+  const handleChangeRowsPerPage = (
+    event: React.ChangeEvent<HTMLInputElement>
+  ) => {
+    setRowsPerPage(parseInt(event.target.value, 10));
+    setPage(0);
+  };
+
   const TransactionInData: ITransactionInData[] = [
     {
+      id: 1,
       product: { id: 1, name: "Product Name" },
       customer: { id: 1, name: "Customer Name" },
       qty: 5,
@@ -27,6 +51,7 @@ export function ReportInPage() {
       unit: "Kg",
     },
     {
+      id: 2,
       product: {
         id: 1,
         name: "Lorem ipsum dolor sit amet consectetur.",
@@ -39,39 +64,48 @@ export function ReportInPage() {
   ];
   const columns: ColumnConfig<ITransactionInData>[] = [
     {
-      key: "product",
-      header: "Product",
-      render: (data) => data.product.name,
+      field: "product",
+      headerName: "Product",
+      headerStyle: {
+        minWidth: "200px",
+        width: "40%",
+      },
     },
     {
-      key: "customer",
-      header: "Customer",
-      render: (data) => data.customer.name,
-      headerStyle: { paddingLeft: "24px" },
-      cellStyle: { paddingLeft: "24px" },
+      field: "customer",
+      headerName: "Customer",
+      headerStyle: {
+        width: "20%",
+      },
     },
     {
-      key: "qty",
-      header: "Quantity",
-      render: (data) => data.qty,
-      headerStyle: { paddingLeft: "24px" },
-      cellStyle: { paddingLeft: "24px" },
+      field: "qty",
+      headerName: "Quantity",
+      headerStyle: {
+        width: "10%",
+      },
     },
     {
-      key: "converted_qty",
-      header: "Quantity (Kg)",
-      render: (data) => data.converted_qty,
-      headerStyle: { paddingLeft: "24px" },
-      cellStyle: { paddingLeft: "24px" },
+      field: "converted_qty",
+      headerName: "Quantity (Kg)",
+      headerStyle: {
+        width: "20%",
+      },
     },
     {
-      key: "unit",
-      header: "Unit",
-      render: (data) => data.unit,
-      headerStyle: { paddingLeft: "24px" },
-      cellStyle: { paddingLeft: "24px" },
+      field: "unit",
+      headerName: "Unit",
+      headerStyle: {
+        width: "10%",
+      },
     },
   ];
+  const filteredData = TransactionInData.filter((row: any) =>
+    columns.some((col) =>
+      String(row[col.field]).toLowerCase().includes(searchQuery.toLowerCase())
+    )
+  );
+
   const columnWidths = ["30%", "20%", "20%", "20%", "10%"];
   return (
     <>
@@ -91,15 +125,50 @@ export function ReportInPage() {
           </div>
         </div>
         <div className="product-in-list w-100 d-flex flex-column">
-          <Table
-            data={TransactionInData}
-            columns={columns}
-            columnWidths={columnWidths}
-          />
-          <PagePaginationComponent
-            selectedPageSize={selectedPageSize}
-            setSelectedPageSize={(data: string) => setSelectedPageSize(data)}
-          />
+          <div className="mui-table-container">
+            <TableContainer component={Paper} sx={{ padding: 2 }}>
+              <Table>
+                <TableHead>
+                  <TableRow>
+                    {columns.map((col) => (
+                      <TableCell
+                        key={col.field}
+                        sx={{
+                          width: col.headerStyle?.width,
+                          minWidth: col.headerStyle?.minWidth,
+                          textAlign: col.headerStyle?.textAlign,
+                          fontWeight: "bold",
+                        }}
+                      >
+                        <b>{col.headerName}</b>
+                      </TableCell>
+                    ))}
+                  </TableRow>
+                </TableHead>
+                <TableBody>
+                  {TransactionInData.map((value) => (
+                    <TableRow key={value.id}>
+                      <TableCell>{value.product.name}</TableCell>
+                      <TableCell>{value.customer.name}</TableCell>
+                      <TableCell>{value.qty}</TableCell>
+                      <TableCell>{value.converted_qty}</TableCell>
+                      <TableCell>{value.unit}</TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+              <TablePagination
+                sx={{ fontSize: "1.1rem" }}
+                component="div"
+                count={filteredData.length}
+                page={page}
+                rowsPerPage={rowsPerPage}
+                onPageChange={handleChangePage}
+                onRowsPerPageChange={handleChangeRowsPerPage}
+                rowsPerPageOptions={[5, 10, 25]}
+              />
+            </TableContainer>
+          </div>
         </div>
       </div>
     </>
