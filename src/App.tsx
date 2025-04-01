@@ -21,6 +21,7 @@ import UpdatePaymentMethodPage from "./features/payment-method/pages/update-paym
 import { ChargePage } from "./features/charge";
 import CreateCashFlow from "./features/cashflow/cashflow-page";
 import { ArReportPaidPage } from "./features/report/ar-report-paid";
+import { ArToPaidPage } from "./features/report/ar-to-paid";
 
 function ExampleRouting() {
   return <h1>tes</h1>;
@@ -39,6 +40,7 @@ const router = createBrowserRouter([
           { path: "transaction-in", element: <ReportInPage /> },
           { path: "transaction-out", element: <ReportOutPage /> },
           { path: "ar", element: <ArReportPaidPage /> },
+          { path: "ar-to-paid", element: <ArToPaidPage /> },
         ],
       },
       {

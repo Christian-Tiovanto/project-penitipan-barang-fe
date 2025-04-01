@@ -12,19 +12,18 @@ import {
 } from "@mui/material";
 
 import { ColumnConfig } from "../../components/table-component";
-interface IArReportPaidData {
+interface IArToPaidData {
   id: number;
   invoice_date: Date;
+  ar_no: string;
   customer: {
     id: number;
     name: string;
   };
-  ar_no: string;
   total_bill: number;
-  total_paid: number;
   to_paid: number;
 }
-export function ArReportPaidPage() {
+export function ArToPaidPage() {
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(5);
   const [searchQuery, setSearchQuery] = useState("");
@@ -39,7 +38,7 @@ export function ArReportPaidPage() {
     setPage(0);
   };
 
-  const TransactionInData: IArReportPaidData[] = [
+  const TransactionInData: IArToPaidData[] = [
     {
       id: 1,
       invoice_date: new Date(),
@@ -49,7 +48,6 @@ export function ArReportPaidPage() {
       },
       ar_no: "FK-JK1234",
       total_bill: 150000,
-      total_paid: 75000,
       to_paid: 0,
     },
     {
@@ -61,11 +59,10 @@ export function ArReportPaidPage() {
       },
       ar_no: "FK-JK155555",
       total_bill: 15000,
-      total_paid: 7500,
       to_paid: 0,
     },
   ];
-  const columns: ColumnConfig<IArReportPaidData & { row_no: number }>[] = [
+  const columns: ColumnConfig<IArToPaidData & { row_no: number }>[] = [
     {
       field: "row_no",
       headerName: "No",
@@ -97,13 +94,6 @@ export function ArReportPaidPage() {
     {
       field: "total_bill",
       headerName: "Total Bill",
-      headerStyle: {
-        width: "10%",
-      },
-    },
-    {
-      field: "total_paid",
-      headerName: "Paid",
       headerStyle: {
         width: "10%",
       },
@@ -175,9 +165,6 @@ export function ArReportPaidPage() {
                         {Number(value.total_bill).toLocaleString("id-ID")}
                       </TableCell>
                       <TableCell>
-                        {Number(value.total_paid).toLocaleString("id-ID")}
-                      </TableCell>
-                      <TableCell>
                         {Number(value.to_paid).toLocaleString("id-ID")}
                       </TableCell>
                     </TableRow>
@@ -185,9 +172,6 @@ export function ArReportPaidPage() {
                   <TableRow>
                     <TableCell colSpan={3}></TableCell>
                     <TableCell sx={{ fontWeight: "bold" }}>Total</TableCell>
-                    <TableCell sx={{ fontWeight: "bold" }}>
-                      {Number(10000).toLocaleString("id-ID")}
-                    </TableCell>
                     <TableCell sx={{ fontWeight: "bold" }}>
                       {Number(10000).toLocaleString("id-ID")}
                     </TableCell>
