@@ -18,6 +18,7 @@ import {
   PaymentMethodPage,
 } from "./features/payment-method";
 import UpdatePaymentMethodPage from "./features/payment-method/pages/update-payment-method";
+import { ChargePage } from "./features/charge";
 
 function ExampleRouting() {
   return <h1>tes</h1>;
@@ -70,8 +71,12 @@ const router = createBrowserRouter([
       },
       {
         path: "master/profile",
-        element: <ProfilePage />,
+        element: <ProfilePage />
       },
+      {
+        path: "master/charge",
+        element: <ChargePage />
+      }
     ],
   },
   {
