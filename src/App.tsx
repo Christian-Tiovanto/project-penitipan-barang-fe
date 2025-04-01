@@ -2,12 +2,23 @@ import { createBrowserRouter, RouterProvider } from "react-router"; // Import ya
 import "./App.css";
 import MainLayout from "./layouts/layouts";
 import { ReportInPage } from "./features/report/report-in";
+import {
+  CreateUserPage,
+  LoginPage,
+  ChangePasswordPage,
+  UserPage,
+  ProfilePage,
+  UpdateUserPage,
+} from "./features/auth";
+import { MasterPage } from "./features/master";
+import { ReportOutPage } from "./features/report/report-out";
 import { CreateUserPage, LoginPage, ChangePasswordPage, UserPage, ProfilePage, UpdateUserPage } from './features/auth'
 import { MasterPage } from "./features/master";
 import { ReportOutPage } from "./features/report/report-out";
 import { ToastProvider } from "./contexts/toastContexts";
 import { CreatePaymentMethodPage, PaymentMethodPage } from "./features/payment-method";
 import UpdatePaymentMethodPage from "./features/payment-method/pages/update-payment-method";
+
 
 function ExampleRouting() {
   return (
