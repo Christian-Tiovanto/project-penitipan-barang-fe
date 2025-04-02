@@ -25,6 +25,8 @@ import { CreateProductUnitPage, ProductUnitPage } from "./features/product-unit"
 import { CreateProductPage, ProductPage } from "./features/product";
 import UpdateProductPage from "./features/product/pages/update-product";
 import CreateCashFlow from "./features/cashflow/cashflow-page";
+import { CreateCustomerPage, CustomerPage } from "./features/customer";
+import UpdateCustomerPage from "./features/customer/pages/update-customer";
 
 function ExampleRouting() {
   return <h1>tes</h1>;
@@ -107,6 +109,18 @@ const router = createBrowserRouter([
       {
         path: "master/product/edit-product/:id",
         element: <UpdateProductPage />,
+      },
+      {
+        path: "master/customer",
+        element: <CustomerPage />,
+      },
+      {
+        path: "master/customer/create-customer",
+        element: <CreateCustomerPage />,
+      },
+      {
+        path: "master/customer/edit-customer/:id",
+        element: <UpdateCustomerPage />,
       },
     ],
   },
