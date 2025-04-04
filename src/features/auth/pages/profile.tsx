@@ -133,18 +133,16 @@ const ProfileForm: React.FC = () => {
 
             <Dropdown
                 label="Role *"
-                name="role"
-                value={form.role}
+                value={String(form.role)}
                 options={[
                     { value: "admin", label: "Admin" },
                     { value: "default", label: "Default" },
                 ]}
-                onChange={(e) => setForm({ ...form, role: e.target.value })}
-                onBlur={handleDropdownBlur}
+                // onChange={handleDropdownChange}
                 error={!!errors.role}
                 errorMessage={errors.role}
-                readOnly
                 icon={<FaUser />}
+                readOnly
             />
 
             <div className="text-end mt-3">

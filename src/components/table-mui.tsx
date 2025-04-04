@@ -138,7 +138,15 @@ const MuiTable: React.FC<Props> = ({ columns, fetchData, onEdit, onDelete, onAdd
                 <TableRow key={row.id}>
                   {columns.map((col) => {
                     const value = col.field.split('.').reduce((acc, part) => acc && acc[part], row);
-                    return <TableCell key={col.field}>{value}</TableCell>;
+                    // console.log(value);
+                    // return <TableCell key={col.field}>{value}</TableCell>;
+
+                    // const value = row[col.field];
+                    return (
+                      <TableCell key={col.field}>
+                        {typeof value === "boolean" ? (value ? "Active" : "Inactive") : value}
+                      </TableCell>
+                    );
                   })}
                   <TableCell>
                     <IconButton color="primary" onClick={() => onEdit && onEdit(row)}>
