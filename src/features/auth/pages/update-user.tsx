@@ -104,6 +104,10 @@ const UpdateUserForm: React.FC = () => {
         setForm({ ...form, [e.target.name]: e.target.value });
     };
 
+    const handleDropdownChange = (value: string) => {
+        setForm({ ...form, role: value });
+    };
+
     const handleSubmit = async (e: React.FormEvent) => {
         try {
             e.preventDefault();
@@ -153,18 +157,17 @@ const UpdateUserForm: React.FC = () => {
 
             <Dropdown
                 label="Role *"
-                name="role"
-                value={form.role}
+                value={String(form.role)}
                 options={[
                     { value: "admin", label: "Admin" },
                     { value: "default", label: "Default" },
                 ]}
-                onChange={(e) => setForm({ ...form, role: e.target.value })}
-                onBlur={handleDropdownBlur}
+                onChange={handleDropdownChange}
                 error={!!errors.role}
                 errorMessage={errors.role}
                 icon={<FaUser />}
             />
+
             {/* 
             <InputField
                 label="Password *"

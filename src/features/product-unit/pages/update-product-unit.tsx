@@ -43,8 +43,8 @@ const UpdateProductUnitForm: React.FC = () => {
     useEffect(() => {
         if (id) {
             const ProductUnitId = parseInt(id, 10);
-            fetchProductUnitById(ProductUnitId);
             fetchProducts();
+            fetchProductUnitById(ProductUnitId);
         }
     }, []);
 
@@ -62,6 +62,7 @@ const UpdateProductUnitForm: React.FC = () => {
     const fetchProductUnitById = async (id: number) => {
         try {
             const ProductUnitData = await getProductUnitById(id);
+            console.log(ProductUnitData);
             setForm({
                 name: ProductUnitData.name || "",
                 conversionToKg: ProductUnitData.conversion_to_kg || 0,
@@ -104,22 +105,12 @@ const UpdateProductUnitForm: React.FC = () => {
         }));
     };
 
-    const handleDropdownBlur = (e: React.FocusEvent<HTMLSelectElement>) => {
-        if (!e.target.value) {
-            setErrors((prevErrors) => ({
-                ...prevErrors,
-                productId: "Please Select a Product",
-            }));
-        } else {
-            setErrors((prevErrors) => ({
-                ...prevErrors,
-                productId: "",
-            }));
-        }
-    };
-
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         setForm({ ...form, [e.target.name]: e.target.value });
+    };
+
+    const handleDropdownChange = (value: string) => {
+        setForm({ ...form, productId: value });
     };
 
     const handleSubmit = async (e: React.FormEvent) => {
@@ -178,22 +169,18 @@ const UpdateProductUnitForm: React.FC = () => {
             </div>
 
             <Dropdown
-                label="Select Product"
-                name="productId"
-                value={form.productId}
+                label="Product *"
+                value={String(form.productId)}
                 options={products.map((product) => ({
                     value: product.id.toString(),
                     label: product.name,
                 }))}
-                onChange={(e) => setForm({ ...form, productId: e.target.value })}
-                onBlur={handleDropdownBlur}
+                onChange={handleDropdownChange}
                 error={!!errors.productId}
                 errorMessage={errors.productId}
                 icon={<FaBox />}
                 readOnly
             />
-
-
 
             <div className="text-end mt-3">
                 <button type="submit" className="btn btn-primary px-4">

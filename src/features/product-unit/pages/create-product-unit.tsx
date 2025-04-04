@@ -83,22 +83,12 @@ const CreateProductUnitForm: React.FC = () => {
         }));
     };
 
-    const handleDropdownBlur = (e: React.FocusEvent<HTMLSelectElement>) => {
-        if (!e.target.value) {
-            setErrors((prevErrors) => ({
-                ...prevErrors,
-                productId: "Please Select a Product",
-            }));
-        } else {
-            setErrors((prevErrors) => ({
-                ...prevErrors,
-                productId: "",
-            }));
-        }
-    };
-
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         setForm({ ...form, [e.target.name]: e.target.value });
+    };
+
+    const handleDropdownChange = (value: string) => {
+        setForm({ ...form, productId: value });
     };
 
     const handleSubmit = async (e: React.FormEvent) => {
@@ -148,15 +138,13 @@ const CreateProductUnitForm: React.FC = () => {
             </div>
 
             <Dropdown
-                label="Select Product"
-                name="productId"
+                label="Product *"
                 value={form.productId}
                 options={products.map((product) => ({
                     value: product.id.toString(),
                     label: product.name,
                 }))}
-                onChange={(e) => setForm({ ...form, productId: e.target.value })}
-                onBlur={handleDropdownBlur}
+                onChange={handleDropdownChange}
                 error={!!errors.productId}
                 errorMessage={errors.productId}
                 icon={<FaBox />}

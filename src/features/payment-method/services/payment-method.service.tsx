@@ -20,7 +20,24 @@ export const createPaymentMethod = async (name: string) => {
     }
 };
 
-export const getAllPaymentMethods = async (pageSize: number, pageNo: number) => {
+export const getAllPaymentMethods = async () => {
+    try {
+        const token = Cookies.get("auth_token");
+
+        const response = await axios.get(`${API_URL}/api/v1/payment-method/all`,
+            {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                },
+            }
+        );
+        return response.data;
+    } catch (error: any) {
+        throw error.response?.data || "get all Payment Method failed";
+    }
+};
+
+export const getAllPaymentMethodsPagination = async (pageSize: number, pageNo: number) => {
     try {
         const token = Cookies.get("auth_token");
 
