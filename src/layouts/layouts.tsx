@@ -56,10 +56,10 @@ export default function MainLayout() {
               <i className="fas fa-project-diagram me-2"></i>Master
             </a>
             <a
-              href="#"
+              href="/transaction"
               className="list-group-item list-group-item-action bg-transparent primary-text fw-bold"
             >
-              <i className="fas fa-chart-line me-2"></i>Analytics
+              <i className="fas fa-warehouse me-2"></i>Transaction
             </a>
             <a
               href="#"
