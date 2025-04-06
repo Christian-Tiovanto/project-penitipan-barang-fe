@@ -21,7 +21,7 @@ export interface CreateCashflowDto {
 export default function CreateCashFlow() {
   const [cashflowType, setCashflowType] = useState(null);
   const [amount, setAmount] = useState("0");
-  const [descriptions, setDescriptions] = useState(undefined);
+  const [descriptions, setDescriptions] = useState("");
   const [startDate] = useState(startOfToday());
   const [endDate] = useState(startOfTomorrow());
   const { showToast } = useToast();
@@ -75,6 +75,10 @@ export default function CreateCashFlow() {
           error?.response?.data?.message || error?.message || "Unknown error"
         }`;
         showToast(finalMessage, "danger");
+      } finally {
+        setCashflowType(null);
+        setAmount("0");
+        setDescriptions("");
       }
     }
   };
@@ -165,7 +169,7 @@ export default function CreateCashFlow() {
             <button
               type="button"
               className={`btn w-100 h-50 mt-3 ${
-                amount && cashflowType
+                amount != "0" && cashflowType
                   ? "btn-success"
                   : "btn-secondary disabled"
               }`}
