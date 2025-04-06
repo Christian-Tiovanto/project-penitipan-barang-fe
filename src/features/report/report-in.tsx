@@ -33,7 +33,6 @@ export function ReportInPage() {
   const [rowsPerPage, setRowsPerPage] = useState(5);
   const [startDate, setStartDate] = useState(startOfToday());
   const [endDate, setEndDate] = useState(startOfTomorrow());
-  const [searchQuery, setSearchQuery] = useState("");
 
   const { data, isLoading, error } = useTransactionInReport({
     startDate,
@@ -90,11 +89,6 @@ export function ReportInPage() {
       },
     },
   ];
-  const filteredData = data.filter((row: any) =>
-    columns.some((col) =>
-      String(row[col.field]).toLowerCase().includes(searchQuery.toLowerCase())
-    )
-  );
 
   const columnWidths = ["30%", "20%", "20%", "20%", "10%"];
   return (
@@ -146,21 +140,36 @@ export function ReportInPage() {
                   </TableRow>
                 </TableHead>
                 <TableBody>
-                  {data.map((value) => (
-                    <TableRow key={value.id}>
-                      <TableCell>{value.product.name}</TableCell>
-                      <TableCell>{value.customer.name}</TableCell>
-                      <TableCell>{value.qty}</TableCell>
-                      <TableCell>{value.converted_qty}</TableCell>
-                      <TableCell>{value.unit}</TableCell>
+                  {isLoading ? (
+                    <TableRow>
+                      <TableCell colSpan={5}>
+                        <div className="w-100 d-flex justify-content-center">
+                          <div
+                            className="spinner-border d-flex justify-content-center"
+                            role="status"
+                          >
+                            <span className="visually-hidden">Loading...</span>
+                          </div>
+                        </div>
+                      </TableCell>
                     </TableRow>
-                  ))}
+                  ) : (
+                    data.map((value) => (
+                      <TableRow key={value.id}>
+                        <TableCell>{value.product.name}</TableCell>
+                        <TableCell>{value.customer.name}</TableCell>
+                        <TableCell>{value.qty}</TableCell>
+                        <TableCell>{value.converted_qty}</TableCell>
+                        <TableCell>{value.unit}</TableCell>
+                      </TableRow>
+                    ))
+                  )}
                 </TableBody>
               </Table>
               <TablePagination
                 sx={{ fontSize: "1.1rem" }}
                 component="div"
-                count={filteredData.length}
+                count={data.length}
                 page={page}
                 rowsPerPage={rowsPerPage}
                 onPageChange={handleChangePage}
