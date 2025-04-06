@@ -43,12 +43,31 @@ body {
   color: rgba(0, 0, 0, 0.54);
 }
 .gray {
-  background-color: rgba(0, 0, 0, 0.06) !important;
+  background-color: #e0e0e0 !important;
 }
 .cyan {
   background-color: rgb(0, 188, 212) !important;
 }
+.blue-lighten {
+  background-color: #bbdefb !important;
+}
 
+.red-lighten {
+  background-color: #ffcdd2 !important;
+}
+
+.green-lighten {
+  background-color: #c8e6c9 !important;
+}
+
+.teal-lighten {
+  background-color: #47cec0 !important;
+}
+
+.dark-blue {
+  background-color: #001e67 !important;
+  border-color: #001e67 !important;
+}
 #sidebar-wrapper {
   position: fixed;
   z-index: 9999;
@@ -331,4 +350,12 @@ body {
   min-height: 48px;
   box-shadow: 0 2px 4px -1px rgba(0, 0, 0, 0.2), 0 4px 5px 0 rgba(0, 0, 0, 0.14),
     0 1px 10px 0 rgba(0, 0, 0, 0.12);
+}
+
+/* Nett Income Table */
+.nett-income-table-border {
+  border-top: 1px solid #c4c7ca !important; /* Bootstrap's gray */
+  border-bottom: 1px solid #c4c7ca !important;
+  border-left: 1px solid #000 !important;
+  border-right: 1px solid #000 !important;
 }

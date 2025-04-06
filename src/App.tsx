@@ -24,6 +24,10 @@ import { ArReportPaidPage } from "./features/report/ar-report-paid";
 import { ArToPaidPage } from "./features/report/ar-to-paid";
 import { CustomerProductStockPage } from "./features/report/customer-product-stock";
 import { InvoiceProductStockPage } from "./features/report/invoice-product-stock";
+import { StockBookPage } from "./features/report/stock-book";
+import { StockReportPage } from "./features/report/stock-report";
+import { NettIncomeReportPage } from "./features/report/nett-income-report";
+import InputPaidoffPage from "./features/report/input-paidoff";
 
 function ExampleRouting() {
   return <h1>tes</h1>;
@@ -50,6 +54,22 @@ const router = createBrowserRouter([
           {
             path: "invoice-product-stock",
             element: <InvoiceProductStockPage />,
+          },
+          {
+            path: "stock-book",
+            element: <StockBookPage />,
+          },
+          {
+            path: "stock-report",
+            element: <StockReportPage />,
+          },
+          {
+            path: "nett-income",
+            element: <NettIncomeReportPage />,
+          },
+          {
+            path: "input-paidoff",
+            element: <InputPaidoffPage />,
           },
         ],
       },

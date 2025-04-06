@@ -12,13 +12,9 @@ import {
 } from "@mui/material";
 
 import { ColumnConfig } from "../../components/table-component";
-interface ICustomerProductStockData {
+interface IStockReportData {
   id: number;
   product: {
-    id: number;
-    name: string;
-  };
-  customer: {
     id: number;
     name: string;
   };
@@ -27,7 +23,7 @@ interface ICustomerProductStockData {
   product_out: number;
   final_qty: number;
 }
-export function CustomerProductStockPage() {
+export function StockReportPage() {
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(5);
   const [searchQuery, setSearchQuery] = useState("");
@@ -42,16 +38,12 @@ export function CustomerProductStockPage() {
     setPage(0);
   };
 
-  const TransactionInData: ICustomerProductStockData[] = [
+  const TransactionInData: IStockReportData[] = [
     {
       id: 1,
       product: {
         id: 1,
         name: "Product Name",
-      },
-      customer: {
-        id: 1,
-        name: "Chris",
       },
       initial_qty: 500,
       product_in: 500,
@@ -64,19 +56,13 @@ export function CustomerProductStockPage() {
         id: 1,
         name: "Product Name",
       },
-      customer: {
-        id: 2,
-        name: "Tiovan",
-      },
       initial_qty: 500,
       product_in: 500,
       product_out: 500,
       final_qty: 500,
     },
   ];
-  const columns: ColumnConfig<
-    ICustomerProductStockData & { row_no: number }
-  >[] = [
+  const columns: ColumnConfig<IStockReportData & { row_no: number }>[] = [
     {
       field: "row_no",
       headerName: "No",
@@ -87,13 +73,6 @@ export function CustomerProductStockPage() {
     {
       field: "product",
       headerName: "Product",
-      headerStyle: {
-        width: "20%",
-      },
-    },
-    {
-      field: "customer",
-      headerName: "Customer",
       headerStyle: {
         width: "20%",
       },
@@ -143,20 +122,20 @@ export function CustomerProductStockPage() {
         <div className="row">
           <div className="col-md-6 position-relative">
             <DatePicker
-              idDatePicker="tanggal-awal-masuk-barang"
-              titleText="Tanggal Awal"
+              idDatePicker="tanggal-awal-stock-report"
+              titleText="Tanggal"
               datetime={false}
             />
           </div>
           <div className="col-md-6 position-relative">
             <DatePicker
-              idDatePicker="tanggal-akhir-masuk-barang"
-              titleText="Tanggal Akhir"
+              idDatePicker="tanggal-awal-stock-report"
+              titleText="Customer Filter Ntar"
               datetime={false}
             />
           </div>
         </div>
-        <div className="w-100 d-flex flex-column">
+        <div className="product-in-list w-100 d-flex flex-column">
           <div className="mui-table-container">
             <TableContainer component={Paper} sx={{ padding: 2 }}>
               <Table>
@@ -183,7 +162,6 @@ export function CustomerProductStockPage() {
                     <TableRow key={value.id}>
                       <TableCell>{index + 1}</TableCell>
                       <TableCell>{value.product.name}</TableCell>
-                      <TableCell>{value.customer.name}</TableCell>
                       <TableCell>
                         {Number(value.initial_qty).toLocaleString("id-ID")}
                       </TableCell>
@@ -210,22 +188,9 @@ export function CustomerProductStockPage() {
                     <TableCell sx={{ fontWeight: "bold" }}>
                       {Number(10000).toLocaleString("id-ID")}
                     </TableCell>
-                    <TableCell sx={{ fontWeight: "bold" }}>
-                      {Number(10000).toLocaleString("id-ID")}
-                    </TableCell>
                   </TableRow>
                 </TableBody>
               </Table>
-              <TablePagination
-                sx={{ fontSize: "1.1rem" }}
-                component="div"
-                count={filteredData.length}
-                page={page}
-                rowsPerPage={rowsPerPage}
-                onPageChange={handleChangePage}
-                onRowsPerPageChange={handleChangeRowsPerPage}
-                rowsPerPageOptions={[5, 10, 25]}
-              />
             </TableContainer>
           </div>
         </div>
