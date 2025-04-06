@@ -1,5 +1,5 @@
 import { useState } from "react";
-import DatePicker from "../../components/date-picker";
+import { StartDatePicker } from "../../components/date-picker";
 import {
   Paper,
   Table,
@@ -127,14 +127,14 @@ export function ArReportPaidPage() {
       <div className="container-fluid m-0 p-0">
         <div className="row">
           <div className="col-md-6 position-relative">
-            <DatePicker
+            <StartDatePicker
               idDatePicker="tanggal-awal-masuk-barang"
               titleText="Tanggal Awal"
               datetime={false}
             />
           </div>
           <div className="col-md-6 position-relative">
-            <DatePicker
+            <StartDatePicker
               idDatePicker="tanggal-akhir-masuk-barang"
               titleText="Tanggal Akhir"
               datetime={false}

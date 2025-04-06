@@ -19,7 +19,7 @@ import DeleteIcon from "@mui/icons-material/Delete";
 import FilterListIcon from "@mui/icons-material/FilterList";
 import { visuallyHidden } from "@mui/utils";
 import { FaArrowRight } from "react-icons/fa6";
-import DatePicker from "../../components/date-picker";
+import { StartDatePicker } from "../../components/date-picker";
 import InputNominal from "../../components/input-nominal";
 
 interface AR {
@@ -288,28 +288,28 @@ export default function InputPaidoffPage() {
       <div className="container-fluid m-0 p-0">
         <div className="row mb-4">
           <div className="col-md-6 col-lg-4 position-relative mb-2">
-            <DatePicker
+            <StartDatePicker
               idDatePicker="tanggal-awal-masuk-barang"
               titleText="Tanggal Awal"
               datetime={false}
             />
           </div>
           <div className="col-md-6 col-lg-4 position-relative mb-2">
-            <DatePicker
+            <StartDatePicker
               idDatePicker="tanggal-akhir-masuk-barang"
               titleText="Tanggal Akhir"
               datetime={false}
             />
           </div>
           <div className="col-md-6 col-lg-4 position-relative mb-2">
-            <DatePicker
+            <StartDatePicker
               idDatePicker="tanggal-akhir-masuk-barang"
               titleText="Status"
               datetime={false}
             />
           </div>
           <div className="col-md-6 col-lg-4 position-relative mb-2">
-            <DatePicker
+            <StartDatePicker
               idDatePicker="tanggal-akhir-masuk-barang"
               titleText="Pick Customer"
               datetime={false}
@@ -431,7 +431,7 @@ export default function InputPaidoffPage() {
             </div>
             <div className="modal-body d-flex flex-column gap-3">
               <div className="container-fluid p-0">
-                <DatePicker
+                <StartDatePicker
                   idDatePicker="tanggal-input-pelunasan"
                   titleText="Tanggal Lunas"
                   datetime={false}

@@ -29,7 +29,7 @@ export class TransactionInReportService {
     if (query?.pageNo !== undefined) {
       queryParams.page_no = query.pageNo.toString();
     }
-
+    console.log(query);
     // Build URL with filtered parameters
     const response = await axios.get<{ data: ITransactionInData[] }>(
       `${URL}/api/v1/transaction-in`,

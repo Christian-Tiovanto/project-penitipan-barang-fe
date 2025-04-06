@@ -1,5 +1,5 @@
 import { useState } from "react";
-import DatePicker from "../../components/date-picker";
+import { StartDatePicker, EndDatePicker } from "../../components/date-picker";
 import {
   Paper,
   Table,
@@ -13,6 +13,7 @@ import {
 
 import { ColumnConfig } from "../../components/table-component";
 import { useTransactionInReport } from "./hooks/report-in.hooks";
+import { endOfToday, startOfToday, startOfTomorrow } from "date-fns";
 export interface ITransactionInData {
   id: number;
   product: {
@@ -28,18 +29,10 @@ export interface ITransactionInData {
   unit: string;
 }
 export function ReportInPage() {
-  const now = new Date();
-
-  const todayStart = new Date(now);
-  todayStart.setHours(0, 0, 0, 0);
-
-  const todayEnd = new Date(now);
-  todayEnd.setDate(todayEnd.getDate() + 1);
-  todayEnd.setHours(0, 0, 0, 0);
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(5);
-  const [startDate, setStartDate] = useState(todayStart);
-  const [endDate, setEndDate] = useState(todayEnd);
+  const [startDate, setStartDate] = useState(startOfToday());
+  const [endDate, setEndDate] = useState(startOfTomorrow());
   const [searchQuery, setSearchQuery] = useState("");
 
   const { data, isLoading, error } = useTransactionInReport({
@@ -109,19 +102,18 @@ export function ReportInPage() {
       <div className="container-fluid m-0 p-0">
         <div className="row">
           <div className="col-md-6 position-relative">
-            <DatePicker
+            <StartDatePicker
               idDatePicker="tanggal-awal-masuk-barang"
               titleText="Tanggal Awal"
               value={startDate}
               onDateClick={(date: Date) => {
-                console.log("kepanggil?");
                 setStartDate(date);
               }}
               datetime={false}
             />
           </div>
           <div className="col-md-6 position-relative">
-            <DatePicker
+            <EndDatePicker
               idDatePicker="tanggal-akhir-masuk-barang"
               titleText="Tanggal Akhir"
               value={endDate}

@@ -1,5 +1,5 @@
 import { useState } from "react";
-import DatePicker from "../../components/date-picker";
+import { StartDatePicker } from "../../components/date-picker";
 import {
   Paper,
   Table,
@@ -121,14 +121,14 @@ export function StockReportPage() {
       <div className="container-fluid m-0 p-0">
         <div className="row">
           <div className="col-md-6 position-relative">
-            <DatePicker
+            <StartDatePicker
               idDatePicker="tanggal-awal-stock-report"
               titleText="Tanggal"
               datetime={false}
             />
           </div>
           <div className="col-md-6 position-relative">
-            <DatePicker
+            <StartDatePicker
               idDatePicker="tanggal-awal-stock-report"
               titleText="Customer Filter Ntar"
               datetime={false}
