@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { TransactionInReportService } from "../services/report-in.service";
+import { useToast } from "../../../contexts/toastContexts";
 
 export const useTransactionInReport = (query: {
   startDate: Date;
@@ -10,7 +11,8 @@ export const useTransactionInReport = (query: {
   const { startDate, endDate, pageNo, pageSize } = query;
   const [data, setData] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState<Error | null>(null);
+  const [error, setError] = useState<Error | null | any>(null);
+  const { showToast } = useToast();
   const abortControllerRef = useRef<AbortController | null>(null);
 
   useEffect(() => {
@@ -36,6 +38,12 @@ export const useTransactionInReport = (query: {
         setData([]);
         if (!controller.signal.aborted) {
           setError(err as Error);
+        }
+        if (error) {
+          const finalMessage = `Failed to get data.\n${
+            error?.response?.data?.message || error?.message || "Unknown error"
+          }`;
+          showToast(finalMessage, "danger");
         }
       } finally {
         if (!controller.signal.aborted) {

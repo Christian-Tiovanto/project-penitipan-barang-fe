@@ -14,6 +14,7 @@ import {
 import { ColumnConfig } from "../../components/table-component";
 import { useTransactionInReport } from "./hooks/report-in.hooks";
 import { endOfToday, startOfToday, startOfTomorrow } from "date-fns";
+import { useToast } from "../../contexts/toastContexts";
 export interface ITransactionInData {
   id: number;
   product: {
@@ -33,13 +34,13 @@ export function ReportInPage() {
   const [rowsPerPage, setRowsPerPage] = useState(5);
   const [startDate, setStartDate] = useState(startOfToday());
   const [endDate, setEndDate] = useState(startOfTomorrow());
-
-  const { data, isLoading, error } = useTransactionInReport({
+  const { data, isLoading } = useTransactionInReport({
     startDate,
     endDate,
     pageNo: page,
     pageSize: rowsPerPage,
   });
+
   const handleChangePage = (_: unknown, newPage: number) => {
     setPage(newPage);
   };
