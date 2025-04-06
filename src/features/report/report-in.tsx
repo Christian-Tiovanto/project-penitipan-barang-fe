@@ -12,7 +12,8 @@ import {
 } from "@mui/material";
 
 import { ColumnConfig } from "../../components/table-component";
-interface ITransactionInData {
+import { useTransactionInReport } from "./hooks/report-in.hooks";
+export interface ITransactionInData {
   id: number;
   product: {
     id: number;
@@ -27,9 +28,26 @@ interface ITransactionInData {
   unit: string;
 }
 export function ReportInPage() {
+  const now = new Date();
+
+  const todayStart = new Date(now);
+  todayStart.setHours(0, 0, 0, 0);
+
+  const todayEnd = new Date(now);
+  todayEnd.setDate(todayEnd.getDate() + 1);
+  todayEnd.setHours(0, 0, 0, 0);
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(5);
+  const [startDate, setStartDate] = useState(todayStart);
+  const [endDate, setEndDate] = useState(todayEnd);
   const [searchQuery, setSearchQuery] = useState("");
+
+  const { data, isLoading, error } = useTransactionInReport({
+    startDate,
+    endDate,
+    pageNo: page,
+    pageSize: rowsPerPage,
+  });
   const handleChangePage = (_: unknown, newPage: number) => {
     setPage(newPage);
   };
@@ -41,27 +59,6 @@ export function ReportInPage() {
     setPage(0);
   };
 
-  const TransactionInData: ITransactionInData[] = [
-    {
-      id: 1,
-      product: { id: 1, name: "Product Name" },
-      customer: { id: 1, name: "Customer Name" },
-      qty: 5,
-      converted_qty: 500,
-      unit: "Kg",
-    },
-    {
-      id: 2,
-      product: {
-        id: 1,
-        name: "Lorem ipsum dolor sit amet consectetur.",
-      },
-      customer: { id: 1, name: "Customer Name" },
-      qty: 5,
-      converted_qty: 500,
-      unit: "Kg",
-    },
-  ];
   const columns: ColumnConfig<ITransactionInData>[] = [
     {
       field: "product",
@@ -100,7 +97,7 @@ export function ReportInPage() {
       },
     },
   ];
-  const filteredData = TransactionInData.filter((row: any) =>
+  const filteredData = data.filter((row: any) =>
     columns.some((col) =>
       String(row[col.field]).toLowerCase().includes(searchQuery.toLowerCase())
     )
@@ -115,6 +112,11 @@ export function ReportInPage() {
             <DatePicker
               idDatePicker="tanggal-awal-masuk-barang"
               titleText="Tanggal Awal"
+              value={startDate}
+              onDateClick={(date: Date) => {
+                console.log("kepanggil?");
+                setStartDate(date);
+              }}
               datetime={false}
             />
           </div>
@@ -122,6 +124,10 @@ export function ReportInPage() {
             <DatePicker
               idDatePicker="tanggal-akhir-masuk-barang"
               titleText="Tanggal Akhir"
+              value={endDate}
+              onDateClick={(date: Date) => {
+                setEndDate(date);
+              }}
               datetime={false}
             />
           </div>
@@ -148,7 +154,7 @@ export function ReportInPage() {
                   </TableRow>
                 </TableHead>
                 <TableBody>
-                  {TransactionInData.map((value) => (
+                  {data.map((value) => (
                     <TableRow key={value.id}>
                       <TableCell>{value.product.name}</TableCell>
                       <TableCell>{value.customer.name}</TableCell>

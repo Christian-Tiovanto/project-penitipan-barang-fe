@@ -5,13 +5,16 @@ const DatePicker = ({
   titleText,
   datetime,
   idDatePickerTime,
+  value,
+  onDateClick,
 }: {
   idDatePicker: string;
   titleText: string;
   datetime: boolean;
   idDatePickerTime?: string;
+  value: Date;
+  onDateClick: Function;
 }) => {
-  const [selectedDate, setSelectedDate] = useState(new Date());
   const [showPicker, setShowPicker] = useState(false);
   const [currentMonth, setCurrentMonth] = useState(new Date().getMonth());
   const [currentYear, setCurrentYear] = useState(new Date().getFullYear());
@@ -36,8 +39,10 @@ const DatePicker = ({
 
   useEffect(() => {
     // Update selected date when month/year changes
-    const newDate = new Date(currentYear, currentMonth, selectedDate.getDate());
-    setSelectedDate(newDate);
+    const newDate = new Date(currentYear, currentMonth, value.getDate());
+    onDateClick(newDate);
+    console.log("value.getDate()");
+    console.log(value);
   }, [currentMonth, currentYear]);
 
   const generateDateGrid = () => {
@@ -54,7 +59,7 @@ const DatePicker = ({
         date,
         isCurrentMonth: false,
         isToday: date.toDateString() === today.toDateString(),
-        isSelected: date.toDateString() === selectedDate.toDateString(),
+        isSelected: date.toDateString() === value.toDateString(),
       });
     }
 
@@ -67,7 +72,7 @@ const DatePicker = ({
         date,
         isCurrentMonth: true,
         isToday: date.toDateString() === today.toDateString(),
-        isSelected: date.toDateString() === selectedDate.toDateString(),
+        isSelected: date.toDateString() === value.toDateString(),
       });
     }
 
@@ -81,7 +86,7 @@ const DatePicker = ({
         date,
         isCurrentMonth: false,
         isToday: date.toDateString() === today.toDateString(),
-        isSelected: date.toDateString() === selectedDate.toDateString(),
+        isSelected: date.toDateString() === value.toDateString(),
       });
     }
 
@@ -109,7 +114,7 @@ const DatePicker = ({
   const togglePicker = (show: boolean) => {
     if (show) {
       // Store original values when opening picker
-      setOriginalDate(selectedDate);
+      setOriginalDate(value);
       setOriginalMonth(currentMonth);
       setOriginalYear(currentYear);
     }
@@ -119,16 +124,15 @@ const DatePicker = ({
   // Modified cancel handler
   const handleCancel = () => {
     // Reset to original values
-    setSelectedDate(originalDate);
+    console.log("masa si");
+    onDateClick(originalDate);
     setCurrentMonth(originalMonth);
     setCurrentYear(originalYear);
     setShowPicker(false);
-    console.log("again");
-    console.log(showPicker);
   };
 
   return (
-    <div className="datepicker-container mb-3">
+    <div className="datepicker-container">
       <div
         className="container-input-date d-flex justify-content-start align-items-center ps-3"
         onClick={() => togglePicker(true)}
@@ -140,12 +144,12 @@ const DatePicker = ({
             type="text"
             className="form-control third-bg border-0"
             placeholder="Select date"
-            value={selectedDate.toLocaleDateString("en-GB", {
+            value={value.toLocaleDateString("en-GB", {
               year: "numeric",
               month: "2-digit",
               day: "2-digit",
             })}
-            onClick={() => togglePicker(true)}
+            onChange={() => togglePicker(true)}
             readOnly
           />
           <label htmlFor={idDatePicker} className="label">
@@ -197,7 +201,10 @@ const DatePicker = ({
                 ${date.isSelected ? "selected" : ""}
               `}
               disabled={!date.isCurrentMonth}
-              onClick={() => setSelectedDate(date.date)}
+              onClick={() => {
+                console.log("masa kepanggil jgk sih?");
+                onDateClick(date.date);
+              }}
             >
               {date.day}
             </button>
