@@ -14,10 +14,15 @@ const UserPage: React.FC = () => {
     { field: "id", headerName: "ID" },
     { field: "email", headerName: "Email" },
     { field: "fullname", headerName: "Full Name" },
+    { field: "pin", headerName: "Pin" },
     { field: "role", headerName: "Role" },
   ];
 
-  const fetchTableData = async (pageNo: number, PageSize: number, searchQuery: string) => {
+  const fetchTableData = async (
+    pageNo: number,
+    PageSize: number,
+    searchQuery: string
+  ) => {
     try {
       const response = await getAllUsers(PageSize, pageNo);
 
@@ -25,7 +30,6 @@ const UserPage: React.FC = () => {
         data: response.data,
         total: response.meta.total_count,
       };
-
     } catch (error) {
       console.error("Error fetching data:", error);
       return { data: [], total: 0 };
@@ -40,12 +44,12 @@ const UserPage: React.FC = () => {
     try {
       await deleteUserById(row.id);
       showToast("Data deleted successfully!", "success");
-
     } catch (error: any) {
-      const finalMessage = `Failed to delete data.\n${error?.response?.data?.message || error?.message || "Unknown error"}`;
+      const finalMessage = `Failed to delete data.\n${
+        error?.response?.data?.message || error?.message || "Unknown error"
+      }`;
       showToast(finalMessage, "danger");
     }
-
   };
 
   const handleAdd = () => {

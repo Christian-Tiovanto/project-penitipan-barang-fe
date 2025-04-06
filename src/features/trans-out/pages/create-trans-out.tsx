@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import Breadcrumb from "../../../components/breadcrumb";
-import { FaSave, FaArrowLeft, FaSearch } from "react-icons/fa";
+import { FaSave, FaArrowLeft, FaSearch, FaCalendarAlt } from "react-icons/fa";
 import { useNavigate } from "react-router";
 import { useToast } from "../../../contexts/toastContexts";
 import { FaBox } from "react-icons/fa6";
@@ -9,7 +9,9 @@ import { getAllCustomers } from "../../customer/services/customer.service";
 import { getAllProducts } from "../../product/services/product.service";
 import InputField from "../../../components/inputfield";
 import ProductCard from "../../../components/product-card";
-import { createTransOut } from "../services/trans-out.service";
+import { createTransOut, previewTransOut } from "../services/trans-out.service";
+import { StartDatePicker } from "../../../components/date-picker";
+import DatePickerField from "../../../components/date-picker-field";
 
 interface Product {
   id: number;
@@ -32,11 +34,46 @@ interface Customer {
   updated_at: Date;
 }
 
+enum InvoiceStatus {
+  PENDING = "pending",
+  COMPLETED = "completed",
+}
+
+interface Invoice {
+  customerId: number;
+  invoice_no: string;
+  total_amount: number;
+  charge: number;
+  fine: number;
+  discount: number;
+  total_order: number;
+  total_order_converted: number;
+  tax: number;
+  status: InvoiceStatus;
+}
+
 const CreateTransOutForm: React.FC = () => {
   const navigate = useNavigate();
   const { showToast } = useToast();
   const [products, setProducts] = useState<Product[]>([]);
   const [customers, setCustomers] = useState<Customer[]>([]);
+
+  const [isModalOpen, setIsModalOpen] = useState(false); // State untuk mengontrol modal
+  const [modalData, setModalData] = useState<{
+    products: Product[];
+    invoice: Invoice;
+  } | null>(null);
+
+  const openModal = () => {
+    setIsModalOpen(true);
+  };
+
+  const closeModal = () => {
+    setIsModalOpen(false);
+    setModalData(null);
+  };
+
+  const [selectedDate, setSelectedDate] = useState<Date | null>(new Date());
 
   const [form, setForm] = useState({
     customerId: "",
@@ -113,8 +150,40 @@ const CreateTransOutForm: React.FC = () => {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
 
+  const handleDateChange = (date: Date | null) => {
+    setSelectedDate(date);
+  };
+
   const updateQty = (id: number, qty: number) => {
     setProducts((prev) => prev.map((p) => (p.id === id ? { ...p, qty } : p)));
+  };
+
+  const handleCreateInvoice = async () => {
+    try {
+      const payload = products
+        .filter((p) => p.qty > 0)
+        .map((p) => ({
+          productId: p.id,
+          converted_qty: p.qty,
+        }));
+
+      const clockOut = selectedDate ? selectedDate.toISOString() : "";
+
+      await createTransOut(
+        parseInt(form.customerId, 10),
+        form.no_plat,
+        clockOut,
+        payload
+      );
+
+      navigate("/transaction");
+      showToast("Data added successfully!", "success");
+    } catch (error: any) {
+      const finalMessage = `Failed to add data.\n${
+        error?.response?.data?.message || error?.message || "Unknown error"
+      }`;
+      showToast(finalMessage, "danger");
+    }
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -128,14 +197,24 @@ const CreateTransOutForm: React.FC = () => {
             productId: p.id,
             converted_qty: p.qty,
           }));
-        await createTransOut(
+
+        const clockOut = selectedDate ? selectedDate.toISOString() : "";
+
+        const invoice = await previewTransOut(
           parseInt(form.customerId, 10),
           form.no_plat,
-          // form.clock_out,
+          clockOut,
           payload
         );
-        navigate("/transaction");
-        showToast("Data added successfully!", "success");
+
+        const productModal = products.filter((p) => p.qty > 0);
+
+        setModalData(() => ({
+          products: productModal,
+          invoice: invoice,
+        }));
+
+        openModal();
       }
     } catch (error: any) {
       const finalMessage = `Failed to add data.\n${
@@ -162,7 +241,7 @@ const CreateTransOutForm: React.FC = () => {
       <div className="row g-3">
         <div className="col-md-6">
           <InputField
-            label="No Plat *"
+            label="Plat No *"
             type="text"
             name="no_plat"
             value={form.no_plat}
@@ -174,16 +253,14 @@ const CreateTransOutForm: React.FC = () => {
           />
         </div>
         <div className="col-md-6">
-          <InputField
-            label="No Plat *"
-            type="text"
-            name="no_plat"
-            value={form.no_plat}
-            onChange={handleChange}
-            onBlur={handleBlur}
-            error={!!errors.no_plat}
-            errorMessage={errors.no_plat}
-            icon={<FaBox />}
+          <DatePickerField
+            label="Clock Out"
+            name="startDate"
+            value={selectedDate}
+            onChange={handleDateChange}
+            icon={<FaCalendarAlt />}
+            error={!selectedDate} // contoh error: jika belum pilih tanggal
+            errorMessage="The date cannot be empty"
           />
         </div>
       </div>
@@ -223,6 +300,99 @@ const CreateTransOutForm: React.FC = () => {
             </div>
           )}
         </div>
+        {/* Modal */}
+        {isModalOpen && modalData && (
+          <div
+            className="modal fade show d-flex align-items-center justify-content-center"
+            id="paidoff-form"
+            tabIndex={-1}
+            aria-labelledby="paidoffFormLabel"
+            aria-hidden="false"
+            style={{
+              display: "block",
+              position: "fixed",
+              top: 0,
+              left: 0,
+              right: 0,
+              bottom: 0,
+              zIndex: 1050,
+            }}
+          >
+            <div className="modal-dialog">
+              <div className="modal-content">
+                <div className="modal-header">
+                  <h5 className="modal-title" id="paidoffFormLabel">
+                    Rincian Invoice
+                  </h5>
+                  <button
+                    type="button"
+                    className="btn-close"
+                    onClick={closeModal}
+                    aria-label="Close"
+                  ></button>
+                </div>
+                <div className="modal-body">
+                  <table className="table table-striped">
+                    <thead>
+                      <tr>
+                        <th>Product</th>
+                        <th>Price</th>
+                        <th>Qty</th>
+                        <th>Total</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {modalData.products.map((product, index) => (
+                        <tr key={index}>
+                          <td>{product.name}</td>
+                          <td>{product.price}</td>
+                          <td>{product.qty}</td>
+                          <td>{product.price * product.qty}</td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                  <div className="d-flex justify-content-between">
+                    <strong>Subtotal:</strong>
+                    <span>{modalData.invoice.total_amount}</span>
+                  </div>
+                  <div className="d-flex justify-content-between">
+                    <strong>Fine:</strong>
+                    <span>{modalData.invoice.fine}</span>
+                  </div>
+                  <div className="d-flex justify-content-between">
+                    <strong>Charge:</strong>
+                    <span>{modalData.invoice.charge}</span>
+                  </div>
+                  <div className="d-flex justify-content-between">
+                    <strong>Total:</strong>
+                    <span>
+                      {modalData.invoice.total_amount +
+                        modalData.invoice.fine +
+                        modalData.invoice.charge}
+                    </span>
+                  </div>
+                </div>
+                <div className="modal-footer">
+                  <button
+                    type="button"
+                    className="btn btn-secondary"
+                    onClick={closeModal}
+                  >
+                    Close
+                  </button>
+                  <button
+                    type="button"
+                    className="btn btn-primary"
+                    onClick={handleCreateInvoice}
+                  >
+                    Create Invoice
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
 
       <div className="text-end mt-3">
