@@ -1,6 +1,7 @@
 import axios, { AxiosRequestConfig } from "axios";
 import { ITransactionInData } from "../report-in";
 import Cookies from "js-cookie";
+import { Order } from "../../../enum/SortOrder";
 const URL = "http://127.0.0.1:3000";
 export class TransactionInReportService {
   async getTransactionIns(
@@ -9,13 +10,20 @@ export class TransactionInReportService {
       endDate: Date;
       pageSize: number;
       pageNo: number;
+      sortBy: string;
+      order: Order;
     },
     config?: AxiosRequestConfig
   ) {
     const token = Cookies.get("auth_token");
     // Create filtered query object
     const queryParams: Record<string, string> = {};
-
+    if (query?.sortBy) {
+      queryParams.sort = query?.sortBy;
+    }
+    if (query?.order) {
+      queryParams.order = query?.order;
+    }
     // Conditional parameter formatting
     if (query?.startDate) {
       queryParams.start_date = query.startDate.toISOString();

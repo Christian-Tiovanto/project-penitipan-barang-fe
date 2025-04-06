@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { StartDatePicker, EndDatePicker } from "../../components/date-picker";
 import {
+  Box,
   Paper,
   Table,
   TableBody,
@@ -9,12 +10,12 @@ import {
   TableHead,
   TablePagination,
   TableRow,
+  TableSortLabel,
 } from "@mui/material";
-
-import { ColumnConfig } from "../../components/table-component";
+import { visuallyHidden } from "@mui/utils";
 import { useTransactionInReport } from "./hooks/report-in.hooks";
-import { endOfToday, startOfToday, startOfTomorrow } from "date-fns";
-import { useToast } from "../../contexts/toastContexts";
+import { startOfToday, startOfTomorrow } from "date-fns";
+import { Order } from "../../enum/SortOrder";
 export interface ITransactionInData {
   id: number;
   product: {
@@ -29,16 +30,123 @@ export interface ITransactionInData {
   converted_qty: number;
   unit: string;
 }
+interface HeadCell<T> {
+  field: keyof T;
+  headerName: string;
+  headerStyle?: React.CSSProperties;
+}
+
+const columns: HeadCell<ITransactionInData>[] = [
+  {
+    field: "product",
+    headerName: "Product",
+    headerStyle: {
+      minWidth: "200px",
+      width: "40%",
+    },
+  },
+  {
+    field: "customer",
+    headerName: "Customer",
+    headerStyle: {
+      width: "20%",
+    },
+  },
+  {
+    field: "qty",
+    headerName: "Quantity",
+    headerStyle: {
+      width: "10%",
+    },
+  },
+  {
+    field: "converted_qty",
+    headerName: "Quantity (Kg)",
+    headerStyle: {
+      width: "20%",
+    },
+  },
+  {
+    field: "unit",
+    headerName: "Unit",
+    headerStyle: {
+      width: "10%",
+    },
+  },
+];
+interface EnhancedTableProps {
+  onRequestSort: (
+    event: React.MouseEvent<unknown>,
+    property: keyof ITransactionInData
+  ) => void;
+  order: Order;
+  orderBy: string;
+}
+function EnhancedTableHead(props: EnhancedTableProps) {
+  const { order, orderBy, onRequestSort } = props;
+  const createSortHandler =
+    (property: keyof ITransactionInData) =>
+    (event: React.MouseEvent<unknown>) => {
+      onRequestSort(event, property);
+    };
+
+  return (
+    <TableHead>
+      <TableRow>
+        {columns.map((col) => (
+          <TableCell
+            className="fw-bold text-nowrap"
+            key={col.field}
+            sortDirection={orderBy === col.field ? order : false}
+            sx={{
+              width: col.headerStyle?.width,
+              minWidth: col.headerStyle?.minWidth,
+              textAlign: col.headerStyle?.textAlign,
+              fontWeight: "bold",
+            }}
+          >
+            <TableSortLabel
+              active={orderBy === col.field}
+              direction={orderBy === col.field ? order : "asc"}
+              onClick={createSortHandler(col.field)}
+            >
+              {col.headerName}
+              {orderBy === col.field ? (
+                <Box component="span" sx={visuallyHidden}>
+                  {order === "desc" ? "sorted descending" : "sorted ascending"}
+                </Box>
+              ) : null}
+            </TableSortLabel>
+          </TableCell>
+        ))}
+      </TableRow>
+    </TableHead>
+  );
+}
 export function ReportInPage() {
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(5);
   const [startDate, setStartDate] = useState(startOfToday());
   const [endDate, setEndDate] = useState(startOfTomorrow());
+  const [order, setOrder] = useState<Order>("asc");
+  const [orderBy, setOrderBy] = useState<keyof ITransactionInData>("product");
+
+  const handleRequestSort = (
+    event: React.MouseEvent<unknown>,
+    property: keyof ITransactionInData
+  ) => {
+    const isAsc = orderBy === property && order === "asc";
+    setOrder(isAsc ? "desc" : "asc");
+    setOrderBy(property);
+  };
+
   const { data, isLoading } = useTransactionInReport({
     startDate,
     endDate,
     pageNo: page,
     pageSize: rowsPerPage,
+    order,
+    sortBy: orderBy,
   });
 
   const handleChangePage = (_: unknown, newPage: number) => {
@@ -52,46 +160,6 @@ export function ReportInPage() {
     setPage(0);
   };
 
-  const columns: ColumnConfig<ITransactionInData>[] = [
-    {
-      field: "product",
-      headerName: "Product",
-      headerStyle: {
-        minWidth: "200px",
-        width: "40%",
-      },
-    },
-    {
-      field: "customer",
-      headerName: "Customer",
-      headerStyle: {
-        width: "20%",
-      },
-    },
-    {
-      field: "qty",
-      headerName: "Quantity",
-      headerStyle: {
-        width: "10%",
-      },
-    },
-    {
-      field: "converted_qty",
-      headerName: "Quantity (Kg)",
-      headerStyle: {
-        width: "20%",
-      },
-    },
-    {
-      field: "unit",
-      headerName: "Unit",
-      headerStyle: {
-        width: "10%",
-      },
-    },
-  ];
-
-  const columnWidths = ["30%", "20%", "20%", "20%", "10%"];
   return (
     <>
       <div className="container-fluid m-0 p-0">
@@ -123,7 +191,12 @@ export function ReportInPage() {
           <div className="mui-table-container">
             <TableContainer component={Paper} sx={{ padding: 2 }}>
               <Table>
-                <TableHead>
+                <EnhancedTableHead
+                  onRequestSort={handleRequestSort}
+                  order={order}
+                  orderBy={orderBy}
+                />
+                {/* <TableHead>
                   <TableRow>
                     {columns.map((col) => (
                       <TableCell
@@ -139,7 +212,7 @@ export function ReportInPage() {
                       </TableCell>
                     ))}
                   </TableRow>
-                </TableHead>
+                </TableHead> */}
                 <TableBody>
                   {isLoading ? (
                     <TableRow>

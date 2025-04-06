@@ -1,14 +1,17 @@
 import { useEffect, useRef, useState } from "react";
 import { TransactionInReportService } from "../services/report-in.service";
 import { useToast } from "../../../contexts/toastContexts";
+import { Order } from "../../../enum/SortOrder";
 
 export const useTransactionInReport = (query: {
   startDate: Date;
   endDate: Date;
   pageNo: number;
   pageSize: number;
+  sortBy: string;
+  order: Order;
 }) => {
-  const { startDate, endDate, pageNo, pageSize } = query;
+  const { startDate, endDate, pageNo, pageSize, order, sortBy } = query;
   const [data, setData] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<Error | null | any>(null);
@@ -30,6 +33,8 @@ export const useTransactionInReport = (query: {
               startDate,
               pageNo,
               pageSize,
+              sortBy,
+              order,
             },
             { signal: controller.signal }
           );
@@ -56,7 +61,7 @@ export const useTransactionInReport = (query: {
     return () => {
       abortControllerRef.current?.abort();
     };
-  }, [startDate, endDate, pageNo, pageSize]);
+  }, [startDate, endDate, pageNo, pageSize, order, sortBy]);
 
   return {
     data,
