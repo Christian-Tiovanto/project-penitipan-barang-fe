@@ -1,0 +1,58 @@
+import axios, { AxiosRequestConfig } from "axios";
+import Cookies from "js-cookie";
+import { ICashflowHistory, CreateCashflowDto } from "../cashflow-page";
+const URL = "http://127.0.0.1:3000";
+export class CashflowService {
+  async getCashflowHistory(
+    query?: {
+      startDate: Date;
+      endDate: Date;
+      pageSize?: number;
+      pageNo?: number;
+    },
+    config?: AxiosRequestConfig
+  ) {
+    const token = Cookies.get("auth_token");
+    // Create filtered query object
+    const queryParams: Record<string, string> = {};
+    // Conditional parameter formatting
+    if (query?.startDate) {
+      queryParams.start_date = query.startDate.toISOString();
+    }
+    if (query?.endDate) {
+      queryParams.end_date = query.endDate.toISOString();
+    }
+    if (query?.pageSize) {
+      queryParams.page_size = query.pageSize.toString();
+    }
+    if (query?.pageNo !== undefined) {
+      queryParams.page_no = query.pageNo.toString();
+    }
+    const response = await axios.get<{ data: ICashflowHistory[] }>(
+      `${URL}/api/v1/cashflow`,
+      {
+        params: queryParams,
+        signal: config?.signal,
+        paramsSerializer: (params) => new URLSearchParams(params).toString(),
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+    return response.data.data;
+  }
+
+  async createCashflow(createCashflowDto: CreateCashflowDto) {
+    const token = Cookies.get("auth_token");
+    const response = await axios.post(
+      `${URL}/api/v1/cashflow`,
+      createCashflowDto,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+    return response;
+  }
+}

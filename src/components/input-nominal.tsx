@@ -12,7 +12,7 @@ export default function InputNominal({
   return (
     <div className="form-floating rounded-top mt-2 border-bottom border-dark">
       <input
-        type="number"
+        type="text"
         className="form-control third-bg rounded-0 text-center"
         id="cashflow-total"
         value={nominal}
