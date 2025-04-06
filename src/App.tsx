@@ -39,6 +39,8 @@ import { TransactionPage } from "./features/transaction";
 import { CreateTransInPage, TransInPage } from "./features/trans-in";
 import TransInHistoryPage from "./features/trans-in/pages/history-trans-in";
 import UpdateTransInPage from "./features/trans-in/pages/update-trans-in";
+import { TransOutPage } from "./features/trans-out";
+import CreateTransOutPage from "./features/trans-out/pages/create-trans-out";
 
 function ExampleRouting() {
   return <h1>tes</h1>;
@@ -165,6 +167,10 @@ const router = createBrowserRouter([
       {
         path: "transaction/in/edit-in/:id",
         element: <UpdateTransInPage />,
+      },
+      {
+        path: "transaction/out/create-out",
+        element: <CreateTransOutPage />,
       },
     ],
   },

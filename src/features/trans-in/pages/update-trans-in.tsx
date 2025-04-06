@@ -74,10 +74,10 @@ const UpdateTransInForm: React.FC = () => {
         const transInId = parseInt(id, 10);
         const transIn = await fetchTransInById(transInId);
 
-        fetchProducts(transIn.productId);
-        fetchProductUnits(transIn.productId);
-        fetchCustomers();
-        setDataForm(transIn);
+        await fetchProducts(transIn.productId);
+        const productUnits = await fetchProductUnits(transIn.productId);
+        await fetchCustomers();
+        await setDataForm(transIn, productUnits);
       }
     };
 
@@ -87,7 +87,7 @@ const UpdateTransInForm: React.FC = () => {
   const fetchProducts = async (id: number) => {
     try {
       const product = await getProductById(id);
-      setProducts([product]);
+      await setProducts([product]);
     } catch (error) {
       console.error("Error fetching product:", error);
     }
@@ -96,7 +96,8 @@ const UpdateTransInForm: React.FC = () => {
   const fetchProductUnits = async (id: number) => {
     try {
       const productUnits = await getProductUnitsByProductId(id);
-      setProductUnits(productUnits);
+      await setProductUnits(productUnits);
+      return productUnits;
     } catch (error) {
       console.error("Error fetching product units:", error);
     }
@@ -105,7 +106,7 @@ const UpdateTransInForm: React.FC = () => {
   const fetchCustomers = async () => {
     try {
       const customers = await getAllCustomers();
-      setCustomers(customers);
+      await setCustomers(customers);
     } catch (error) {
       console.error("Error fetching customers:", error);
     }
@@ -121,12 +122,20 @@ const UpdateTransInForm: React.FC = () => {
     }
   };
 
-  const setDataForm = async (TransInData: any) => {
+  const setDataForm = async (TransInData: any, productUnits: ProductUnit[]) => {
     try {
+      console.log(productUnits);
+      console.log(TransInData.unit.toLowerCase());
+      const matchedUnit = productUnits.find(
+        (unit) => unit.name.toLowerCase() === TransInData.unit.toLowerCase()
+      );
+
+      console.log(matchedUnit);
+      const id = matchedUnit?.id.toString();
       setForm({
         productId: TransInData.productId,
         qty: TransInData.qty || 0,
-        productUnitId: TransInData.productUnitId,
+        productUnitId: id || "",
         customerId: TransInData.customerId,
       });
     } catch (error) {
