@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { IoCloseSharp } from "react-icons/io5";
+import InputNominal from "../../components/input-nominal";
 export default function CreateCashFlow() {
   const [cashflowType, setCashflowType] = useState(null);
   const [nominal, setNominal] = useState(0);
@@ -88,20 +89,11 @@ export default function CreateCashFlow() {
                 </label>
               </div>
             </div>
-            <div className="form-floating rounded-top mt-2 border-bottom border-dark">
-              <input
-                type="number"
-                className="form-control gray rounded-0 text-center"
-                id="cashflow-total"
-                value={nominal}
-                onChange={handleNominalChange}
-                onKeyDown={(e) => {
-                  if (e.key === "-") e.preventDefault();
-                }}
-                min="0"
-              />
-              <label htmlFor="cashflow-total">Nominal *</label>
-            </div>
+            <InputNominal
+              title="Nominal *"
+              nominal={nominal}
+              handleNominalChange={handleNominalChange}
+            />
             <button
               type="button"
               className={`btn w-100 h-50 mt-3 ${

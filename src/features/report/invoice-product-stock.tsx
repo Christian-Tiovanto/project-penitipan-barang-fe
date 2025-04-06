@@ -12,42 +12,22 @@ import {
 } from "@mui/material";
 
 import { ColumnConfig } from "../../components/table-component";
-import { useTransactionInReport } from "./hooks/report-in.hooks";
-export interface ITransactionInData {
+interface IInvoiceProductStockData {
   id: number;
   product: {
     id: number;
     name: string;
   };
-  customer: {
+  invoice: {
     id: number;
-    name: string;
+    invoice_no: string;
   };
-  qty: number;
-  converted_qty: number;
-  unit: string;
+  total_product_out: number;
 }
-export function ReportInPage() {
-  const now = new Date();
-
-  const todayStart = new Date(now);
-  todayStart.setHours(0, 0, 0, 0);
-
-  const todayEnd = new Date(now);
-  todayEnd.setDate(todayEnd.getDate() + 1);
-  todayEnd.setHours(0, 0, 0, 0);
+export function InvoiceProductStockPage() {
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(5);
-  const [startDate, setStartDate] = useState(todayStart);
-  const [endDate, setEndDate] = useState(todayEnd);
   const [searchQuery, setSearchQuery] = useState("");
-
-  const { data, isLoading, error } = useTransactionInReport({
-    startDate,
-    endDate,
-    pageNo: page,
-    pageSize: rowsPerPage,
-  });
   const handleChangePage = (_: unknown, newPage: number) => {
     setPage(newPage);
   };
@@ -59,51 +39,69 @@ export function ReportInPage() {
     setPage(0);
   };
 
-  const columns: ColumnConfig<ITransactionInData>[] = [
+  const TransactionInData: IInvoiceProductStockData[] = [
     {
-      field: "product",
-      headerName: "Product",
-      headerStyle: {
-        minWidth: "200px",
-        width: "40%",
+      id: 1,
+      product: {
+        id: 1,
+        name: "Product Name",
       },
+      invoice: {
+        id: 1,
+        invoice_no: "JK-443211",
+      },
+      total_product_out: 500,
     },
     {
-      field: "customer",
-      headerName: "Customer",
-      headerStyle: {
-        width: "20%",
+      id: 2,
+      product: {
+        id: 1,
+        name: "Product Name",
       },
-    },
-    {
-      field: "qty",
-      headerName: "Quantity",
-      headerStyle: {
-        width: "10%",
+      invoice: {
+        id: 1,
+        invoice_no: "JK-112341",
       },
-    },
-    {
-      field: "converted_qty",
-      headerName: "Quantity (Kg)",
-      headerStyle: {
-        width: "20%",
-      },
-    },
-    {
-      field: "unit",
-      headerName: "Unit",
-      headerStyle: {
-        width: "10%",
-      },
+      total_product_out: 500,
     },
   ];
-  const filteredData = data.filter((row: any) =>
+  const columns: ColumnConfig<IInvoiceProductStockData & { row_no: number }>[] =
+    [
+      {
+        field: "row_no",
+        headerName: "No",
+        headerStyle: {
+          width: "1%",
+        },
+      },
+      {
+        field: "product",
+        headerName: "Product",
+        headerStyle: {
+          width: "39%",
+        },
+      },
+      {
+        field: "invoice",
+        headerName: "Invoice No",
+        headerStyle: {
+          width: "30%",
+        },
+      },
+      {
+        field: "total_product_out",
+        headerName: "Total Product Out",
+        headerStyle: {
+          width: "30%",
+        },
+      },
+    ];
+  const filteredData = TransactionInData.filter((row: any) =>
     columns.some((col) =>
       String(row[col.field]).toLowerCase().includes(searchQuery.toLowerCase())
     )
   );
 
-  const columnWidths = ["30%", "20%", "20%", "20%", "10%"];
   return (
     <>
       <div className="container-fluid m-0 p-0">
@@ -112,11 +110,6 @@ export function ReportInPage() {
             <DatePicker
               idDatePicker="tanggal-awal-masuk-barang"
               titleText="Tanggal Awal"
-              value={startDate}
-              onDateClick={(date: Date) => {
-                console.log("kepanggil?");
-                setStartDate(date);
-              }}
               datetime={false}
             />
           </div>
@@ -124,10 +117,6 @@ export function ReportInPage() {
             <DatePicker
               idDatePicker="tanggal-akhir-masuk-barang"
               titleText="Tanggal Akhir"
-              value={endDate}
-              onDateClick={(date: Date) => {
-                setEndDate(date);
-              }}
               datetime={false}
             />
           </div>
@@ -154,15 +143,25 @@ export function ReportInPage() {
                   </TableRow>
                 </TableHead>
                 <TableBody>
-                  {data.map((value) => (
+                  {TransactionInData.map((value, index) => (
                     <TableRow key={value.id}>
+                      <TableCell>{index + 1}</TableCell>
                       <TableCell>{value.product.name}</TableCell>
-                      <TableCell>{value.customer.name}</TableCell>
-                      <TableCell>{value.qty}</TableCell>
-                      <TableCell>{value.converted_qty}</TableCell>
-                      <TableCell>{value.unit}</TableCell>
+                      <TableCell>{value.invoice.invoice_no}</TableCell>
+                      <TableCell>
+                        {Number(value.total_product_out).toLocaleString(
+                          "id-ID"
+                        )}
+                      </TableCell>
                     </TableRow>
                   ))}
+                  <TableRow>
+                    <TableCell colSpan={2}></TableCell>
+                    <TableCell sx={{ fontWeight: "bold" }}>Total</TableCell>
+                    <TableCell sx={{ fontWeight: "bold" }}>
+                      {Number(10000).toLocaleString("id-ID")}
+                    </TableCell>
+                  </TableRow>
                 </TableBody>
               </Table>
               <TablePagination

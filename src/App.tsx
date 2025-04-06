@@ -28,6 +28,14 @@ import {
 import { CreateProductPage, ProductPage } from "./features/product";
 import UpdateProductPage from "./features/product/pages/update-product";
 import CreateCashFlow from "./features/cashflow/cashflow-page";
+import { ArReportPaidPage } from "./features/report/ar-report-paid";
+import { ArToPaidPage } from "./features/report/ar-to-paid";
+import { CustomerProductStockPage } from "./features/report/customer-product-stock";
+import { InvoiceProductStockPage } from "./features/report/invoice-product-stock";
+import { StockBookPage } from "./features/report/stock-book";
+import { StockReportPage } from "./features/report/stock-report";
+import { NettIncomeReportPage } from "./features/report/nett-income-report";
+import InputPaidoffPage from "./features/report/input-paidoff";
 import { CreateCustomerPage, CustomerPage } from "./features/customer";
 import UpdateCustomerPage from "./features/customer/pages/update-customer";
 import {
@@ -39,6 +47,7 @@ import { TransactionPage } from "./features/transaction";
 import { CreateTransInPage, TransInPage } from "./features/trans-in";
 import TransInHistoryPage from "./features/trans-in/pages/history-trans-in";
 import UpdateTransInPage from "./features/trans-in/pages/update-trans-in";
+
 
 function ExampleRouting() {
   return <h1>tes</h1>;
@@ -56,6 +65,32 @@ const router = createBrowserRouter([
         children: [
           { path: "transaction-in", element: <ReportInPage /> },
           { path: "transaction-out", element: <ReportOutPage /> },
+          { path: "ar", element: <ArReportPaidPage /> },
+          { path: "ar-to-paid", element: <ArToPaidPage /> },
+          {
+            path: "customer-product-stock",
+            element: <CustomerProductStockPage />,
+          },
+          {
+            path: "invoice-product-stock",
+            element: <InvoiceProductStockPage />,
+          },
+          {
+            path: "stock-book",
+            element: <StockBookPage />,
+          },
+          {
+            path: "stock-report",
+            element: <StockReportPage />,
+          },
+          {
+            path: "nett-income",
+            element: <NettIncomeReportPage />,
+          },
+          {
+            path: "input-paidoff",
+            element: <InputPaidoffPage />,
+          },
         ],
       },
       {

@@ -12,42 +12,22 @@ import {
 } from "@mui/material";
 
 import { ColumnConfig } from "../../components/table-component";
-import { useTransactionInReport } from "./hooks/report-in.hooks";
-export interface ITransactionInData {
+interface IArReportPaidData {
   id: number;
-  product: {
-    id: number;
-    name: string;
-  };
+  invoice_date: Date;
   customer: {
     id: number;
     name: string;
   };
-  qty: number;
-  converted_qty: number;
-  unit: string;
+  ar_no: string;
+  total_bill: number;
+  total_paid: number;
+  to_paid: number;
 }
-export function ReportInPage() {
-  const now = new Date();
-
-  const todayStart = new Date(now);
-  todayStart.setHours(0, 0, 0, 0);
-
-  const todayEnd = new Date(now);
-  todayEnd.setDate(todayEnd.getDate() + 1);
-  todayEnd.setHours(0, 0, 0, 0);
+export function ArReportPaidPage() {
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(5);
-  const [startDate, setStartDate] = useState(todayStart);
-  const [endDate, setEndDate] = useState(todayEnd);
   const [searchQuery, setSearchQuery] = useState("");
-
-  const { data, isLoading, error } = useTransactionInReport({
-    startDate,
-    endDate,
-    pageNo: page,
-    pageSize: rowsPerPage,
-  });
   const handleChangePage = (_: unknown, newPage: number) => {
     setPage(newPage);
   };
@@ -59,51 +39,89 @@ export function ReportInPage() {
     setPage(0);
   };
 
-  const columns: ColumnConfig<ITransactionInData>[] = [
+  const TransactionInData: IArReportPaidData[] = [
     {
-      field: "product",
-      headerName: "Product",
+      id: 1,
+      invoice_date: new Date(),
+      customer: {
+        id: 1,
+        name: "Chris",
+      },
+      ar_no: "FK-JK1234",
+      total_bill: 150000,
+      total_paid: 75000,
+      to_paid: 0,
+    },
+    {
+      id: 2,
+      invoice_date: new Date(),
+      customer: {
+        id: 2,
+        name: "Tiovan",
+      },
+      ar_no: "FK-JK155555",
+      total_bill: 15000,
+      total_paid: 7500,
+      to_paid: 0,
+    },
+  ];
+  const columns: ColumnConfig<IArReportPaidData & { row_no: number }>[] = [
+    {
+      field: "row_no",
+      headerName: "No",
       headerStyle: {
-        minWidth: "200px",
-        width: "40%",
+        width: "1%",
+      },
+    },
+    {
+      field: "invoice_date",
+      headerName: "Invoice Date",
+      headerStyle: {
+        width: "10%",
+      },
+    },
+    {
+      field: "ar_no",
+      headerName: "Invoice No",
+      headerStyle: {
+        width: "10%",
       },
     },
     {
       field: "customer",
       headerName: "Customer",
       headerStyle: {
-        width: "20%",
+        width: "10%",
       },
     },
     {
-      field: "qty",
-      headerName: "Quantity",
+      field: "total_bill",
+      headerName: "Total Bill",
       headerStyle: {
         width: "10%",
       },
     },
     {
-      field: "converted_qty",
-      headerName: "Quantity (Kg)",
+      field: "total_paid",
+      headerName: "Paid",
       headerStyle: {
-        width: "20%",
+        width: "10%",
       },
     },
     {
-      field: "unit",
-      headerName: "Unit",
+      field: "to_paid",
+      headerName: "To Paid",
       headerStyle: {
         width: "10%",
       },
     },
   ];
-  const filteredData = data.filter((row: any) =>
+  const filteredData = TransactionInData.filter((row: any) =>
     columns.some((col) =>
       String(row[col.field]).toLowerCase().includes(searchQuery.toLowerCase())
     )
   );
 
-  const columnWidths = ["30%", "20%", "20%", "20%", "10%"];
   return (
     <>
       <div className="container-fluid m-0 p-0">
@@ -112,11 +130,6 @@ export function ReportInPage() {
             <DatePicker
               idDatePicker="tanggal-awal-masuk-barang"
               titleText="Tanggal Awal"
-              value={startDate}
-              onDateClick={(date: Date) => {
-                console.log("kepanggil?");
-                setStartDate(date);
-              }}
               datetime={false}
             />
           </div>
@@ -124,10 +137,6 @@ export function ReportInPage() {
             <DatePicker
               idDatePicker="tanggal-akhir-masuk-barang"
               titleText="Tanggal Akhir"
-              value={endDate}
-              onDateClick={(date: Date) => {
-                setEndDate(date);
-              }}
               datetime={false}
             />
           </div>
@@ -154,15 +163,38 @@ export function ReportInPage() {
                   </TableRow>
                 </TableHead>
                 <TableBody>
-                  {data.map((value) => (
+                  {TransactionInData.map((value, index) => (
                     <TableRow key={value.id}>
-                      <TableCell>{value.product.name}</TableCell>
+                      <TableCell>{index + 1}</TableCell>
+                      <TableCell>
+                        {value.invoice_date.toLocaleDateString("en-GB")}
+                      </TableCell>
+                      <TableCell>{value.ar_no}</TableCell>
                       <TableCell>{value.customer.name}</TableCell>
-                      <TableCell>{value.qty}</TableCell>
-                      <TableCell>{value.converted_qty}</TableCell>
-                      <TableCell>{value.unit}</TableCell>
+                      <TableCell>
+                        {Number(value.total_bill).toLocaleString("id-ID")}
+                      </TableCell>
+                      <TableCell>
+                        {Number(value.total_paid).toLocaleString("id-ID")}
+                      </TableCell>
+                      <TableCell>
+                        {Number(value.to_paid).toLocaleString("id-ID")}
+                      </TableCell>
                     </TableRow>
                   ))}
+                  <TableRow>
+                    <TableCell colSpan={3}></TableCell>
+                    <TableCell sx={{ fontWeight: "bold" }}>Total</TableCell>
+                    <TableCell sx={{ fontWeight: "bold" }}>
+                      {Number(10000).toLocaleString("id-ID")}
+                    </TableCell>
+                    <TableCell sx={{ fontWeight: "bold" }}>
+                      {Number(10000).toLocaleString("id-ID")}
+                    </TableCell>
+                    <TableCell sx={{ fontWeight: "bold" }}>
+                      {Number(10000).toLocaleString("id-ID")}
+                    </TableCell>
+                  </TableRow>
                 </TableBody>
               </Table>
               <TablePagination
