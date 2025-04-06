@@ -1,5 +1,8 @@
 import { useState } from "react";
-import { StartDatePicker, EndDatePicker } from "../../components/date-picker";
+import {
+  StartDatePicker,
+  EndDatePicker,
+} from "../../../components/date-picker";
 import {
   Box,
   Paper,
@@ -13,9 +16,13 @@ import {
   TableSortLabel,
 } from "@mui/material";
 import { visuallyHidden } from "@mui/utils";
-import { useTransactionInReport } from "./hooks/report-in.hooks";
+import { useTransactionInReport } from "../hooks/report-in.hooks";
 import { startOfToday, startOfTomorrow } from "date-fns";
-import { Order } from "../../enum/SortOrder";
+import { Order } from "../../../enum/SortOrder";
+import {
+  EnhancedTableProps,
+  HeadCell,
+} from "../../../components/table-component";
 export interface ITransactionInData {
   id: number;
   product: {
@@ -29,11 +36,6 @@ export interface ITransactionInData {
   qty: number;
   converted_qty: number;
   unit: string;
-}
-interface HeadCell<T> {
-  field: keyof T;
-  headerName: string;
-  headerStyle?: React.CSSProperties;
 }
 
 const columns: HeadCell<ITransactionInData>[] = [
@@ -74,15 +76,8 @@ const columns: HeadCell<ITransactionInData>[] = [
     },
   },
 ];
-interface EnhancedTableProps {
-  onRequestSort: (
-    event: React.MouseEvent<unknown>,
-    property: keyof ITransactionInData
-  ) => void;
-  order: Order;
-  orderBy: string;
-}
-function EnhancedTableHead(props: EnhancedTableProps) {
+
+function EnhancedTableHead(props: EnhancedTableProps<ITransactionInData>) {
   const { order, orderBy, onRequestSort } = props;
   const createSortHandler =
     (property: keyof ITransactionInData) =>

@@ -1,7 +1,7 @@
 import { createBrowserRouter, RouterProvider } from "react-router"; // Import yang benar dari react-router-dom
 import "./App.css";
 import MainLayout from "./layouts/layouts";
-import { ReportInPage } from "./features/report/report-in";
+import { ReportInPage } from "./features/report/pages/report-in";
 import {
   CreateUserPage,
   LoginPage,
@@ -47,7 +47,6 @@ import { TransactionPage } from "./features/transaction";
 import { CreateTransInPage, TransInPage } from "./features/trans-in";
 import TransInHistoryPage from "./features/trans-in/pages/history-trans-in";
 import UpdateTransInPage from "./features/trans-in/pages/update-trans-in";
-
 
 function ExampleRouting() {
   return <h1>tes</h1>;

@@ -3,8 +3,8 @@ import { ITransactionInData } from "../pages/report-in";
 import Cookies from "js-cookie";
 import { Order } from "../../../enum/SortOrder";
 const URL = "http://127.0.0.1:3000";
-export class TransactionInReportService {
-  async getTransactionIns(
+export class TransactionOutReportService {
+  async getTransactionOuts(
     query?: {
       startDate: Date;
       endDate: Date;
@@ -40,7 +40,7 @@ export class TransactionInReportService {
     console.log(query);
     // Build URL with filtered parameters
     const response = await axios.get<{ data: ITransactionInData[] }>(
-      `${URL}/api/v1/transaction-in`,
+      `${URL}/api/v1/transaction-out`,
       {
         params: queryParams,
         signal: config?.signal,
