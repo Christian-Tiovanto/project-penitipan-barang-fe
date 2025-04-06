@@ -19,6 +19,14 @@ import {
 } from "./features/payment-method";
 import UpdatePaymentMethodPage from "./features/payment-method/pages/update-payment-method";
 import { ChargePage } from "./features/charge";
+
+import UpdateProductUnitPage from "./features/product-unit/pages/update-product-unit";
+import {
+  CreateProductUnitPage,
+  ProductUnitPage,
+} from "./features/product-unit";
+import { CreateProductPage, ProductPage } from "./features/product";
+import UpdateProductPage from "./features/product/pages/update-product";
 import CreateCashFlow from "./features/cashflow/cashflow-page";
 import { ArReportPaidPage } from "./features/report/ar-report-paid";
 import { ArToPaidPage } from "./features/report/ar-to-paid";
@@ -28,6 +36,18 @@ import { StockBookPage } from "./features/report/stock-book";
 import { StockReportPage } from "./features/report/stock-report";
 import { NettIncomeReportPage } from "./features/report/nett-income-report";
 import InputPaidoffPage from "./features/report/input-paidoff";
+import { CreateCustomerPage, CustomerPage } from "./features/customer";
+import UpdateCustomerPage from "./features/customer/pages/update-customer";
+import {
+  CreateCustomerPaymentPage,
+  CustomerPaymentPage,
+} from "./features/customer-payment";
+import UpdateCustomerPaymentPage from "./features/customer-payment/pages/update-customer-payment";
+import { TransactionPage } from "./features/transaction";
+import { CreateTransInPage, TransInPage } from "./features/trans-in";
+import TransInHistoryPage from "./features/trans-in/pages/history-trans-in";
+import UpdateTransInPage from "./features/trans-in/pages/update-trans-in";
+
 
 function ExampleRouting() {
   return <h1>tes</h1>;
@@ -78,6 +98,10 @@ const router = createBrowserRouter([
         element: <MasterPage />,
       },
       {
+        path: "transaction",
+        element: <TransactionPage />,
+      },
+      {
         path: "master/change-password",
         element: <ChangePasswordPage />,
       },
@@ -112,6 +136,70 @@ const router = createBrowserRouter([
       {
         path: "master/charge",
         element: <ChargePage />,
+      },
+      {
+        path: "master/product-unit",
+        element: <ProductUnitPage />,
+      },
+      {
+        path: "master/product-unit/create-product-unit",
+        element: <CreateProductUnitPage />,
+      },
+      {
+        path: "master/product-unit/edit-product-unit/:id",
+        element: <UpdateProductUnitPage />,
+      },
+      {
+        path: "master/product",
+        element: <ProductPage />,
+      },
+      {
+        path: "master/product/create-product",
+        element: <CreateProductPage />,
+      },
+      {
+        path: "master/product/edit-product/:id",
+        element: <UpdateProductPage />,
+      },
+      {
+        path: "master/customer",
+        element: <CustomerPage />,
+      },
+      {
+        path: "master/customer/create-customer",
+        element: <CreateCustomerPage />,
+      },
+      {
+        path: "master/customer/edit-customer/:id",
+        element: <UpdateCustomerPage />,
+      },
+      {
+        path: "master/customer-payment",
+        element: <CustomerPaymentPage />,
+      },
+      {
+        path: "master/customer-payment/create-customer-payment",
+        element: <CreateCustomerPaymentPage />,
+      },
+      {
+        path: "master/customer-payment/edit-customer-payment/:id",
+        element: <UpdateCustomerPaymentPage />,
+      },
+      {
+        path: "transaction/in",
+        element: <TransInPage />,
+      },
+      {
+        path: "transaction/in/create-in/:id",
+        element: <CreateTransInPage />,
+      },
+      {
+        path: "transaction/in/history-in/:id",
+        element: <TransInHistoryPage />,
+      },
+      {
+        path: "transaction/in/edit-in/:id",
+        element: <UpdateTransInPage />,
       },
     ],
   },

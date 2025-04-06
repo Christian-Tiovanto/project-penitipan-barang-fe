@@ -3,10 +3,10 @@ import Cookies from "js-cookie";
 
 const API_URL = "http://127.0.0.1:3000";
 
-export const createPaymentMethod = async (name: string) => {
+export const createCustomer = async (name: string, code: string, address: string) => {
     try {
         const token = Cookies.get("auth_token");
-        const response = await axios.post(`${API_URL}/api/v1/payment-method`, { name },
+        const response = await axios.post(`${API_URL}/api/v1/customer`, { name, code, address },
             {
                 headers: {
                     Authorization: `Bearer ${token}`,
@@ -16,32 +16,15 @@ export const createPaymentMethod = async (name: string) => {
 
         return response.data;
     } catch (error: any) {
-        throw error.response?.data || "Payment Method failed";
+        throw error.response?.data || "Customer failed";
     }
 };
 
-export const getAllPaymentMethods = async () => {
-    try {
-        const token = Cookies.get("auth_token");
-
-        const response = await axios.get(`${API_URL}/api/v1/payment-method/all`,
-            {
-                headers: {
-                    Authorization: `Bearer ${token}`,
-                },
-            }
-        );
-        return response.data;
-    } catch (error: any) {
-        throw error.response?.data || "get all Payment Method failed";
-    }
-};
-
-export const getAllPaymentMethodsPagination = async (pageSize: number, pageNo: number) => {
+export const getAllCustomersPagination = async (pageSize: number, pageNo: number) => {
     try {
         const token = Cookies.get("auth_token");
 
-        const response = await axios.get(`${API_URL}/api/v1/payment-method?page_size=${pageSize}&page_no=${pageNo}`,
+        const response = await axios.get(`${API_URL}/api/v1/customer?page_size=${pageSize}&page_no=${pageNo}`,
             {
                 headers: {
                     Authorization: `Bearer ${token}`,
@@ -50,15 +33,15 @@ export const getAllPaymentMethodsPagination = async (pageSize: number, pageNo: n
         );
         return response.data;
     } catch (error: any) {
-        throw error.response?.data || "get all Payment Method failed";
+        throw error.response?.data || "get all Customer failed";
     }
 };
 
-export const getPaymentMethodById = async (id: number) => {
+export const getAllCustomers = async () => {
     try {
-        const token = Cookies.get("auth_token"); // Ambil token dari cookie
+        const token = Cookies.get("auth_token");
 
-        const response = await axios.get(`${API_URL}/api/v1/payment-method/${id}`,
+        const response = await axios.get(`${API_URL}/api/v1/customer/all`,
             {
                 headers: {
                     Authorization: `Bearer ${token}`,
@@ -67,16 +50,33 @@ export const getPaymentMethodById = async (id: number) => {
         );
         return response.data;
     } catch (error: any) {
-        throw error.response?.data || "get Payment Method by id failed";
+        throw error.response?.data || "get all Customer failed";
+    }
+};
+
+export const getCustomerById = async (id: number) => {
+    try {
+        const token = Cookies.get("auth_token");
+
+        const response = await axios.get(`${API_URL}/api/v1/customer/${id}`,
+            {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                },
+            }
+        );
+        return response.data;
+    } catch (error: any) {
+        throw error.response?.data || "get Customer by id failed";
     }
 };
 
 
-export const updatePaymentMethodById = async (id: number, data: any) => {
+export const updateCustomerById = async (id: number, data: any) => {
     try {
-        const token = Cookies.get("auth_token"); // Ambil token dari cookie
+        const token = Cookies.get("auth_token");
 
-        const response = await axios.patch(`${API_URL}/api/v1/payment-method/${id}`,
+        const response = await axios.patch(`${API_URL}/api/v1/customer/${id}`,
             data,
             {
                 headers: {
@@ -87,15 +87,15 @@ export const updatePaymentMethodById = async (id: number, data: any) => {
         );
         return response.data;
     } catch (error: any) {
-        throw error.response?.data || "Update PaymentMethod by id failed";
+        throw error.response?.data || "Update Customer by id failed";
     }
 };
 
-export const deletePaymentMethodById = async (id: number) => {
+export const deleteCustomerById = async (id: number) => {
     try {
         const token = Cookies.get("auth_token");
 
-        const response = await axios.delete(`${API_URL}/api/v1/payment-method/${id}`,
+        const response = await axios.delete(`${API_URL}/api/v1/customer/${id}`,
             {
                 headers: {
                     Authorization: `Bearer ${token}`,
@@ -105,6 +105,6 @@ export const deletePaymentMethodById = async (id: number) => {
         );
         return response.data;
     } catch (error: any) {
-        throw error.response?.data || "Delete Payment Method by id failed";
+        throw error.response?.data || "Delete Customer by id failed";
     }
 };

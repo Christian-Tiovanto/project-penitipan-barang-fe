@@ -66,7 +66,7 @@ const UpdateUserForm: React.FC = () => {
         // }
 
         if (!form.role) {
-            newErrors.role = "Please select a category";
+            newErrors.role = "Please Select a Role";
         }
 
         setErrors(newErrors);
@@ -89,7 +89,7 @@ const UpdateUserForm: React.FC = () => {
         if (!e.target.value) {
             setErrors((prevErrors) => ({
                 ...prevErrors,
-                role: "Please Select A Role",
+                role: "Please Select a Role",
             }));
         } else {
             setErrors((prevErrors) => ({
@@ -102,6 +102,10 @@ const UpdateUserForm: React.FC = () => {
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         setForm({ ...form, [e.target.name]: e.target.value });
+    };
+
+    const handleDropdownChange = (value: string) => {
+        setForm({ ...form, role: value });
     };
 
     const handleSubmit = async (e: React.FormEvent) => {
@@ -153,17 +157,17 @@ const UpdateUserForm: React.FC = () => {
 
             <Dropdown
                 label="Role *"
-                name="role"
-                value={form.role}
+                value={String(form.role)}
                 options={[
                     { value: "admin", label: "Admin" },
                     { value: "default", label: "Default" },
                 ]}
-                onChange={(e) => setForm({ ...form, role: e.target.value })}
-                onBlur={handleDropdownBlur}
+                onChange={handleDropdownChange}
                 error={!!errors.role}
                 errorMessage={errors.role}
+                icon={<FaUser />}
             />
+
             {/* 
             <InputField
                 label="Password *"

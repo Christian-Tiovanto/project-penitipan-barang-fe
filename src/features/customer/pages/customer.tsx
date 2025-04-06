@@ -4,20 +4,22 @@ import { FaArrowLeft } from "react-icons/fa";
 import { useNavigate } from "react-router";
 import MuiTable from "../../../components/table-mui";
 import { useToast } from "../../../contexts/toastContexts";
-import { deletePaymentMethodById, getAllPaymentMethods, getAllPaymentMethodsPagination } from "../services/payment-method.service";
+import { deleteCustomerById, getAllCustomersPagination } from "../services/customer.service";
 
-const PaymentMethodPage: React.FC = () => {
+const CustomerPage: React.FC = () => {
     const navigate = useNavigate();
     const { showToast } = useToast();
 
     const columns = [
         { field: "id", headerName: "ID" },
         { field: "name", headerName: "Name" },
+        { field: "code", headerName: "Code" },
+        { field: "address", headerName: "Address" },
     ];
 
     const fetchTableData = async (pageNo: number, PageSize: number, searchQuery: string) => {
         try {
-            const response = await getAllPaymentMethodsPagination(PageSize, pageNo);
+            const response = await getAllCustomersPagination(PageSize, pageNo);
 
             return {
                 data: response.data,
@@ -31,29 +33,28 @@ const PaymentMethodPage: React.FC = () => {
     };
 
     const handleEdit = (row: any) => {
-        navigate(`/master/payment-method/edit-payment-method/${row.id}`);
+        navigate(`/master/customer/edit-customer/${row.id}`);
     };
 
     const handleDelete = async (row: any) => {
         try {
-            await deletePaymentMethodById(row.id);
+            await deleteCustomerById(row.id);
             showToast("Data deleted successfully!", "success");
 
         } catch (error: any) {
             const finalMessage = `Failed to delete data.\n${error?.response?.data?.message || error?.message || "Unknown error"}`;
             showToast(finalMessage, "danger");
         }
-
     };
 
     const handleAdd = () => {
-        navigate("/master/payment-method/create-payment-method");
+        navigate("/master/customer/create-customer");
     };
 
     return (
         <div className="container mt-4">
             <div className="d-flex justify-content-between align-items-center p-3 mb-3">
-                <Breadcrumb title="Master" items={["Payment Method"]} />
+                <Breadcrumb title="Master" items={["Customer"]} />
                 <button
                     type="button"
                     className="btn btn-outline-secondary px-4"
@@ -77,4 +78,4 @@ const PaymentMethodPage: React.FC = () => {
     );
 };
 
-export default PaymentMethodPage;
+export default CustomerPage;

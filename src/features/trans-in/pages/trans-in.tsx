@@ -1,0 +1,74 @@
+import React from "react";
+import Breadcrumb from "../../../components/breadcrumb";
+import { FaArrowLeft } from "react-icons/fa";
+import { useNavigate } from "react-router";
+import { useToast } from "../../../contexts/toastContexts";
+import { getAllProductsPagination } from "../../product/services/product.service";
+import MuiTableTrans from "../../../components/table-mui-trans";
+
+const TransInPage: React.FC = () => {
+  const navigate = useNavigate();
+  const { showToast } = useToast();
+
+  const columns = [
+    { field: "id", headerName: "ID" },
+    { field: "name", headerName: "Name" },
+    { field: "price", headerName: "Price" },
+    { field: "qty", headerName: "Qty" },
+    { field: "desc", headerName: "Desc" },
+  ];
+
+  const fetchTableData = async (
+    pageNo: number,
+    PageSize: number,
+    searchQuery: string
+  ) => {
+    try {
+      const response = await getAllProductsPagination(PageSize, pageNo);
+
+      return {
+        data: response.data,
+        total: response.meta.total_count,
+      };
+    } catch (error) {
+      console.error("Error fetching data:", error);
+      return { data: [], total: 0 };
+    }
+  };
+
+  const handleHistory = (row: any) => {
+    navigate(`/transaction/in/history-in/${row.id}`);
+  };
+
+  const handleAdd = (row: any) => {
+    navigate(`/transaction/in/create-in/${row.id}`);
+  };
+
+  return (
+    <div className="container mt-4">
+      <div className="d-flex justify-content-between align-items-center p-3 mb-3">
+        <Breadcrumb title="Transaction" items={["Transaction In"]} />
+        <button
+          type="button"
+          className="btn btn-outline-secondary px-4"
+          onClick={() => navigate(-1)}
+        >
+          <FaArrowLeft className="me-2" />
+          Back
+        </button>
+      </div>
+
+      <div className="card shadow-lg border-0 rounded-4 p-4">
+        <MuiTableTrans
+          columns={columns}
+          fetchData={fetchTableData}
+          onAdd={handleAdd}
+          onHistory={handleHistory}
+          // onAdd={handleAdd}
+        />
+      </div>
+    </div>
+  );
+};
+
+export default TransInPage;

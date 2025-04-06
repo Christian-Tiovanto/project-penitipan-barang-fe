@@ -4,21 +4,26 @@ import { FaArrowLeft } from "react-icons/fa";
 import { useNavigate } from "react-router";
 import MuiTable from "../../../components/table-mui";
 import { useToast } from "../../../contexts/toastContexts";
-import { deletePaymentMethodById, getAllPaymentMethods, getAllPaymentMethodsPagination } from "../services/payment-method.service";
+import { deleteCustomerPaymentById, getAllCustomerPayments } from "../services/customer-payment.service";
+// import { deleteProductUnitById, getAllProductUnits } from "../services/customer-payment.service";
 
-const PaymentMethodPage: React.FC = () => {
+const CustomerPaymentPage: React.FC = () => {
     const navigate = useNavigate();
     const { showToast } = useToast();
 
     const columns = [
         { field: "id", headerName: "ID" },
-        { field: "name", headerName: "Name" },
+        { field: "customer.name", headerName: "Customer" },
+        { field: "payment_method.name", headerName: "Payment Method" },
+        { field: "charge", headerName: "Charge" },
+        { field: "status", headerName: "Status" },
+        { field: "min_pay", headerName: "Min Pay" },
     ];
 
     const fetchTableData = async (pageNo: number, PageSize: number, searchQuery: string) => {
         try {
-            const response = await getAllPaymentMethodsPagination(PageSize, pageNo);
-
+            const response = await getAllCustomerPayments(PageSize, pageNo);
+            console.log(response);
             return {
                 data: response.data,
                 total: response.meta.total_count,
@@ -31,29 +36,28 @@ const PaymentMethodPage: React.FC = () => {
     };
 
     const handleEdit = (row: any) => {
-        navigate(`/master/payment-method/edit-payment-method/${row.id}`);
+        navigate(`/master/customer-payment/edit-customer-payment/${row.id}`);
     };
 
     const handleDelete = async (row: any) => {
         try {
-            await deletePaymentMethodById(row.id);
+            await deleteCustomerPaymentById(row.id);
             showToast("Data deleted successfully!", "success");
 
         } catch (error: any) {
             const finalMessage = `Failed to delete data.\n${error?.response?.data?.message || error?.message || "Unknown error"}`;
             showToast(finalMessage, "danger");
         }
-
     };
 
     const handleAdd = () => {
-        navigate("/master/payment-method/create-payment-method");
+        navigate("/master/customer-payment/create-customer-payment");
     };
 
     return (
         <div className="container mt-4">
             <div className="d-flex justify-content-between align-items-center p-3 mb-3">
-                <Breadcrumb title="Master" items={["Payment Method"]} />
+                <Breadcrumb title="Master" items={["Customer Payment"]} />
                 <button
                     type="button"
                     className="btn btn-outline-secondary px-4"
@@ -77,4 +81,4 @@ const PaymentMethodPage: React.FC = () => {
     );
 };
 
-export default PaymentMethodPage;
+export default CustomerPaymentPage;

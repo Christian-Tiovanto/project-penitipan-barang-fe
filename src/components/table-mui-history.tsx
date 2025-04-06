@@ -10,17 +10,13 @@ import {
   TablePagination,
   IconButton,
   Box,
-  Button,
+  // Button,
   TextField,
   InputAdornment,
   CircularProgress,
 } from "@mui/material";
-import {
-  Edit as EditIcon,
-  Delete as DeleteIcon,
-  Add as AddIcon,
-  Search as SearchIcon,
-} from "@mui/icons-material";
+import { Edit as EditIcon, Search as SearchIcon } from "@mui/icons-material";
+import { FaDolly } from "react-icons/fa6";
 
 interface Column {
   field: string;
@@ -29,13 +25,17 @@ interface Column {
 
 interface Props {
   columns: Column[];
-  fetchData: (page: number, rowsPerPage: number, searchQuery: string) => Promise<{ data: any[], total: number }>;
+  fetchData: (
+    page: number,
+    rowsPerPage: number,
+    searchQuery: string
+  ) => Promise<{ data: any[]; total: number }>;
+  //   onAdd?: (row: any) => void;
   onEdit?: (row: any) => void;
-  onDelete?: (row: any) => void;
-  onAdd?: () => void;
+  // onAdd?: () => void;
 }
 
-const MuiTable: React.FC<Props> = ({ columns, fetchData, onEdit, onDelete, onAdd }) => {
+const MuiTableHistory: React.FC<Props> = ({ columns, fetchData, onEdit }) => {
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(5);
   const [searchQuery, setSearchQuery] = useState("");
@@ -63,20 +63,22 @@ const MuiTable: React.FC<Props> = ({ columns, fetchData, onEdit, onDelete, onAdd
     setPage(newPage);
   };
 
-  const handleChangeRowsPerPage = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleChangeRowsPerPage = (
+    event: React.ChangeEvent<HTMLInputElement>
+  ) => {
     setRowsPerPage(parseInt(event.target.value, 10));
     setPage(0);
   };
 
-  const handleDelete = async (row: any) => {
+  const handleEdit = async (row: any) => {
     try {
-      if (onDelete) {
-        await onDelete(row);
+      if (onEdit) {
+        await onEdit(row);
       }
 
       loadData();
     } catch (error) {
-      console.error("Failed to delete data:", error);
+      console.error("Failed to Edit data:", error);
     }
   };
 
@@ -90,15 +92,10 @@ const MuiTable: React.FC<Props> = ({ columns, fetchData, onEdit, onDelete, onAdd
           alignItems="center"
           mb={2}
         >
-          <Button
-            variant="contained"
-            color="primary"
-            startIcon={<AddIcon />}
-            onClick={onAdd}
-            sx={{ textTransform: "none", fontSize: "0.9rem", padding: "8px 16px", mb: { xs: 2, sm: 0 } }}
-          >
-            Add New
-          </Button>
+          <h4 className="p-3 mb-3 mb-0">
+            {data[0]?.product?.name ?? "Tidak ada nama"}
+          </h4>
+
           <TextField
             label="Search..."
             variant="standard"
@@ -137,23 +134,29 @@ const MuiTable: React.FC<Props> = ({ columns, fetchData, onEdit, onDelete, onAdd
               {data.map((row) => (
                 <TableRow key={row.id}>
                   {columns.map((col) => {
-                    const value = col.field.split('.').reduce((acc, part) => acc && acc[part], row);
+                    const value = col.field
+                      .split(".")
+                      .reduce((acc, part) => acc && acc[part], row);
                     // console.log(value);
                     // return <TableCell key={col.field}>{value}</TableCell>;
 
                     // const value = row[col.field];
                     return (
                       <TableCell key={col.field}>
-                        {typeof value === "boolean" ? (value ? "Active" : "Inactive") : value}
+                        {typeof value === "boolean"
+                          ? value
+                            ? "Active"
+                            : "Inactive"
+                          : value}
                       </TableCell>
                     );
                   })}
                   <TableCell>
-                    <IconButton color="primary" onClick={() => onEdit && onEdit(row)}>
+                    <IconButton
+                      sx={{ color: "green" }}
+                      onClick={() => handleEdit(row)}
+                    >
                       <EditIcon />
-                    </IconButton>
-                    <IconButton sx={{ color: "red" }} onClick={() => handleDelete(row)}>
-                      <DeleteIcon />
                     </IconButton>
                   </TableCell>
                 </TableRow>
@@ -176,4 +179,4 @@ const MuiTable: React.FC<Props> = ({ columns, fetchData, onEdit, onDelete, onAdd
   );
 };
 
-export default MuiTable;
+export default MuiTableHistory;
