@@ -1,8 +1,10 @@
 import { useState } from "react";
 import {
-  StartDatePicker,
   EndDatePicker,
+  StartDatePicker,
 } from "../../../components/date-picker";
+import { visuallyHidden } from "@mui/utils";
+
 import {
   Box,
   Paper,
@@ -15,15 +17,15 @@ import {
   TableRow,
   TableSortLabel,
 } from "@mui/material";
-import { visuallyHidden } from "@mui/utils";
-import { useTransactionInReport } from "../hooks/report-in.hooks";
-import { startOfToday, startOfTomorrow } from "date-fns";
-import { Order } from "../../../enum/SortOrder";
+
 import {
   EnhancedTableProps,
   HeadCell,
 } from "../../../components/table-component";
-export interface ITransactionInData {
+import { startOfToday, startOfTomorrow } from "date-fns";
+import { Order } from "../../../enum/SortOrder";
+import { useTransactionOutReport } from "../hooks/report-out.hooks";
+interface ITransactionOutData {
   id: number;
   product: {
     id: number;
@@ -33,12 +35,10 @@ export interface ITransactionInData {
     id: number;
     name: string;
   };
-  qty: number;
   converted_qty: number;
-  unit: string;
+  total_days: number;
 }
-
-const columns: HeadCell<ITransactionInData>[] = [
+const columns: HeadCell<ITransactionOutData>[] = [
   {
     field: "product",
     headerName: "Product",
@@ -51,36 +51,30 @@ const columns: HeadCell<ITransactionInData>[] = [
     field: "customer",
     headerName: "Customer",
     headerStyle: {
-      width: "20%",
-    },
-  },
-  {
-    field: "qty",
-    headerName: "Quantity",
-    headerStyle: {
-      width: "10%",
+      width: "30%",
     },
   },
   {
     field: "converted_qty",
     headerName: "Quantity (Kg)",
     headerStyle: {
+      textAlign: "center",
       width: "20%",
     },
   },
   {
-    field: "unit",
-    headerName: "Unit",
+    field: "total_days",
+    headerName: "Total Days",
     headerStyle: {
+      textAlign: "center",
       width: "10%",
     },
   },
 ];
-
-function EnhancedTableHead(props: EnhancedTableProps<ITransactionInData>) {
+function EnhancedTableHead(props: EnhancedTableProps<ITransactionOutData>) {
   const { order, orderBy, onRequestSort } = props;
   const createSortHandler =
-    (property: keyof ITransactionInData) =>
+    (property: keyof ITransactionOutData) =>
     (event: React.MouseEvent<unknown>) => {
       onRequestSort(event, property);
     };
@@ -118,31 +112,22 @@ function EnhancedTableHead(props: EnhancedTableProps<ITransactionInData>) {
     </TableHead>
   );
 }
-export function ReportInPage() {
+export function ReportOutPage() {
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(5);
   const [startDate, setStartDate] = useState(startOfToday());
   const [endDate, setEndDate] = useState(startOfTomorrow());
   const [order, setOrder] = useState<Order>("asc");
-  const [orderBy, setOrderBy] = useState<keyof ITransactionInData>("product");
+  const [orderBy, setOrderBy] = useState<keyof ITransactionOutData>("product");
 
   const handleRequestSort = (
     event: React.MouseEvent<unknown>,
-    property: keyof ITransactionInData
+    property: keyof ITransactionOutData
   ) => {
     const isAsc = orderBy === property && order === "asc";
     setOrder(isAsc ? "desc" : "asc");
     setOrderBy(property);
   };
-
-  const { data, isLoading } = useTransactionInReport({
-    startDate,
-    endDate,
-    pageNo: page,
-    pageSize: rowsPerPage,
-    order,
-    sortBy: orderBy,
-  });
 
   const handleChangePage = (_: unknown, newPage: number) => {
     setPage(newPage);
@@ -154,6 +139,14 @@ export function ReportInPage() {
     setRowsPerPage(parseInt(event.target.value, 10));
     setPage(0);
   };
+  const { data, isLoading } = useTransactionOutReport({
+    startDate,
+    endDate,
+    pageNo: page,
+    pageSize: rowsPerPage,
+    order,
+    sortBy: orderBy,
+  });
 
   return (
     <>
@@ -161,24 +154,24 @@ export function ReportInPage() {
         <div className="row">
           <div className="col-md-6 position-relative">
             <StartDatePicker
-              idDatePicker="tanggal-awal-masuk-barang"
-              titleText="Tanggal Awal"
+              idDatePicker="tanggal-awal-keluar-barang"
+              titleText="Start Date"
+              datetime={false}
               value={startDate}
               onDateClick={(date: Date) => {
                 setStartDate(date);
               }}
-              datetime={false}
             />
           </div>
           <div className="col-md-6 position-relative">
             <EndDatePicker
-              idDatePicker="tanggal-akhir-masuk-barang"
-              titleText="Tanggal Akhir"
+              idDatePicker="tanggal-akhir-keluar-barang"
+              titleText="End Date"
+              datetime={false}
               value={endDate}
               onDateClick={(date: Date) => {
                 setEndDate(date);
               }}
-              datetime={false}
             />
           </div>
         </div>
@@ -191,6 +184,23 @@ export function ReportInPage() {
                   order={order}
                   orderBy={orderBy}
                 />
+                {/* <TableHead>
+                  <TableRow>
+                    {columns.map((col) => (
+                      <TableCell
+                        key={col.field}
+                        sx={{
+                          width: col.headerStyle?.width,
+                          minWidth: col.headerStyle?.minWidth,
+                          textAlign: col.headerStyle?.textAlign,
+                          fontWeight: "bold",
+                        }}
+                      >
+                        <b>{col.headerName}</b>
+                      </TableCell>
+                    ))}
+                  </TableRow>
+                </TableHead> */}
                 <TableBody>
                   {isLoading ? (
                     <TableRow>
@@ -210,9 +220,12 @@ export function ReportInPage() {
                       <TableRow key={value.id}>
                         <TableCell>{value.product.name}</TableCell>
                         <TableCell>{value.customer.name}</TableCell>
-                        <TableCell>{value.qty}</TableCell>
-                        <TableCell>{value.converted_qty}</TableCell>
-                        <TableCell>{value.unit}</TableCell>
+                        <TableCell sx={{ textAlign: "center" }}>
+                          {value.converted_qty}
+                        </TableCell>
+                        <TableCell sx={{ textAlign: "center" }}>
+                          {value.total_days}
+                        </TableCell>
                       </TableRow>
                     ))
                   )}

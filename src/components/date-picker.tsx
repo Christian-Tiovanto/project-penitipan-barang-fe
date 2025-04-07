@@ -132,7 +132,7 @@ const StartDatePicker = ({
   };
 
   return (
-    <div className="datepicker-container">
+    <div className="select-container">
       <div
         className="container-input-date d-flex justify-content-start align-items-center ps-3"
         onClick={() => togglePicker(true)}
@@ -380,7 +380,7 @@ const EndDatePicker = ({
   };
 
   return (
-    <div className="datepicker-container">
+    <div className="select-container">
       <div
         className="container-input-date d-flex justify-content-start align-items-center ps-3"
         onClick={() => togglePicker(true)}

@@ -11,7 +11,7 @@ import {
   UpdateUserPage,
 } from "./features/auth";
 import { MasterPage } from "./features/master";
-import { ReportOutPage } from "./features/report/report-out";
+import { ReportOutPage } from "./features/report/pages/report-out";
 import { ToastProvider } from "./contexts/toastContexts";
 import {
   CreatePaymentMethodPage,
@@ -30,9 +30,9 @@ import UpdateProductPage from "./features/product/pages/update-product";
 import CreateCashFlow from "./features/cashflow/cashflow-page";
 import { ArReportPaidPage } from "./features/report/ar-report-paid";
 import { ArToPaidPage } from "./features/report/ar-to-paid";
-import { CustomerProductStockPage } from "./features/report/customer-product-stock";
+import { CustomerProductStockPage } from "./features/report/pages/customer-product-stock";
 import { InvoiceProductStockPage } from "./features/report/invoice-product-stock";
-import { StockBookPage } from "./features/report/stock-book";
+import { StockBookPage } from "./features/report/pages/stock-book";
 import { StockReportPage } from "./features/report/stock-report";
 import { NettIncomeReportPage } from "./features/report/nett-income-report";
 import InputPaidoffPage from "./features/report/input-paidoff";
