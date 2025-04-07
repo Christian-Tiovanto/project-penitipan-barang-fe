@@ -22,7 +22,6 @@ import {
 import { startOfToday, startOfTomorrow } from "date-fns";
 import { Order } from "../../../enum/SortOrder";
 import { useStockBookReport } from "../hooks/stock-book.hooks";
-import Dropdown from "../../../components/dropdown";
 import { FaBox } from "react-icons/fa6";
 import { getAllProducts } from "../../product/services/product.service";
 import { Product } from "../../product-unit/pages/create-product-unit";
@@ -185,10 +184,10 @@ function EnhancedTableHead(props: EnhancedTableProps<TableData>) {
 }
 
 export function StockBookPage() {
-  const [productId, setProductId] = useState<string>("");
   const [customerId, setCustomerId] = useState<string>("");
-  const [products, setProducts] = useState<Product[]>([]);
   const [customers, setCustomers] = useState<Customer[]>([]);
+  const [productId, setProductId] = useState<string>("");
+  const [products, setProducts] = useState<Product[]>([]);
   const [startDate, setStartDate] = useState(startOfToday());
   const [endDate, setEndDate] = useState(startOfTomorrow());
   const [order, setOrder] = useState<Order>("asc");
@@ -330,13 +329,13 @@ export function StockBookPage() {
               id="customer"
               label="Customer *"
               value={customerId}
-              options={customers.map((product) => ({
-                value: product.id.toString(),
-                label: product.name,
+              options={customers.map((customer) => ({
+                value: customer.id.toString(),
+                label: customer.name,
               }))}
               onChange={handleCustomerDropdownChange}
-              error={!!errors.productId}
-              errorMessage={errors.productId}
+              error={!!errors.customerId}
+              errorMessage={errors.customerId}
               icon={<FaBox />}
             />
           </div>

@@ -33,7 +33,7 @@ import { ArToPaidPage } from "./features/report/ar-to-paid";
 import { CustomerProductStockPage } from "./features/report/pages/customer-product-stock";
 import { InvoiceProductStockPage } from "./features/report/invoice-product-stock";
 import { StockBookPage } from "./features/report/pages/stock-book";
-import { StockReportPage } from "./features/report/stock-report";
+import { StockReportPage } from "./features/report/pages/stock-report";
 import { NettIncomeReportPage } from "./features/report/nett-income-report";
 import InputPaidoffPage from "./features/report/input-paidoff";
 import { CreateCustomerPage, CustomerPage } from "./features/customer";
