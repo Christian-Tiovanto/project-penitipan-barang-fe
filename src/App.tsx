@@ -28,7 +28,7 @@ import {
 import { CreateProductPage, ProductPage } from "./features/product";
 import UpdateProductPage from "./features/product/pages/update-product";
 import CreateCashFlow from "./features/cashflow/cashflow-page";
-import { ArReportPaidPage } from "./features/report/ar-report-paid";
+import { ArReportPaidPage } from "./features/report/pages/ar-report-paid";
 import { ArToPaidPage } from "./features/report/ar-to-paid";
 import { CustomerProductStockPage } from "./features/report/pages/customer-product-stock";
 import { InvoiceProductStockPage } from "./features/report/invoice-product-stock";

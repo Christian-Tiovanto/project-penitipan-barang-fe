@@ -2,28 +2,26 @@ import { useEffect, useRef, useState } from "react";
 import { useToast } from "../../../contexts/toastContexts";
 import { Order } from "../../../enum/SortOrder";
 import { StockBookReportService } from "../services/stock-book.service";
-export const useStockBookReport = (
-  productId: string,
-  customerId: string,
-  query: {
-    startDate: Date;
-    endDate: Date;
-  }
-) => {
-  const { startDate, endDate } = query;
-  const [data, setData] = useState<any>();
+import { ArPaidReportService } from "../services/ar-report-paid.service";
+import { IArReportPaidData } from "../pages/ar-report-paid";
+export const useArPaidReport = (query: {
+  customerId: string;
+  startDate: Date;
+  endDate: Date;
+  pageNo: number;
+  pageSize: number;
+  sortBy: string;
+  order: Order;
+}) => {
+  const { startDate, endDate, customerId, pageNo, pageSize, sortBy, order } =
+    query;
+  const [data, setData] = useState<IArReportPaidData[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<Error | null | any>(null);
   const { showToast } = useToast();
   const abortControllerRef = useRef<AbortController | null>(null);
 
   useEffect(() => {
-    // Only fetch if both IDs exist
-    if (!productId || !customerId) {
-      setData(undefined); // Clear previous data
-      return;
-    }
-
     const fetchData = async () => {
       abortControllerRef.current?.abort();
       const controller = new AbortController();
@@ -32,15 +30,11 @@ export const useStockBookReport = (
       try {
         setIsLoading(true);
         setError(null);
-        const stockBookReport =
-          await new StockBookReportService().getStockBookReport(
-            productId,
-            customerId,
-            { endDate, startDate },
-            { signal: controller.signal }
-          );
-
-        setData(stockBookReport);
+        const arPaidReport = await new ArPaidReportService().getArPaidReport(
+          { endDate, startDate, customerId, pageNo, pageSize, sortBy, order },
+          { signal: controller.signal }
+        );
+        setData(arPaidReport);
       } catch (err) {
         if (!controller.signal.aborted) {
           setError(err);
@@ -62,7 +56,7 @@ export const useStockBookReport = (
     return () => {
       abortControllerRef.current?.abort();
     };
-  }, [productId, customerId, startDate, endDate]);
+  }, [customerId, startDate, endDate, pageNo, pageSize, order, sortBy]);
 
   return {
     data,
