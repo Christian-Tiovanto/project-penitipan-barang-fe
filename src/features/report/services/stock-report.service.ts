@@ -1,5 +1,4 @@
 import axios, { AxiosRequestConfig } from "axios";
-import { ITransactionInData } from "../pages/report-in";
 import Cookies from "js-cookie";
 import { IStockReportData } from "../pages/stock-report";
 const URL = "http://127.0.0.1:3000";

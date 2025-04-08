@@ -1,20 +1,32 @@
 import { useEffect, useRef, useState } from "react";
 import { useToast } from "../../../contexts/toastContexts";
 import { Order } from "../../../enum/SortOrder";
-import { StockBookReportService } from "../services/stock-book.service";
 import { ArPaidReportService } from "../services/ar-report-paid.service";
 import { IArReportPaidData } from "../pages/ar-report-paid";
-import { ArToPaidService } from "../services/ar-to-paid.service";
-import { IArToPaidData } from "../pages/ar-to-paid";
-export const useArToPaidReport = (query: {
+import { ArStatus } from "../../../enum/ArStatus";
+import { ArListService } from "../services/ar-list.service";
+import { AR } from "../pages/ar-list";
+export const useArList = (query: {
   customerId: string;
+  status: ArStatus;
   startDate: Date;
   endDate: Date;
+  pageNo: number;
+  pageSize: number;
   sortBy: string;
   order: Order;
 }) => {
-  const { startDate, endDate, customerId, sortBy, order } = query;
-  const [data, setData] = useState<IArToPaidData[]>([]);
+  const {
+    startDate,
+    endDate,
+    customerId,
+    pageNo,
+    pageSize,
+    sortBy,
+    order,
+    status,
+  } = query;
+  const [data, setData] = useState<AR[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<Error | null | any>(null);
   const { showToast } = useToast();
@@ -29,8 +41,17 @@ export const useArToPaidReport = (query: {
       try {
         setIsLoading(true);
         setError(null);
-        const arPaidReport = await new ArToPaidService().getArToPaidReport(
-          { endDate, startDate, customerId, sortBy, order },
+        const arPaidReport = await new ArListService().getArList(
+          {
+            endDate,
+            startDate,
+            customerId,
+            pageNo,
+            pageSize,
+            sortBy,
+            order,
+            arStatus: status,
+          },
           { signal: controller.signal }
         );
         setData(arPaidReport);
@@ -55,7 +76,7 @@ export const useArToPaidReport = (query: {
     return () => {
       abortControllerRef.current?.abort();
     };
-  }, [customerId, startDate, endDate, order, sortBy]);
+  }, [customerId, startDate, endDate, pageNo, pageSize, order, sortBy]);
 
   return {
     data,

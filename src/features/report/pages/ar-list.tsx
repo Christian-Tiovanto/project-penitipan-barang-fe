@@ -11,79 +11,44 @@ import TableSortLabel from "@mui/material/TableSortLabel";
 import Paper from "@mui/material/Paper";
 import Checkbox from "@mui/material/Checkbox";
 import { visuallyHidden } from "@mui/utils";
-import { FaArrowRight } from "react-icons/fa6";
-import { StartDatePicker } from "../../components/date-picker";
-import InputNominal from "../../components/input-nominal";
+import { FaArrowRight, FaBox } from "react-icons/fa6";
+import {
+  EndDatePicker,
+  StartDatePicker,
+} from "../../../components/date-picker";
+import InputNominal from "../../../components/input-nominal";
+import { startOfToday, startOfTomorrow } from "date-fns";
+import DropdownSecondStyle from "../../../components/dropdown-2";
+import { Customer } from "../../customer-payment/pages/update-customer-payment";
+import { getAllCustomers } from "../../customer/services/customer.service";
+import { ArStatus } from "../../../enum/ArStatus";
+import { useArList } from "../hooks/ar-list.hooks";
 
-interface AR {
+export interface AR {
   id: number;
-  ar_date: Date;
+  created_at: Date;
   ar_no: string;
   customer: {
     id: number;
     name: string;
   };
-  paid_payment: string[];
+  ar_payment: { payment_method_name: string }[];
   total_bill: number;
   to_paid: number;
-  created_at: Date;
-}
-
-const rows: AR[] = [
-  {
-    id: 1,
-    ar_date: new Date(),
-    ar_no: "FJ-030425-25683",
-    paid_payment: ["CASH,CASH"],
-    customer: { id: 1, name: "Customer Name" },
-    total_bill: 162000,
-    to_paid: 112000,
-    created_at: new Date(),
-  },
-  {
-    id: 2,
-    ar_date: new Date(),
-    ar_no: "FJ-030425-25683",
-    paid_payment: ["CASH,CASH"],
-    customer: { id: 1, name: "Customer Name" },
-    total_bill: 162000,
-    to_paid: 112000,
-    created_at: new Date(),
-  },
-  {
-    id: 3,
-    ar_date: new Date(),
-    ar_no: "FJ-030425-25683",
-    paid_payment: ["CASH,CASH"],
-    customer: { id: 1, name: "Customer Name" },
-    total_bill: 162000,
-    to_paid: 112000,
-    created_at: new Date(),
-  },
-];
-
-function descendingComparator<T>(a: T, b: T, orderBy: keyof T) {
-  if (b[orderBy] < a[orderBy]) {
-    return -1;
-  }
-  if (b[orderBy] > a[orderBy]) {
-    return 1;
-  }
-  return 0;
 }
 
 type Order = "asc" | "desc";
-
+type TableData = AR & { ar_date: string };
 interface HeadCell {
   disablePadding: boolean;
-  id: keyof AR;
+  id: keyof TableData;
   label: string;
   numeric: boolean;
 }
 
 const headCells: readonly HeadCell[] = [
   {
-    id: "ar_date",
+    id: "created_at",
     numeric: false,
     disablePadding: false,
     label: "AR Date",
@@ -101,7 +66,7 @@ const headCells: readonly HeadCell[] = [
     label: "Customer",
   },
   {
-    id: "paid_payment",
+    id: "ar_payment",
     numeric: false,
     disablePadding: false,
     label: "Payment",
@@ -118,17 +83,14 @@ const headCells: readonly HeadCell[] = [
     disablePadding: false,
     label: "To Paid",
   },
-  {
-    id: "created_at",
-    numeric: false,
-    disablePadding: false,
-    label: "created At",
-  },
 ];
 
 interface EnhancedTableProps {
   numSelected: number;
-  onRequestSort: (event: React.MouseEvent<unknown>, property: keyof AR) => void;
+  onRequestSort: (
+    event: React.MouseEvent<unknown>,
+    property: keyof TableData
+  ) => void;
   onSelectAllClick: (event: React.ChangeEvent<HTMLInputElement>) => void;
   order: Order;
   orderBy: string;
@@ -144,7 +106,7 @@ function EnhancedTableHead(props: EnhancedTableProps) {
     onRequestSort,
   } = props;
   const createSortHandler =
-    (property: keyof AR) => (event: React.MouseEvent<unknown>) => {
+    (property: keyof TableData) => (event: React.MouseEvent<unknown>) => {
       onRequestSort(event, property);
     };
 
@@ -158,9 +120,6 @@ function EnhancedTableHead(props: EnhancedTableProps) {
             indeterminate={numSelected > 0 && numSelected < rowCount}
             checked={rowCount > 0 && numSelected === rowCount}
             onChange={onSelectAllClick}
-            // inputProps={{
-            //   "aria-label": "select all desserts",
-            // }}
           />
         </TableCell>
         {headCells.map((headCell) => (
@@ -189,12 +148,14 @@ function EnhancedTableHead(props: EnhancedTableProps) {
     </TableHead>
   );
 }
-export default function InputPaidoffPage() {
-  const [order, setOrder] = React.useState<Order>("asc");
-  const [orderBy, setOrderBy] = React.useState<keyof AR>("ar_date");
-  const [selected, setSelected] = React.useState<readonly number[]>([]);
-  const [page, setPage] = React.useState(0);
-  const [rowsPerPage, setRowsPerPage] = React.useState(5);
+function InputPayment({
+  selected,
+  data,
+}: {
+  selected: readonly number[];
+  data: AR[];
+}) {
+  const [startDate, setStartDate] = React.useState(startOfToday());
   const [nominal, setNominal] = React.useState(0);
 
   const handleNominalChange = (event: any) => {
@@ -203,9 +164,93 @@ export default function InputPaidoffPage() {
       setNominal(value);
     }
   };
+
+  return (
+    <div
+      className="modal fade"
+      id="paidoff-form"
+      tabIndex={-1}
+      aria-labelledby="exampleModalLabel"
+      aria-hidden="true"
+    >
+      <div className="modal-dialog modal-dialog-centered">
+        <div className="modal-content">
+          <div className="modal-header d-flex flex-wrap gap-2 justify-content-center">
+            <span className="badge rounded-pill gray px-3 py-2 text-black">
+              Total Item : {selected.length}
+            </span>
+            <span className="badge rounded-pill gray px-3 py-2 text-black">
+              {"Total Piutang : " +
+                data
+                  .filter((value) => selected.includes(value.id))
+                  .reduce((sum, ar) => sum + ar.to_paid, 0)}
+            </span>
+          </div>
+          <div className="modal-body d-flex flex-column gap-3">
+            <div className="container-fluid p-0">
+              <StartDatePicker
+                idDatePicker="tanggal-input-pelunasan"
+                titleText="Tanggal Lunas"
+                datetime={false}
+                value={startDate}
+                onDateClick={(date: Date) => {
+                  setStartDate(date);
+                }}
+              />
+            </div>
+            <InputNominal
+              title="Total Paid"
+              nominal={nominal}
+              handleNominalChange={handleNominalChange}
+            />
+            <InputNominal
+              title="Payment Type"
+              nominal={nominal}
+              handleNominalChange={handleNominalChange}
+            />
+          </div>
+          <div className="modal-footer">
+            <button
+              type="button"
+              className="btn-close me-auto ms-4"
+              data-bs-dismiss="modal"
+              aria-label="Close"
+            ></button>
+            <button type="button" className="btn btn-primary">
+              Save changes
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+export default function ArListPage() {
+  const [customerId, setCustomerId] = React.useState<string>("");
+  const [customers, setCustomers] = React.useState<Customer[]>([]);
+  const [status, setStatus] = React.useState<ArStatus>(ArStatus.PENDING);
+  const [startDate, setStartDate] = React.useState(startOfToday());
+  const [endDate, setEndDate] = React.useState(startOfTomorrow());
+  const [order, setOrder] = React.useState<Order>("asc");
+  const [orderBy, setOrderBy] = React.useState<keyof TableData>("created_at");
+  const [selected, setSelected] = React.useState<readonly number[]>([]);
+  const [page, setPage] = React.useState(0);
+  const [rowsPerPage, setRowsPerPage] = React.useState(1);
+
+  const { data, isLoading } = useArList({
+    startDate,
+    endDate,
+    customerId,
+    order,
+    sortBy: orderBy,
+    pageNo: page,
+    pageSize: rowsPerPage,
+    status,
+  });
+
   const handleRequestSort = (
     event: React.MouseEvent<unknown>,
-    property: keyof AR
+    property: keyof TableData
   ) => {
     const isAsc = orderBy === property && order === "asc";
     setOrder(isAsc ? "desc" : "asc");
@@ -214,7 +259,7 @@ export default function InputPaidoffPage() {
 
   const handleSelectAllClick = (event: React.ChangeEvent<HTMLInputElement>) => {
     if (event.target.checked) {
-      const newSelected = rows.map((n) => n.id);
+      const newSelected = data.map((n) => n.id);
       setSelected(newSelected);
       return;
     }
@@ -251,17 +296,23 @@ export default function InputPaidoffPage() {
     setPage(0);
   };
 
-  // Avoid a layout jump when reaching the last page with empty rows.
-  const emptyRows =
-    page > 0 ? Math.max(0, (1 + page) * rowsPerPage - rows.length) : 0;
-
-  const visibleRows = React.useMemo(
-    () =>
-      [...rows]
-        // .sort(getComparator(order, orderBy))
-        .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage),
-    [order, orderBy, page, rowsPerPage]
-  );
+  const handleCustomerDropdownChange = (value: string) => {
+    setCustomerId(value);
+  };
+  const handleStatusDropdownChange = (value: string) => {
+    setStatus(value as ArStatus);
+  };
+  const fetchCustomers = async () => {
+    try {
+      const customers = await getAllCustomers();
+      setCustomers(customers);
+    } catch (error) {
+      console.error("Error fetching customers:", error);
+    }
+  };
+  React.useEffect(() => {
+    fetchCustomers();
+  }, []);
 
   return (
     <>
@@ -272,27 +323,53 @@ export default function InputPaidoffPage() {
               idDatePicker="tanggal-awal-masuk-barang"
               titleText="Tanggal Awal"
               datetime={false}
+              value={startDate}
+              onDateClick={(date: Date) => {
+                setStartDate(date);
+              }}
             />
           </div>
           <div className="col-md-6 col-lg-4 position-relative mb-2">
-            <StartDatePicker
+            <EndDatePicker
               idDatePicker="tanggal-akhir-masuk-barang"
               titleText="Tanggal Akhir"
               datetime={false}
+              value={endDate}
+              onDateClick={(date: Date) => {
+                setEndDate(date);
+              }}
             />
           </div>
           <div className="col-md-6 col-lg-4 position-relative mb-2">
-            <StartDatePicker
-              idDatePicker="tanggal-akhir-masuk-barang"
-              titleText="Status"
-              datetime={false}
+            <DropdownSecondStyle
+              id="Status"
+              label="Status *"
+              value={status}
+              options={[
+                {
+                  id: ArStatus.PENDING,
+                  name: "Belum Lunas",
+                },
+                { id: ArStatus.COMPLETED, name: "Lunas" },
+              ].map((customer) => ({
+                value: customer.id.toString(),
+                label: customer.name,
+              }))}
+              onChange={handleStatusDropdownChange}
             />
           </div>
+
           <div className="col-md-6 col-lg-4 position-relative mb-2">
-            <StartDatePicker
-              idDatePicker="tanggal-akhir-masuk-barang"
-              titleText="Pick Customer"
-              datetime={false}
+            <DropdownSecondStyle
+              id="customer"
+              label="Customer *"
+              value={customerId}
+              options={customers.map((customer) => ({
+                value: customer.id.toString(),
+                label: customer.name,
+              }))}
+              onChange={handleCustomerDropdownChange}
+              icon={<FaBox />}
             />
           </div>
         </div>
@@ -309,10 +386,10 @@ export default function InputPaidoffPage() {
                     orderBy={orderBy}
                     onSelectAllClick={handleSelectAllClick}
                     onRequestSort={handleRequestSort}
-                    rowCount={rows.length}
+                    rowCount={data.length}
                   />
                   <TableBody>
-                    {visibleRows.map((row, index) => {
+                    {data.map((row, index) => {
                       const isItemSelected = selected.includes(row.id);
                       const labelId = `enhanced-table-checkbox-${index}`;
 
@@ -325,7 +402,21 @@ export default function InputPaidoffPage() {
                           tabIndex={-1}
                           key={row.id}
                           selected={isItemSelected}
-                          sx={{ cursor: "pointer" }}
+                          sx={{
+                            cursor: "pointer",
+                            border: 1, // Add border to row
+                            borderColor: "divider", // Use theme's divider color
+                            "&:hover": {
+                              borderColor: "primary.main", // Change border color on hover
+                            },
+                            // Remove cell borders
+                            "& .MuiTableCell-root": {
+                              border: "none",
+                              "&:last-child": {
+                                paddingRight: "16px", // Maintain padding
+                              },
+                            },
+                          }}
                         >
                           <TableCell padding="checkbox">
                             <Checkbox
@@ -337,33 +428,37 @@ export default function InputPaidoffPage() {
                             />
                           </TableCell>
                           <TableCell component="th" id={labelId} scope="row">
-                            {row.ar_date.toDateString()}
+                            {new Date(row.created_at).toDateString()}
                           </TableCell>
                           <TableCell align="left">{row.ar_no}</TableCell>
                           <TableCell align="left">
                             {row.customer.name}
                           </TableCell>
-                          <TableCell align="left">{row.paid_payment}</TableCell>
+                          <TableCell
+                            align="left"
+                            className="d-flex flex-column"
+                            style={{ fontSize: "13px" }}
+                          >
+                            {row.ar_payment.map((payment) => (
+                              <span>
+                                <strong>
+                                  {"- " + payment.payment_method_name}
+                                </strong>
+                              </span>
+                            ))}
+                          </TableCell>
                           <TableCell align="left">{row.total_bill}</TableCell>
                           <TableCell align="left">{row.to_paid}</TableCell>
-                          <TableCell align="left">
-                            {row.created_at.toDateString()}
-                          </TableCell>
                         </TableRow>
                       );
                     })}
-                    {emptyRows > 0 && (
-                      <TableRow>
-                        <TableCell colSpan={6} />
-                      </TableRow>
-                    )}
                   </TableBody>
                 </Table>
               </TableContainer>
               <TablePagination
-                rowsPerPageOptions={[5, 10, 25]}
+                rowsPerPageOptions={[1, 10, 25]}
                 component="div"
-                count={rows.length}
+                count={data.length}
                 rowsPerPage={rowsPerPage}
                 page={page}
                 onPageChange={handleChangePage}
@@ -375,7 +470,9 @@ export default function InputPaidoffPage() {
       </div>
       <button
         type="button"
-        className="btn btn-primary position-fixed rounded-0 dark-blue"
+        className={`btn btn-primary position-fixed rounded-0 dark-blue ${
+          selected.length > 0 ? "d-block" : "d-none"
+        }`}
         data-bs-target="#paidoff-form"
         data-bs-toggle="modal"
         style={{
@@ -386,62 +483,10 @@ export default function InputPaidoffPage() {
           padding: "0 32px",
         }}
       >
-        {` PELUNASAN ( 1 )`}
+        {` PELUNASAN ( ${selected.length} )`}
         <FaArrowRight className="ms-3" />
       </button>
-      <div
-        className="modal fade"
-        id="paidoff-form"
-        tabIndex={-1}
-        aria-labelledby="exampleModalLabel"
-        aria-hidden="true"
-      >
-        <div className="modal-dialog modal-dialog-centered">
-          <div className="modal-content">
-            <div className="modal-header d-flex flex-wrap gap-2 justify-content-center">
-              <span className="badge rounded-pill gray px-3 py-2 text-black">
-                Total Item : 1
-              </span>
-              <span className="badge rounded-pill gray px-3 py-2 text-black">
-                Total Piutang : 162.000.000
-              </span>
-              <span className="badge rounded-pill gray px-3 py-2 text-black">
-                Customer : 1 asdfasdfasdfadsf
-              </span>
-            </div>
-            <div className="modal-body d-flex flex-column gap-3">
-              <div className="container-fluid p-0">
-                <StartDatePicker
-                  idDatePicker="tanggal-input-pelunasan"
-                  titleText="Tanggal Lunas"
-                  datetime={false}
-                />
-              </div>
-              <InputNominal
-                title="Total Paid"
-                nominal={nominal}
-                handleNominalChange={handleNominalChange}
-              />
-              <InputNominal
-                title="Payment Type"
-                nominal={nominal}
-                handleNominalChange={handleNominalChange}
-              />
-            </div>
-            <div className="modal-footer">
-              <button
-                type="button"
-                className="btn-close me-auto ms-4"
-                data-bs-dismiss="modal"
-                aria-label="Close"
-              ></button>
-              <button type="button" className="btn btn-primary">
-                Save changes
-              </button>
-            </div>
-          </div>
-        </div>
-      </div>
+      <InputPayment selected={selected} data={data} />
     </>
   );
 }

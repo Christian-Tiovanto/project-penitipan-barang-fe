@@ -1,16 +1,19 @@
 import axios, { AxiosRequestConfig } from "axios";
 import Cookies from "js-cookie";
 import { Order } from "../../../enum/SortOrder";
-import { IArReportPaidData } from "../pages/ar-report-paid";
-import { IArToPaidData } from "../pages/ar-to-paid";
+import { ArStatus } from "../../../enum/ArStatus";
+import { AR } from "../pages/ar-list";
 const URL = "http://127.0.0.1:3000";
-export class ArToPaidService {
-  async getArToPaidReport(
+export class ArListService {
+  async getArList(
     query?: {
       startDate: Date;
       endDate: Date;
+      pageSize: number;
+      pageNo: number;
       sortBy: string;
       order: Order;
+      arStatus: ArStatus;
       customerId: string;
     },
     config?: AxiosRequestConfig
@@ -28,15 +31,25 @@ export class ArToPaidService {
     if (query?.customerId) {
       queryParams.customer = query.customerId;
     }
+    if (query?.pageSize) {
+      queryParams.page_size = query.pageSize.toString();
+    }
+    if (query?.pageNo !== undefined) {
+      queryParams.page_no = query.pageNo.toString();
+    }
     if (query?.sortBy) {
       queryParams.sort = query?.sortBy;
     }
     if (query?.order) {
       queryParams.order = query?.order;
     }
+    if (query?.arStatus) {
+      queryParams.status = query?.arStatus;
+    }
     queryParams.compact = "true";
+    queryParams.with_payment = "true";
     // Build URL with filtered parameters
-    const response = await axios.get<{ data: IArToPaidData[] }>(
+    const response = await axios.get<{ data: AR[] }>(
       `${URL}/api/v1/report/ar-paid-report`,
       {
         params: queryParams,

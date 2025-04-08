@@ -1,5 +1,8 @@
 import { useEffect, useState } from "react";
-import { EndDatePicker, StartDatePicker } from "../../components/date-picker";
+import {
+  EndDatePicker,
+  StartDatePicker,
+} from "../../../components/date-picker";
 import {
   Box,
   Paper,
@@ -14,13 +17,16 @@ import {
 } from "@mui/material";
 import { visuallyHidden } from "@mui/utils";
 import { startOfToday, startOfTomorrow } from "date-fns";
-import DropdownSecondStyle from "../../components/dropdown-2";
-import { Customer } from "../customer-payment/pages/update-customer-payment";
-import { getAllCustomers } from "../customer/services/customer.service";
-import { EnhancedTableProps, HeadCell } from "../../components/table-component";
+import DropdownSecondStyle from "../../../components/dropdown-2";
+import { Customer } from "../../customer-payment/pages/update-customer-payment";
+import { getAllCustomers } from "../../customer/services/customer.service";
+import {
+  EnhancedTableProps,
+  HeadCell,
+} from "../../../components/table-component";
 import { FaBox } from "react-icons/fa6";
-import { Order } from "../../enum/SortOrder";
-import { useArToPaidReport } from "./hooks/ar-to-paid.hooks";
+import { Order } from "../../../enum/SortOrder";
+import { useArToPaidReport } from "../hooks/ar-to-paid.hooks";
 export interface IArToPaidData {
   id: number;
   created_at: Date;

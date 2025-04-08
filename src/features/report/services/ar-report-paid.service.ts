@@ -1,8 +1,6 @@
 import axios, { AxiosRequestConfig } from "axios";
-import { ITransactionInData } from "../pages/report-in";
 import Cookies from "js-cookie";
 import { Order } from "../../../enum/SortOrder";
-import { IStockBookData } from "../pages/stock-book";
 import { IArReportPaidData } from "../pages/ar-report-paid";
 const URL = "http://127.0.0.1:3000";
 export class ArPaidReportService {

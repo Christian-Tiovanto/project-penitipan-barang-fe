@@ -29,13 +29,13 @@ import { CreateProductPage, ProductPage } from "./features/product";
 import UpdateProductPage from "./features/product/pages/update-product";
 import CreateCashFlow from "./features/cashflow/cashflow-page";
 import { ArReportPaidPage } from "./features/report/pages/ar-report-paid";
-import { ArToPaidPage } from "./features/report/ar-to-paid";
+import { ArToPaidPage } from "./features/report/pages/ar-to-paid";
 import { CustomerProductStockPage } from "./features/report/pages/customer-product-stock";
 import { InvoiceProductStockPage } from "./features/report/invoice-product-stock";
 import { StockBookPage } from "./features/report/pages/stock-book";
 import { StockReportPage } from "./features/report/pages/stock-report";
 import { NettIncomeReportPage } from "./features/report/pages/nett-income-report";
-import InputPaidoffPage from "./features/report/input-paidoff";
+import ArListPage from "./features/report/pages/ar-list";
 import { CreateCustomerPage, CustomerPage } from "./features/customer";
 import UpdateCustomerPage from "./features/customer/pages/update-customer";
 import {
@@ -88,7 +88,7 @@ const router = createBrowserRouter([
           },
           {
             path: "input-paidoff",
-            element: <InputPaidoffPage />,
+            element: <ArListPage />,
           },
         ],
       },
