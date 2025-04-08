@@ -34,7 +34,7 @@ import { CustomerProductStockPage } from "./features/report/pages/customer-produ
 import { InvoiceProductStockPage } from "./features/report/invoice-product-stock";
 import { StockBookPage } from "./features/report/pages/stock-book";
 import { StockReportPage } from "./features/report/pages/stock-report";
-import { NettIncomeReportPage } from "./features/report/nett-income-report";
+import { NettIncomeReportPage } from "./features/report/pages/nett-income-report";
 import InputPaidoffPage from "./features/report/input-paidoff";
 import { CreateCustomerPage, CustomerPage } from "./features/customer";
 import UpdateCustomerPage from "./features/customer/pages/update-customer";
