@@ -1,9 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { useToast } from "../../../contexts/toastContexts";
 import { Order } from "../../../enum/SortOrder";
-import { StockBookReportService } from "../services/stock-book.service";
-import { ArPaidReportService } from "../services/ar-report-paid.service";
-import { IArReportPaidData } from "../pages/ar-report-paid";
 import { ArToPaidService } from "../services/ar-to-paid.service";
 import { IArToPaidData } from "../pages/ar-to-paid";
 export const useArToPaidReport = (query: {

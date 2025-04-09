@@ -11,7 +11,6 @@ import {
   TableCell,
   TableContainer,
   TableHead,
-  TablePagination,
   TableRow,
   TableSortLabel,
 } from "@mui/material";
@@ -167,7 +166,7 @@ export function ArToPaidPage() {
     <>
       <div className="container-fluid m-0 p-0">
         <div className="row">
-          <div className="col-md-6 col-lg-4 position-relative mb-2">
+          <div className="col-md-6 col-lg-4 position-relative">
             <StartDatePicker
               idDatePicker="tanggal-awal"
               titleText="Start Date"
@@ -178,7 +177,7 @@ export function ArToPaidPage() {
               }}
             />
           </div>
-          <div className="col-md-6 col-lg-4 position-relative mb-2">
+          <div className="col-md-6 col-lg-4 position-relative">
             <EndDatePicker
               idDatePicker="tanggal-akhir"
               titleText="End Date"
@@ -189,7 +188,7 @@ export function ArToPaidPage() {
               }}
             />
           </div>
-          <div className="col-md-6 col-lg-4 position-relative mb-2">
+          <div className="col-md-6 col-lg-4 position-relative">
             <DropdownSecondStyle
               id="customer"
               label="Customer *"
@@ -237,10 +236,14 @@ export function ArToPaidPage() {
                         <TableCell colSpan={3}></TableCell>
                         <TableCell sx={{ fontWeight: "bold" }}>Total</TableCell>
                         <TableCell sx={{ fontWeight: "bold" }}>
-                          {Number(10000).toLocaleString("id-ID")}
+                          {Number(
+                            data.reduce((sum, ar) => sum + ar.total_bill, 0)
+                          ).toLocaleString("id-ID")}
                         </TableCell>
                         <TableCell sx={{ fontWeight: "bold" }}>
-                          {Number(10000).toLocaleString("id-ID")}
+                          {Number(
+                            data.reduce((sum, ar) => sum + ar.to_paid, 0)
+                          ).toLocaleString("id-ID")}
                         </TableCell>
                       </TableRow>
                     </>
