@@ -158,6 +158,7 @@ function InputPayment({
   selected: readonly number[];
   data: AR[];
 }) {
+  const modalRef = React.useRef<HTMLDivElement>(null);
   const [startDate, setStartDate] = React.useState(startOfToday());
   const [nominal, setNominal] = React.useState("0");
   const [isLoading, setIsLoading] = React.useState(false);
@@ -195,6 +196,17 @@ function InputPayment({
       setError(err.message || "Failed to save changes");
     } finally {
       setIsLoading(false);
+      // Close modal regardless of success/failure
+      if (modalRef.current) {
+        const modal = bootstrap.Modal.getInstance(modalRef.current);
+        modal?.hide();
+      }
+
+      // Reset form state
+      setNominal("0");
+      setPaymentMethodId("");
+
+      // Reset selection in parent component
     }
   };
   const handleNominalChange = (event: any) => {
@@ -232,6 +244,7 @@ function InputPayment({
       tabIndex={-1}
       aria-labelledby="exampleModalLabel"
       aria-hidden="true"
+      ref={modalRef}
     >
       <div className="modal-dialog modal-dialog-centered">
         <div className="modal-content">
@@ -293,7 +306,7 @@ function InputPayment({
               onClick={handleSave}
               disabled={isLoading}
             >
-              Save changes
+              Save
             </button>
           </div>
         </div>
