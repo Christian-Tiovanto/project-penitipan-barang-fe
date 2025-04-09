@@ -31,7 +31,6 @@ import CreateCashFlow from "./features/cashflow/cashflow-page";
 import { ArReportPaidPage } from "./features/report/pages/ar-report-paid";
 import { ArToPaidPage } from "./features/report/pages/ar-to-paid";
 import { CustomerProductStockPage } from "./features/report/pages/customer-product-stock";
-import { InvoiceProductStockPage } from "./features/report/invoice-product-stock";
 import { StockBookPage } from "./features/report/pages/stock-book";
 import { StockReportPage } from "./features/report/pages/stock-report";
 import { NettIncomeReportPage } from "./features/report/pages/nett-income-report";
@@ -69,10 +68,6 @@ const router = createBrowserRouter([
           {
             path: "customer-product-stock",
             element: <CustomerProductStockPage />,
-          },
-          {
-            path: "invoice-product-stock",
-            element: <InvoiceProductStockPage />,
           },
           {
             path: "stock-book",

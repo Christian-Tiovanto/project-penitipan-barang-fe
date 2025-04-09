@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import {
   EndDatePicker,
   StartDatePicker,
@@ -11,7 +11,6 @@ import {
   TableCell,
   TableContainer,
   TableHead,
-  TablePagination,
   TableRow,
   TableSortLabel,
 } from "@mui/material";
@@ -23,37 +22,27 @@ import {
 import { startOfToday, startOfTomorrow } from "date-fns";
 import { visuallyHidden } from "@mui/utils";
 import { Order } from "../../../enum/SortOrder";
+import { IStockReportData } from "./stock-report";
+import { useCustomerProductReport } from "../hooks/customer-product.hooks";
 
-interface ICustomerProductStockData {
-  id: number;
-  product: {
-    id: number;
-    name: string;
-  };
-  customer: {
-    id: number;
-    name: string;
-  };
-  stock: number;
-}
-type TableData = ICustomerProductStockData;
+type TableData = IStockReportData & { final_qty: number };
 const columns: HeadCell<TableData>[] = [
   {
-    field: "product",
+    field: "product_name",
     headerName: "Product",
     headerStyle: {
       width: "20%",
     },
   },
   {
-    field: "customer",
+    field: "customer_name",
     headerName: "Customer",
     headerStyle: {
       width: "20%",
     },
   },
   {
-    field: "stock",
+    field: "final_qty",
     headerName: "Stock",
     headerStyle: {
       width: "10%",
@@ -111,12 +100,9 @@ function EnhancedTableHead(props: EnhancedTableProps<TableData>) {
   );
 }
 export function CustomerProductStockPage() {
-  const [page, setPage] = useState(0);
-  const [rowsPerPage, setRowsPerPage] = useState(5);
-  const [startDate, setStartDate] = useState(startOfToday());
   const [endDate, setEndDate] = useState(startOfTomorrow());
   const [order, setOrder] = useState<Order>("asc");
-  const [orderBy, setOrderBy] = useState<keyof TableData>("product");
+  const [orderBy, setOrderBy] = useState<keyof TableData>("product_name");
 
   const handleRequestSort = (
     event: React.MouseEvent<unknown>,
@@ -126,60 +112,47 @@ export function CustomerProductStockPage() {
     setOrder(isAsc ? "desc" : "asc");
     setOrderBy(property);
   };
+  const { data, isLoading } = useCustomerProductReport({
+    endDate,
+  });
+  const sortedCustomerProductReport = useMemo(() => {
+    console.log("data");
+    console.log(data);
+    if (!data) return [];
 
-  const handleChangePage = (_: unknown, newPage: number) => {
-    setPage(newPage);
-  };
+    const processedData = data.map((item) => ({
+      ...item,
+      final_qty: item.product_in - item.product_out,
+    }));
 
-  const handleChangeRowsPerPage = (
-    event: React.ChangeEvent<HTMLInputElement>
-  ) => {
-    setRowsPerPage(parseInt(event.target.value, 10));
-    setPage(0);
-  };
+    return processedData.sort((a, b) => {
+      // Sorting logic for each column
+      switch (orderBy) {
+        case "product_name":
+          return order === "asc"
+            ? a.product_name.localeCompare(b.product_name)
+            : b.product_name.localeCompare(a.product_name);
 
-  const TransactionInData: ICustomerProductStockData[] = [
-    {
-      id: 1,
-      product: {
-        id: 1,
-        name: "Product Name",
-      },
-      customer: {
-        id: 1,
-        name: "Chris",
-      },
-      stock: 500,
-    },
-    {
-      id: 2,
-      product: {
-        id: 1,
-        name: "Product Name",
-      },
-      customer: {
-        id: 2,
-        name: "Tiovan",
-      },
-      stock: 500,
-    },
-  ];
+        case "customer_name":
+          return order === "asc"
+            ? a.customer_name.localeCompare(b.customer_name)
+            : b.customer_name.localeCompare(a.customer_name);
+
+        case "final_qty":
+          return order === "asc"
+            ? a.final_qty - b.final_qty
+            : b.final_qty - a.final_qty;
+
+        default:
+          return 0;
+      }
+    });
+  }, [data, order, orderBy]);
 
   return (
     <>
       <div className="container-fluid m-0 p-0">
         <div className="row">
-          <div className="col-md-6 position-relative">
-            <StartDatePicker
-              idDatePicker="tanggal-awal"
-              titleText="Start Date"
-              value={startDate}
-              onDateClick={(date: Date) => {
-                setStartDate(date);
-              }}
-              datetime={false}
-            />
-          </div>
           <div className="col-md-6 position-relative">
             <EndDatePicker
               idDatePicker="tanggal-akhir"
@@ -202,35 +175,44 @@ export function CustomerProductStockPage() {
                   orderBy={orderBy}
                 />
                 <TableBody>
-                  {TransactionInData.map((value, index) => (
-                    <TableRow key={value.id}>
-                      <TableCell>{index + 1}</TableCell>
-                      <TableCell>{value.product.name}</TableCell>
-                      <TableCell>{value.customer.name}</TableCell>
-                      <TableCell>
-                        {Number(value.stock).toLocaleString("id-ID")}
+                  {!isLoading ? (
+                    <>
+                      {sortedCustomerProductReport.map((value, index) => (
+                        <TableRow key={index}>
+                          <TableCell>{index + 1}</TableCell>
+                          <TableCell>{value.product_name}</TableCell>
+                          <TableCell>{value.customer_name}</TableCell>
+                          <TableCell>
+                            {Number(
+                              value.product_in - value.product_out
+                            ).toLocaleString("id-ID")}
+                          </TableCell>
+                        </TableRow>
+                      ))}
+                      <TableRow>
+                        <TableCell colSpan={2}></TableCell>
+                        <TableCell sx={{ fontWeight: "bold" }}>Total</TableCell>
+                        <TableCell sx={{ fontWeight: "bold" }}>
+                          {Number(10000).toLocaleString("id-ID")}
+                        </TableCell>
+                      </TableRow>
+                    </>
+                  ) : (
+                    <TableRow>
+                      <TableCell colSpan={4}>
+                        <div className="w-100 d-flex justify-content-center">
+                          <div
+                            className="spinner-border d-flex justify-content-center"
+                            role="status"
+                          >
+                            <span className="visually-hidden">Loading...</span>
+                          </div>
+                        </div>
                       </TableCell>
                     </TableRow>
-                  ))}
-                  <TableRow>
-                    <TableCell colSpan={2}></TableCell>
-                    <TableCell sx={{ fontWeight: "bold" }}>Total</TableCell>
-                    <TableCell sx={{ fontWeight: "bold" }}>
-                      {Number(10000).toLocaleString("id-ID")}
-                    </TableCell>
-                  </TableRow>
+                  )}
                 </TableBody>
               </Table>
-              <TablePagination
-                sx={{ fontSize: "1.1rem" }}
-                component="div"
-                count={TransactionInData.length}
-                page={page}
-                rowsPerPage={rowsPerPage}
-                onPageChange={handleChangePage}
-                onRowsPerPageChange={handleChangeRowsPerPage}
-                rowsPerPageOptions={[5, 10, 25]}
-              />
             </TableContainer>
           </div>
         </div>
