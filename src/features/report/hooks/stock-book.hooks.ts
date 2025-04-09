@@ -16,7 +16,6 @@ export const useStockBookReport = (
   const [error, setError] = useState<Error | null | any>(null);
   const { showToast } = useToast();
   const abortControllerRef = useRef<AbortController | null>(null);
-
   useEffect(() => {
     // Only fetch if both IDs exist
     if (!productId || !customerId) {

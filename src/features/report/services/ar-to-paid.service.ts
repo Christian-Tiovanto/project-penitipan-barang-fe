@@ -3,7 +3,19 @@ import Cookies from "js-cookie";
 import { Order } from "../../../enum/SortOrder";
 import { IArReportPaidData } from "../pages/ar-report-paid";
 import { IArToPaidData } from "../pages/ar-to-paid";
+import { AR } from "../pages/ar-list";
 const URL = "http://127.0.0.1:3000";
+
+export interface BulkArPaymentDetailDto {
+  arId: number;
+  total_paid: number;
+}
+export interface CreateBulkArPaymentDto {
+  payment_methodId: string;
+  transfer_date: Date;
+  data: BulkArPaymentDetailDto[];
+  reference_no: string;
+}
 export class ArToPaidService {
   async getArToPaidReport(
     query?: {
@@ -48,5 +60,30 @@ export class ArToPaidService {
       }
     );
     return response.data.data;
+  }
+
+  async createBulkArPayment(
+    listAr: AR[],
+    paymentMethodId: string,
+    reference_no: string
+  ) {
+    const token = Cookies.get("auth_token");
+
+    const createBulkArPaymentDto: CreateBulkArPaymentDto = {
+      payment_methodId: paymentMethodId,
+      transfer_date: new Date(),
+      data: listAr.map((ar) => ({ arId: ar.id, total_paid: ar.to_paid })),
+      reference_no: "123",
+    };
+    const response = await axios.post(
+      `${URL}/api/v1/ar-payment/bulk`,
+      createBulkArPaymentDto,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+    return response;
   }
 }

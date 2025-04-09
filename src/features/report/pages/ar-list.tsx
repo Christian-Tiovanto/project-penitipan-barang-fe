@@ -23,6 +23,9 @@ import { Customer } from "../../customer-payment/pages/update-customer-payment";
 import { getAllCustomers } from "../../customer/services/customer.service";
 import { ArStatus } from "../../../enum/ArStatus";
 import { useArList } from "../hooks/ar-list.hooks";
+import { ArToPaidService } from "../services/ar-to-paid.service";
+import { getAllPaymentMethods } from "../../payment-method/services/payment-method.service";
+import { PaymentMethod } from "../../customer-payment/pages/create-customer-payment";
 
 export interface AR {
   id: number;
@@ -156,14 +159,71 @@ function InputPayment({
   data: AR[];
 }) {
   const [startDate, setStartDate] = React.useState(startOfToday());
-  const [nominal, setNominal] = React.useState(0);
-
-  const handleNominalChange = (event: any) => {
-    const value = event.target.value;
-    if (value === "" || /^[0-9\b]+$/.test(value)) {
-      setNominal(value);
+  const [nominal, setNominal] = React.useState("0");
+  const [isLoading, setIsLoading] = React.useState(false);
+  const [paymentMethodId, setPaymentMethodId] = React.useState<string>("");
+  const [paymentMethods, setpaymentMethods] = React.useState<PaymentMethod[]>(
+    []
+  );
+  const [error, setError] = React.useState(null);
+  const handleDropdownPaymentMethodChange = (value: string) => {
+    setPaymentMethodId(value);
+  };
+  const fetchPaymentMethods = async () => {
+    try {
+      const paymentMethods = await getAllPaymentMethods();
+      setpaymentMethods(paymentMethods);
+    } catch (error) {
+      console.error("Error fetching Payment Methods:", error);
     }
   };
+
+  const handleSave = async () => {
+    try {
+      setIsLoading(true);
+      setError(null);
+      const selectedAr = data.filter((value) => selected.includes(value.id));
+      if (selected.length == 1) {
+        selectedAr[0].to_paid = parseFloat(nominal);
+      }
+      const response = await new ArToPaidService().createBulkArPayment(
+        selectedAr,
+        paymentMethodId,
+        "123"
+      );
+    } catch (err: any) {
+      setError(err.message || "Failed to save changes");
+    } finally {
+      setIsLoading(false);
+    }
+  };
+  const handleNominalChange = (event: any) => {
+    const value = event.target.value;
+
+    // Allow only digits (including empty string)
+    if (/^\d*$/.test(value)) {
+      let processedValue = value;
+
+      // Remove leading zeros if the value has multiple digits
+      if (processedValue.length > 1) {
+        processedValue = processedValue.replace(/^0+/, "");
+      }
+
+      // Ensure the value isn't empty (default to "0")
+      if (processedValue === "") {
+        processedValue = "0";
+      }
+
+      setNominal(processedValue);
+    }
+  };
+  React.useEffect(() => {
+    fetchPaymentMethods();
+  }, []);
+
+  const totalAr = data
+    .filter((value) => selected.includes(value.id))
+    .reduce((sum, ar) => sum + ar.to_paid, 0);
 
   return (
     <div
@@ -180,10 +240,7 @@ function InputPayment({
               Total Item : {selected.length}
             </span>
             <span className="badge rounded-pill gray px-3 py-2 text-black">
-              {"Total Piutang : " +
-                data
-                  .filter((value) => selected.includes(value.id))
-                  .reduce((sum, ar) => sum + ar.to_paid, 0)}
+              {"Total Piutang : " + totalAr}
             </span>
           </div>
           <div className="modal-body d-flex flex-column gap-3">
@@ -200,14 +257,22 @@ function InputPayment({
             </div>
             <InputNominal
               title="Total Paid"
-              nominal={nominal}
+              nominal={parseFloat(nominal)}
               handleNominalChange={handleNominalChange}
             />
-            <InputNominal
-              title="Payment Type"
-              nominal={nominal}
-              handleNominalChange={handleNominalChange}
-            />
+            <div className="container-fluid p-0">
+              <DropdownSecondStyle
+                id="payment-method"
+                label="Payment Method *"
+                value={paymentMethodId}
+                options={paymentMethods.map((paymentMethod) => ({
+                  value: paymentMethod.id.toString(),
+                  label: paymentMethod.name,
+                }))}
+                onChange={handleDropdownPaymentMethodChange}
+                icon={<FaBox />}
+              />{" "}
+            </div>
           </div>
           <div className="modal-footer">
             <button
@@ -216,7 +281,18 @@ function InputPayment({
               data-bs-dismiss="modal"
               aria-label="Close"
             ></button>
-            <button type="button" className="btn btn-primary">
+            <button
+              type="button"
+              className={`btn ${
+                nominal != "0" && paymentMethodId
+                  ? selected.length > 1 && parseFloat(nominal) != totalAr
+                    ? "btn-secondary disabled"
+                    : "btn-success"
+                  : "btn-secondary disabled"
+              }`}
+              onClick={handleSave}
+              disabled={isLoading}
+            >
               Save changes
             </button>
           </div>
@@ -439,8 +515,8 @@ export default function ArListPage() {
                             className="d-flex flex-column"
                             style={{ fontSize: "13px" }}
                           >
-                            {row.ar_payment.map((payment) => (
-                              <span>
+                            {row.ar_payment.map((payment, index) => (
+                              <span key={index}>
                                 <strong>
                                   {"- " + payment.payment_method_name}
                                 </strong>

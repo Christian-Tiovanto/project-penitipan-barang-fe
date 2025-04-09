@@ -149,7 +149,7 @@ const StartDatePicker = ({
               month: "2-digit",
               day: "2-digit",
             })}
-            onChange={() => togglePicker(true)}
+            onClick={() => togglePicker(true)}
             readOnly
           />
           <label htmlFor={idDatePicker} className="label">
@@ -221,6 +221,7 @@ const StartDatePicker = ({
               type="time"
               className="form-control w-100 datepicker-time-container border-0 pb-0 pt-0 "
               value={"00:00"}
+              readOnly
             />
             <label
               htmlFor="date-picker"
@@ -401,7 +402,7 @@ const EndDatePicker = ({
               month: "2-digit",
               day: "2-digit",
             })}
-            onChange={() => togglePicker(true)}
+            onClick={() => togglePicker(true)}
             readOnly
           />
           <label htmlFor={idDatePicker} className="label">
@@ -473,6 +474,7 @@ const EndDatePicker = ({
               type="time"
               className="form-control w-100 datepicker-time-container border-0 pb-0 pt-0 "
               value={"00:00"}
+              readOnly
             />
             <label
               htmlFor="date-picker"
