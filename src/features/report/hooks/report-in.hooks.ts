@@ -2,6 +2,8 @@ import { useEffect, useRef, useState } from "react";
 import { TransactionInReportService } from "../services/report-in.service";
 import { useToast } from "../../../contexts/toastContexts";
 import { Order } from "../../../enum/SortOrder";
+import { PaginationMetaData } from "../../../interfaces/pagination-meta";
+import { ITransactionInData } from "../pages/report-in";
 
 export const useTransactionInReport = (query: {
   startDate: Date;
@@ -12,7 +14,15 @@ export const useTransactionInReport = (query: {
   order: Order;
 }) => {
   const { startDate, endDate, pageNo, pageSize, order, sortBy } = query;
-  const [data, setData] = useState<any[]>([]);
+  const [response, setData] = useState<PaginationMetaData<ITransactionInData>>({
+    meta: {
+      total_count: 0,
+      total_page: 0,
+      page_no: 0,
+      page_size: 0,
+    },
+    data: [],
+  });
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<Error | null | any>(null);
   const { showToast } = useToast();
@@ -40,7 +50,6 @@ export const useTransactionInReport = (query: {
           );
         setData(transactionInReport);
       } catch (err) {
-        setData([]);
         if (!controller.signal.aborted) {
           setError(err as Error);
         }
@@ -64,7 +73,7 @@ export const useTransactionInReport = (query: {
   }, [startDate, endDate, pageNo, pageSize, order, sortBy]);
 
   return {
-    data,
+    response,
     isLoading,
     error,
   };

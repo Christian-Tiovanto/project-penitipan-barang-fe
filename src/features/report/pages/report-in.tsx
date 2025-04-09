@@ -135,7 +135,7 @@ export function ReportInPage() {
     setOrderBy(property);
   };
 
-  const { data, isLoading } = useTransactionInReport({
+  const { response, isLoading } = useTransactionInReport({
     startDate,
     endDate,
     pageNo: page,
@@ -145,7 +145,7 @@ export function ReportInPage() {
   });
 
   const handleChangePage = (_: unknown, newPage: number) => {
-    setPage(newPage);
+    setPage(newPage + 1);
   };
 
   const handleChangeRowsPerPage = (
@@ -159,10 +159,10 @@ export function ReportInPage() {
     <>
       <div className="container-fluid m-0 p-0">
         <div className="row">
-          <div className="col-md-6 position-relative">
+          <div className="col-md-6 position-relative mb-2">
             <StartDatePicker
               idDatePicker="tanggal-awal-masuk-barang"
-              titleText="Tanggal Awal"
+              titleText="Start Date"
               value={startDate}
               onDateClick={(date: Date) => {
                 setStartDate(date);
@@ -170,10 +170,10 @@ export function ReportInPage() {
               datetime={false}
             />
           </div>
-          <div className="col-md-6 position-relative">
+          <div className="col-md-6 position-relative mb-2">
             <EndDatePicker
               idDatePicker="tanggal-akhir-masuk-barang"
-              titleText="Tanggal Akhir"
+              titleText="End Date"
               value={endDate}
               onDateClick={(date: Date) => {
                 setEndDate(date);
@@ -206,7 +206,7 @@ export function ReportInPage() {
                       </TableCell>
                     </TableRow>
                   ) : (
-                    data.map((value) => (
+                    response.data.map((value) => (
                       <TableRow key={value.id}>
                         <TableCell>{value.product.name}</TableCell>
                         <TableCell>{value.customer.name}</TableCell>
@@ -221,9 +221,11 @@ export function ReportInPage() {
               <TablePagination
                 sx={{ fontSize: "1.1rem" }}
                 component="div"
-                count={data.length}
-                page={page}
-                rowsPerPage={rowsPerPage}
+                count={response.data.length > 0 ? response.meta.total_count : 0}
+                rowsPerPage={
+                  response.data.length > 0 ? response.meta.page_size : 5
+                }
+                page={response.data.length > 0 ? response.meta.page_no - 1 : 0}
                 onPageChange={handleChangePage}
                 onRowsPerPageChange={handleChangeRowsPerPage}
                 rowsPerPageOptions={[5, 10, 25]}
