@@ -311,9 +311,9 @@ export default function ArListPage() {
   const [orderBy, setOrderBy] = React.useState<keyof TableData>("created_at");
   const [selected, setSelected] = React.useState<readonly number[]>([]);
   const [page, setPage] = React.useState(0);
-  const [rowsPerPage, setRowsPerPage] = React.useState(1);
+  const [rowsPerPage, setRowsPerPage] = React.useState(5);
 
-  const { data, isLoading } = useArList({
+  const { response, isLoading } = useArList({
     startDate,
     endDate,
     customerId,
@@ -335,7 +335,7 @@ export default function ArListPage() {
 
   const handleSelectAllClick = (event: React.ChangeEvent<HTMLInputElement>) => {
     if (event.target.checked) {
-      const newSelected = data.map((n) => n.id);
+      const newSelected = response.data.map((n) => n.id);
       setSelected(newSelected);
       return;
     }
@@ -362,7 +362,7 @@ export default function ArListPage() {
   };
 
   const handleChangePage = (event: unknown, newPage: number) => {
-    setPage(newPage);
+    setPage(newPage + 1);
   };
 
   const handleChangeRowsPerPage = (
@@ -462,10 +462,10 @@ export default function ArListPage() {
                     orderBy={orderBy}
                     onSelectAllClick={handleSelectAllClick}
                     onRequestSort={handleRequestSort}
-                    rowCount={data.length}
+                    rowCount={response?.data.length}
                   />
                   <TableBody>
-                    {data.map((row, index) => {
+                    {response.data.map((row, index) => {
                       const isItemSelected = selected.includes(row.id);
                       const labelId = `enhanced-table-checkbox-${index}`;
 
@@ -532,11 +532,13 @@ export default function ArListPage() {
                 </Table>
               </TableContainer>
               <TablePagination
-                rowsPerPageOptions={[1, 10, 25]}
+                rowsPerPageOptions={[5, 10, 25]}
                 component="div"
-                count={data.length}
-                rowsPerPage={rowsPerPage}
-                page={page}
+                count={response.data.length > 0 ? response.meta.total_count : 0}
+                rowsPerPage={
+                  response.data.length > 0 ? response.meta.page_size : 5
+                }
+                page={response.data.length > 0 ? response.meta.page_no - 1 : 0}
                 onPageChange={handleChangePage}
                 onRowsPerPageChange={handleChangeRowsPerPage}
               />
@@ -562,7 +564,7 @@ export default function ArListPage() {
         {` PELUNASAN ( ${selected.length} )`}
         <FaArrowRight className="ms-3" />
       </button>
-      <InputPayment selected={selected} data={data} />
+      <InputPayment selected={selected} data={response!.data} />
     </>
   );
 }

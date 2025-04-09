@@ -49,17 +49,22 @@ export class ArListService {
     queryParams.compact = "true";
     queryParams.with_payment = "true";
     // Build URL with filtered parameters
-    const response = await axios.get<{ data: AR[] }>(
-      `${URL}/api/v1/report/ar-paid-report`,
-      {
-        params: queryParams,
-        signal: config?.signal,
-        paramsSerializer: (params) => new URLSearchParams(params).toString(),
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      }
-    );
-    return response.data.data;
+    const response = await axios.get<{
+      meta: {
+        total_count: number;
+        total_page: number;
+        page_no: number;
+        page_size: number;
+      };
+      data: AR[];
+    }>(`${URL}/api/v1/report/ar-paid-report`, {
+      params: queryParams,
+      signal: config?.signal,
+      paramsSerializer: (params) => new URLSearchParams(params).toString(),
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    return response.data;
   }
 }

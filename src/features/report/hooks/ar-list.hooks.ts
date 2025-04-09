@@ -26,7 +26,23 @@ export const useArList = (query: {
     order,
     status,
   } = query;
-  const [data, setData] = useState<AR[]>([]);
+  const [response, setData] = useState<{
+    meta: {
+      total_count: number;
+      total_page: number;
+      page_no: number;
+      page_size: number;
+    };
+    data: AR[];
+  }>({
+    meta: {
+      total_count: 0,
+      total_page: 0,
+      page_no: 0,
+      page_size: 0,
+    },
+    data: [],
+  });
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<Error | null | any>(null);
   const { showToast } = useToast();
@@ -79,7 +95,7 @@ export const useArList = (query: {
   }, [customerId, startDate, endDate, pageNo, pageSize, order, sortBy]);
 
   return {
-    data,
+    response,
     isLoading,
     error,
   };
