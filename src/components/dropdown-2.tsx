@@ -74,7 +74,7 @@ const DropdownSecondStyle: React.FC<DropdownProps> = ({
 
   return (
     <>
-      <div className="select-container">
+      <div className="select-container mb-2">
         <div className="container-fluid d-flex justify-content-start align-items-center ps-3">
           {icon}
           <div className="form-floating w-100">

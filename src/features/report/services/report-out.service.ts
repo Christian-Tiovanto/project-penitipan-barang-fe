@@ -1,5 +1,4 @@
 import axios, { AxiosRequestConfig } from "axios";
-import { ITransactionInData } from "../pages/report-in";
 import Cookies from "js-cookie";
 import { Order } from "../../../enum/SortOrder";
 import { PaginationMetaData } from "../../../interfaces/pagination-meta";
