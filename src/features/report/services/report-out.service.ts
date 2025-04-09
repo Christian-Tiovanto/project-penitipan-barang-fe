@@ -2,6 +2,8 @@ import axios, { AxiosRequestConfig } from "axios";
 import { ITransactionInData } from "../pages/report-in";
 import Cookies from "js-cookie";
 import { Order } from "../../../enum/SortOrder";
+import { PaginationMetaData } from "../../../interfaces/pagination-meta";
+import { ITransactionOutData } from "../pages/report-out";
 const URL = "http://127.0.0.1:3000";
 export class TransactionOutReportService {
   async getTransactionOuts(
@@ -37,9 +39,8 @@ export class TransactionOutReportService {
     if (query?.pageNo !== undefined) {
       queryParams.page_no = query.pageNo.toString();
     }
-    console.log(query);
-    // Build URL with filtered parameters
-    const response = await axios.get<{ data: ITransactionInData[] }>(
+
+    const response = await axios.get<PaginationMetaData<ITransactionOutData>>(
       `${URL}/api/v1/transaction-out`,
       {
         params: queryParams,
@@ -50,6 +51,6 @@ export class TransactionOutReportService {
         },
       }
     );
-    return response.data.data;
+    return response.data;
   }
 }

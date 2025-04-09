@@ -25,7 +25,7 @@ import {
 import { startOfToday, startOfTomorrow } from "date-fns";
 import { Order } from "../../../enum/SortOrder";
 import { useTransactionOutReport } from "../hooks/report-out.hooks";
-interface ITransactionOutData {
+export interface ITransactionOutData {
   id: number;
   product: {
     id: number;
@@ -130,7 +130,7 @@ export function ReportOutPage() {
   };
 
   const handleChangePage = (_: unknown, newPage: number) => {
-    setPage(newPage);
+    setPage(newPage + 1);
   };
 
   const handleChangeRowsPerPage = (
@@ -139,7 +139,7 @@ export function ReportOutPage() {
     setRowsPerPage(parseInt(event.target.value, 10));
     setPage(0);
   };
-  const { data, isLoading } = useTransactionOutReport({
+  const { response, isLoading } = useTransactionOutReport({
     startDate,
     endDate,
     pageNo: page,
@@ -152,7 +152,7 @@ export function ReportOutPage() {
     <>
       <div className="container-fluid m-0 p-0">
         <div className="row">
-          <div className="col-md-6 position-relative">
+          <div className="col-md-6 position-relative mb-2">
             <StartDatePicker
               idDatePicker="tanggal-awal-keluar-barang"
               titleText="Start Date"
@@ -163,7 +163,7 @@ export function ReportOutPage() {
               }}
             />
           </div>
-          <div className="col-md-6 position-relative">
+          <div className="col-md-6 position-relative mb-2">
             <EndDatePicker
               idDatePicker="tanggal-akhir-keluar-barang"
               titleText="End Date"
@@ -216,7 +216,7 @@ export function ReportOutPage() {
                       </TableCell>
                     </TableRow>
                   ) : (
-                    data.map((value) => (
+                    response.data.map((value) => (
                       <TableRow key={value.id}>
                         <TableCell>{value.product.name}</TableCell>
                         <TableCell>{value.customer.name}</TableCell>
@@ -234,9 +234,11 @@ export function ReportOutPage() {
               <TablePagination
                 sx={{ fontSize: "1.1rem" }}
                 component="div"
-                count={data.length}
-                page={page}
-                rowsPerPage={rowsPerPage}
+                count={response.data.length > 0 ? response.meta.total_count : 0}
+                rowsPerPage={
+                  response.data.length > 0 ? response.meta.page_size : 5
+                }
+                page={response.data.length > 0 ? response.meta.page_no - 1 : 0}
                 onPageChange={handleChangePage}
                 onRowsPerPageChange={handleChangeRowsPerPage}
                 rowsPerPageOptions={[5, 10, 25]}
