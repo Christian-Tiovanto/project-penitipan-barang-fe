@@ -24,7 +24,55 @@ import { ArStatus } from "../../../enum/ArStatus";
 import { useInvoiceList } from "../hooks/invoice-list.hooks";
 import { MdLocalPrintshop } from "react-icons/md";
 import { InvoiceListService } from "../services/invoice-list.service";
+import { generateJastipInvoiceTemplate } from "../../template/invoice.template";
+import { generateSpbHtml } from "../../template/spb.template";
 
+interface Product {
+  id: number;
+  name: string;
+  price: number;
+  initial_qty: number;
+  qty: number;
+  desc: string;
+  is_deleted: boolean;
+  created_at: Date;
+  updated_at: Date;
+}
+interface Spb {
+  id: number;
+  customer: number;
+  customerId: number;
+  invoice: number;
+  invoiceId: number;
+  no_plat: string;
+  clock_out: Date;
+  created_at: Date;
+  updated_at: Date;
+}
+interface TransactionOut {
+  id: number;
+  product: Product;
+  productId: number;
+  customer: Customer;
+  customerId: number;
+  transaction_in: number;
+  transaction_inId: number;
+  spb: number;
+  spbId: number;
+  invoice: number;
+  invoiceId: number;
+  qty: number;
+  converted_qty: number;
+  conversion_to_kg: number;
+  unit: string;
+  total_price: number;
+  total_fine: number;
+  total_charge: number;
+  price: number;
+  total_days: number;
+  created_at: Date;
+  updated_at: Date;
+}
 export interface Invoice {
   id: number;
   created_at: Date;
@@ -191,12 +239,142 @@ export default function InvoiceListPage() {
   };
 
   const handlePrintSpb = async (invoiceId: number) => {
-    const data = await new InvoiceListService().getSpb(invoiceId);
-    console.log(data);
+    const spb: Spb = await new InvoiceListService().getSpb(invoiceId);
+    const items: TransactionOut[] = await new InvoiceListService().getTransOut(
+      invoiceId
+    );
+
+    const date = new Date(spb.clock_out);
+
+    // Format jam
+    const hours = date.getHours().toString().padStart(2, "0");
+    const minutes = date.getMinutes().toString().padStart(2, "0");
+    const time = `${hours}:${minutes}`;
+
+    // Format tanggal (D/M/Y)
+    const day = date.getDate().toString().padStart(2, "0");
+    const month = (date.getMonth() + 1).toString().padStart(2, "0"); // 0-based index
+    const year = date.getFullYear();
+    const formattedDate = `${day}/${month}/${year}`;
+
+    // Build rows
+    let totalQty = 0;
+    let totalKg = 0;
+
+    const tableRows = items
+      .map((item, i) => {
+        const name = item.product.name || "-";
+        const volume = item.converted_qty;
+        totalQty += item.qty;
+        totalKg += volume;
+
+        return `
+          <tr>
+            <td class="number">${i + 1}</td>
+            <td class="text">${name.toUpperCase()}</td>
+            <td class="number">${item.qty}</td>
+            <td class="text">${item.unit}</td>
+            <td class="number">${volume.toLocaleString()}</td>
+          </tr>`;
+      })
+      .join("\n");
+
+    const printWindow = window.open("", "_blank", "width=800,height=600");
+
+    if (!printWindow) {
+      alert("Popup blocked!");
+      return;
+    }
+
+    const htmlContent = generateSpbHtml(
+      spb,
+      formattedDate,
+      time,
+      tableRows,
+      totalQty,
+      totalKg
+    );
+
+    printWindow.document.open();
+    printWindow.document.write(htmlContent);
+    printWindow.document.close();
   };
   const handlePrintInvoice = async (invoiceId: number) => {
-    const data = await new InvoiceListService().getTransOut(invoiceId);
-    console.log(data);
+    const spb: Spb = await new InvoiceListService().getSpb(invoiceId);
+    const items: TransactionOut[] = await new InvoiceListService().getTransOut(
+      invoiceId
+    );
+
+    const date = new Date(spb.clock_out);
+
+    // Format jam
+    const hours = date.getHours().toString().padStart(2, "0");
+    const minutes = date.getMinutes().toString().padStart(2, "0");
+    const time = `${hours}:${minutes}`;
+
+    // Format tanggal (D/M/Y)
+    const day = date.getDate().toString().padStart(2, "0");
+    const month = (date.getMonth() + 1).toString().padStart(2, "0"); // 0-based index
+    const year = date.getFullYear();
+    const formattedDate = `${day}/${month}/${year}`;
+
+    // Build rows
+    let totalQty = 0;
+    let totalKg = 0;
+    let totalPrice = 0;
+
+    const tableRows = items
+      .map((item, i) => {
+        const name = item.product.name || "-";
+        const volume = item.converted_qty;
+        totalQty += item.qty;
+        totalKg += volume;
+        totalPrice += item.total_price;
+
+        const date = new Date(item.created_at);
+        date.setDate(date.getDate() - item.total_days);
+
+        const day = date.getDate().toString().padStart(2, "0");
+        const month = (date.getMonth() + 1).toString().padStart(2, "0"); // 0-based index
+        const year = date.getFullYear();
+        const formattedDate = `${day}/${month}/${year}`;
+
+        return `
+          <tr>
+            <td class="number">${i + 1}</td>
+            <td class="text">${name.toUpperCase()}</td>
+            <td class="text">${formattedDate}</td>
+            <td class="number">${item.qty}</td>
+            <td class="number">${item.total_days}</td>
+            <td class="number">${volume.toLocaleString()}</td>
+            <td class="number">${item.price.toLocaleString()}</td>
+            <td class="number">${item.total_charge.toLocaleString()}</td>
+            <td class="number">${item.total_fine.toLocaleString()}</td>
+            <td class="text">${item.total_price.toLocaleString()}</td>
+          </tr>`;
+      })
+      .join("\n");
+
+    const printWindow = window.open("", "_blank", "width=800,height=600");
+
+    if (!printWindow) {
+      alert("Popup blocked!");
+      return;
+    }
+
+    const htmlContent = generateJastipInvoiceTemplate({
+      spb,
+      tableRows,
+      totalQty,
+      totalKg,
+      totalPrice,
+      formattedDate,
+      time,
+    });
+
+    printWindow.document.open();
+    printWindow.document.write(htmlContent);
+    printWindow.document.close();
   };
 
   const handleClick = (event: React.MouseEvent<unknown>, id: number) => {

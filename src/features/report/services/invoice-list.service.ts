@@ -66,7 +66,7 @@ export class InvoiceListService {
     const token = Cookies.get("auth_token");
 
     const queryParams: Record<string, string> = {};
-    const response = await axios.get<PaginationMetaData<Invoice>>(
+    const response = await axios.get(
       `${URL}/api/v1/spb/by-invoice/${invoiceId}`,
       {
         params: queryParams,
@@ -84,7 +84,7 @@ export class InvoiceListService {
     const token = Cookies.get("auth_token");
 
     const queryParams: Record<string, string> = {};
-    const response = await axios.get<PaginationMetaData<Invoice>>(
+    const response = await axios.get(
       `${URL}/api/v1/transaction-out/by-invoice/${invoiceId}`,
       {
         params: queryParams,
