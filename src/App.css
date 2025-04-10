@@ -206,7 +206,7 @@ body {
 .days,
 .dates {
   display: grid;
-  grid-template-columns: repeat(7, 32px);
+  grid-template-columns: repeat(7, 35px);
   gap: 10px;
   margin-block: 10px;
 }

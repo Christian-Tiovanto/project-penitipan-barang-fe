@@ -63,7 +63,7 @@ export default function MainLayout() {
               <i className="fas fa-warehouse me-2"></i>Transaction
             </a>
             <a
-              href="#"
+              href="/report"
               className="list-group-item list-group-item-action bg-transparent primary-text fw-bold"
             >
               <i className="fas fa-paperclip me-2"></i>Reports

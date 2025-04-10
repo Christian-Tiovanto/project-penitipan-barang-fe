@@ -26,6 +26,7 @@ import { useArList } from "../hooks/ar-list.hooks";
 import { ArToPaidService } from "../services/ar-to-paid.service";
 import { getAllPaymentMethods } from "../../payment-method/services/payment-method.service";
 import { PaymentMethod } from "../../customer-payment/pages/create-customer-payment";
+import PageLayout from "../../../components/page-location";
 
 export interface AR {
   id: number;
@@ -405,204 +406,212 @@ export default function ArListPage() {
 
   return (
     <>
-      <div className="container-fluid m-0 p-0">
-        <div className="row mb-4">
-          <div className="col-md-6 col-lg-4 position-relative mb-2">
-            <StartDatePicker
-              idDatePicker="tanggal-awal-masuk-barang"
-              titleText="Tanggal Awal"
-              datetime={false}
-              value={startDate}
-              onDateClick={(date: Date) => {
-                setStartDate(date);
-              }}
-            />
-          </div>
-          <div className="col-md-6 col-lg-4 position-relative mb-2">
-            <EndDatePicker
-              idDatePicker="tanggal-akhir-masuk-barang"
-              titleText="Tanggal Akhir"
-              datetime={false}
-              value={endDate}
-              onDateClick={(date: Date) => {
-                setEndDate(date);
-              }}
-            />
-          </div>
-          <div className="col-md-6 col-lg-4 position-relative mb-2">
-            <DropdownSecondStyle
-              id="Status"
-              label="Status *"
-              value={status}
-              options={[
-                {
-                  id: ArStatus.PENDING,
-                  name: "Belum Lunas",
-                },
-                { id: ArStatus.COMPLETED, name: "Lunas" },
-              ].map((customer) => ({
-                value: customer.id.toString(),
-                label: customer.name,
-              }))}
-              onChange={handleStatusDropdownChange}
-            />
-          </div>
-
-          <div className="col-md-6 col-lg-4 position-relative mb-2">
-            <DropdownSecondStyle
-              id="customer"
-              label="Customer *"
-              value={customerId}
-              options={customers.map((customer) => ({
-                value: customer.id.toString(),
-                label: customer.name,
-              }))}
-              onChange={handleCustomerDropdownChange}
-              icon={<FaBox />}
-            />
-          </div>
-        </div>
-      </div>
-      <div className="w-100 d-flex flex-column">
-        <div className="mui-table-container">
-          <Box sx={{ width: "100%" }}>
-            <Paper sx={{ width: "100%", mb: 2 }}>
-              <TableContainer>
-                <Table sx={{ minWidth: 750 }} aria-labelledby="tableTitle">
-                  <EnhancedTableHead
-                    numSelected={selected.length}
-                    order={order}
-                    orderBy={orderBy}
-                    onSelectAllClick={handleSelectAllClick}
-                    onRequestSort={handleRequestSort}
-                    rowCount={response?.data.length}
-                  />
-                  <TableBody>
-                    {response.data && !isLoading ? (
-                      <>
-                        {response.data.map((row, index) => {
-                          const isItemSelected = selected.includes(row.id);
-                          const labelId = `enhanced-table-checkbox-${index}`;
-
-                          return (
-                            <TableRow
-                              hover
-                              onClick={(event) => handleClick(event, row.id)}
-                              role="checkbox"
-                              aria-checked={isItemSelected}
-                              tabIndex={-1}
-                              key={row.id}
-                              selected={isItemSelected}
-                              sx={{
-                                cursor: "pointer",
-                                border: 1, // Add border to row
-                                borderColor: "divider", // Use theme's divider color
-                                "&:hover": {
-                                  borderColor: "primary.main", // Change border color on hover
-                                },
-                                // Remove cell borders
-                                "& .MuiTableCell-root": {
-                                  border: "none",
-                                  "&:last-child": {
-                                    paddingRight: "16px", // Maintain padding
-                                  },
-                                },
-                              }}
-                            >
-                              <TableCell padding="checkbox">
-                                <Checkbox
-                                  color="primary"
-                                  checked={isItemSelected}
-                                  inputProps={{
-                                    "aria-labelledby": labelId,
-                                  }}
-                                />
-                              </TableCell>
-                              <TableCell
-                                component="th"
-                                id={labelId}
-                                scope="row"
-                              >
-                                {new Date(row.created_at).toDateString()}
-                              </TableCell>
-                              <TableCell align="left">{row.ar_no}</TableCell>
-                              <TableCell align="left">
-                                {row.customer.name}
-                              </TableCell>
-                              <TableCell
-                                align="left"
-                                className="d-flex flex-column"
-                                style={{ fontSize: "13px" }}
-                              >
-                                {row.ar_payment.map((payment, index) => (
-                                  <span key={index}>
-                                    <strong>
-                                      {"- " + payment.payment_method_name}
-                                    </strong>
-                                  </span>
-                                ))}
-                              </TableCell>
-                              <TableCell align="left">
-                                {row.total_bill}
-                              </TableCell>
-                              <TableCell align="left">{row.to_paid}</TableCell>
-                            </TableRow>
-                          );
-                        })}
-                      </>
-                    ) : (
-                      <TableRow>
-                        <TableCell colSpan={7}>
-                          <div className="w-100 d-flex justify-content-center">
-                            <div
-                              className="spinner-border d-flex justify-content-center"
-                              role="status"
-                            >
-                              <span className="visually-hidden">
-                                Loading...
-                              </span>
-                            </div>
-                          </div>
-                        </TableCell>
-                      </TableRow>
-                    )}
-                  </TableBody>
-                </Table>
-              </TableContainer>
-              <TablePagination
-                rowsPerPageOptions={[5, 10, 25]}
-                component="div"
-                count={response.data.length > 0 ? response.meta.total_count : 0}
-                rowsPerPage={
-                  response.data.length > 0 ? response.meta.page_size : 5
-                }
-                page={response.data.length > 0 ? response.meta.page_no - 1 : 0}
-                onPageChange={handleChangePage}
-                onRowsPerPageChange={handleChangeRowsPerPage}
+      <PageLayout title="Report" items={["Daftar Piutang"]}>
+        <div className="container-fluid m-0 p-0">
+          <div className="row mb-4">
+            <div className="col-md-6 col-lg-4 position-relative mb-2">
+              <StartDatePicker
+                idDatePicker="tanggal-awal-masuk-barang"
+                titleText="Tanggal Awal"
+                datetime={false}
+                value={startDate}
+                onDateClick={(date: Date) => {
+                  setStartDate(date);
+                }}
               />
-            </Paper>
-          </Box>
+            </div>
+            <div className="col-md-6 col-lg-4 position-relative mb-2">
+              <EndDatePicker
+                idDatePicker="tanggal-akhir-masuk-barang"
+                titleText="Tanggal Akhir"
+                datetime={false}
+                value={endDate}
+                onDateClick={(date: Date) => {
+                  setEndDate(date);
+                }}
+              />
+            </div>
+            <div className="col-md-6 col-lg-4 position-relative mb-2">
+              <DropdownSecondStyle
+                id="Status"
+                label="Status *"
+                value={status}
+                options={[
+                  {
+                    id: ArStatus.PENDING,
+                    name: "Belum Lunas",
+                  },
+                  { id: ArStatus.COMPLETED, name: "Lunas" },
+                ].map((customer) => ({
+                  value: customer.id.toString(),
+                  label: customer.name,
+                }))}
+                onChange={handleStatusDropdownChange}
+              />
+            </div>
+
+            <div className="col-md-6 col-lg-4 position-relative mb-2">
+              <DropdownSecondStyle
+                id="customer"
+                label="Customer *"
+                value={customerId}
+                options={customers.map((customer) => ({
+                  value: customer.id.toString(),
+                  label: customer.name,
+                }))}
+                onChange={handleCustomerDropdownChange}
+                icon={<FaBox />}
+              />
+            </div>
+          </div>
         </div>
-      </div>
-      <button
-        type="button"
-        className={`btn btn-primary position-fixed rounded-0 dark-blue ${
-          selected.length > 0 ? "d-block" : "d-none"
-        }`}
-        data-bs-target="#paidoff-form"
-        data-bs-toggle="modal"
-        style={{
-          bottom: "16px",
-          right: "16px",
-          fontSize: "16px",
-          height: "44px",
-          padding: "0 32px",
-        }}
-      >
-        {` PELUNASAN ( ${selected.length} )`}
-        <FaArrowRight className="ms-3" />
-      </button>
-      <InputPayment selected={selected} data={response!.data} />
+        <div className="w-100 d-flex flex-column">
+          <div className="mui-table-container">
+            <Box sx={{ width: "100%" }}>
+              <Paper sx={{ width: "100%", mb: 2 }}>
+                <TableContainer>
+                  <Table sx={{ minWidth: 750 }} aria-labelledby="tableTitle">
+                    <EnhancedTableHead
+                      numSelected={selected.length}
+                      order={order}
+                      orderBy={orderBy}
+                      onSelectAllClick={handleSelectAllClick}
+                      onRequestSort={handleRequestSort}
+                      rowCount={response?.data.length}
+                    />
+                    <TableBody>
+                      {response.data && !isLoading ? (
+                        <>
+                          {response.data.map((row, index) => {
+                            const isItemSelected = selected.includes(row.id);
+                            const labelId = `enhanced-table-checkbox-${index}`;
+
+                            return (
+                              <TableRow
+                                hover
+                                onClick={(event) => handleClick(event, row.id)}
+                                role="checkbox"
+                                aria-checked={isItemSelected}
+                                tabIndex={-1}
+                                key={row.id}
+                                selected={isItemSelected}
+                                sx={{
+                                  cursor: "pointer",
+                                  border: 1, // Add border to row
+                                  borderColor: "divider", // Use theme's divider color
+                                  "&:hover": {
+                                    borderColor: "primary.main", // Change border color on hover
+                                  },
+                                  // Remove cell borders
+                                  "& .MuiTableCell-root": {
+                                    border: "none",
+                                    "&:last-child": {
+                                      paddingRight: "16px", // Maintain padding
+                                    },
+                                  },
+                                }}
+                              >
+                                <TableCell padding="checkbox">
+                                  <Checkbox
+                                    color="primary"
+                                    checked={isItemSelected}
+                                    inputProps={{
+                                      "aria-labelledby": labelId,
+                                    }}
+                                  />
+                                </TableCell>
+                                <TableCell
+                                  component="th"
+                                  id={labelId}
+                                  scope="row"
+                                >
+                                  {new Date(row.created_at).toDateString()}
+                                </TableCell>
+                                <TableCell align="left">{row.ar_no}</TableCell>
+                                <TableCell align="left">
+                                  {row.customer.name}
+                                </TableCell>
+                                <TableCell
+                                  align="left"
+                                  className="d-flex flex-column"
+                                  style={{ fontSize: "13px" }}
+                                >
+                                  {row.ar_payment.map((payment, index) => (
+                                    <span key={index}>
+                                      <strong>
+                                        {"- " + payment.payment_method_name}
+                                      </strong>
+                                    </span>
+                                  ))}
+                                </TableCell>
+                                <TableCell align="left">
+                                  {row.total_bill}
+                                </TableCell>
+                                <TableCell align="left">
+                                  {row.to_paid}
+                                </TableCell>
+                              </TableRow>
+                            );
+                          })}
+                        </>
+                      ) : (
+                        <TableRow>
+                          <TableCell colSpan={7}>
+                            <div className="w-100 d-flex justify-content-center">
+                              <div
+                                className="spinner-border d-flex justify-content-center"
+                                role="status"
+                              >
+                                <span className="visually-hidden">
+                                  Loading...
+                                </span>
+                              </div>
+                            </div>
+                          </TableCell>
+                        </TableRow>
+                      )}
+                    </TableBody>
+                  </Table>
+                </TableContainer>
+                <TablePagination
+                  rowsPerPageOptions={[5, 10, 25]}
+                  component="div"
+                  count={
+                    response.data.length > 0 ? response.meta.total_count : 0
+                  }
+                  rowsPerPage={
+                    response.data.length > 0 ? response.meta.page_size : 5
+                  }
+                  page={
+                    response.data.length > 0 ? response.meta.page_no - 1 : 0
+                  }
+                  onPageChange={handleChangePage}
+                  onRowsPerPageChange={handleChangeRowsPerPage}
+                />
+              </Paper>
+            </Box>
+          </div>
+        </div>
+        <button
+          type="button"
+          className={`btn btn-primary position-fixed rounded-0 dark-blue ${
+            selected.length > 0 ? "d-block" : "d-none"
+          }`}
+          data-bs-target="#paidoff-form"
+          data-bs-toggle="modal"
+          style={{
+            bottom: "16px",
+            right: "16px",
+            fontSize: "16px",
+            height: "44px",
+            padding: "0 32px",
+          }}
+        >
+          {` PELUNASAN ( ${selected.length} )`}
+          <FaArrowRight className="ms-3" />
+        </button>
+        <InputPayment selected={selected} data={response!.data} />
+      </PageLayout>
     </>
   );
 }

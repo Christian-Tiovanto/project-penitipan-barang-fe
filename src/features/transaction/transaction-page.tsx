@@ -1,7 +1,7 @@
 import React from "react";
 import { useNavigate } from "react-router";
-import MenuItem from "./components/menu-item";
 import { FaArrowCircleUp, FaArrowCircleDown } from "react-icons/fa";
+import MenuItem from "../../components/menu-item";
 
 const menuItems = [
   {

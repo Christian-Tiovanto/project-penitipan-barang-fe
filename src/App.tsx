@@ -49,11 +49,7 @@ import UpdateTransInPage from "./features/trans-in/pages/update-trans-in";
 import { CostReportPage } from "./features/report/pages/cost-report";
 import InvoiceListPage from "./features/report/pages/invoice-list";
 import CreateTransOutPage from "./features/trans-out/pages/create-trans-out";
-
-const ExampleRouting: React.FC = () => {
-  return <h1>example</h1>;
-};
-
+import ReportPage from "./features/report/report-page";
 
 const router = createBrowserRouter([
   { path: "create-cashflow", element: <CreateCashFlow /> },
@@ -61,13 +57,13 @@ const router = createBrowserRouter([
     path: "/",
     element: <MainLayout />, // Gunakan element bukan Component
     children: [
-      { path: "example", element: <ExampleRouting /> },
       {
         path: "report",
         children: [
+          { index: true, element: <ReportPage /> },
           { path: "transaction-in", element: <ReportInPage /> },
           { path: "transaction-out", element: <ReportOutPage /> },
-          { path: "report-paidoff", element: <ArReportPaidPage /> },
+          { path: "paidoff", element: <ArReportPaidPage /> },
           { path: "ar-to-paid", element: <ArToPaidPage /> },
           {
             path: "customer-product-stock",
