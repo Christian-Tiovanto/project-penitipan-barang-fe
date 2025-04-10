@@ -256,12 +256,11 @@ export function CostReportPage() {
             className="badge rounded-pill text-black p-2 px-4 fw-normal blue-lighten"
             style={{
               fontSize: "13px",
-              minWidth: "115px",
               maxHeight: "37.5px",
             }}
           >
             Initial Balance :{" "}
-            {summary?.final
+            {summary?.initial
               ? Number(summary.initial).toLocaleString("id-ID")
               : 0}
           </div>
@@ -273,7 +272,7 @@ export function CostReportPage() {
             }}
           >
             Total In :{" "}
-            {summary?.final
+            {summary?.totalIn
               ? Number(summary.totalIn).toLocaleString("id-ID")
               : 0}
           </div>
@@ -285,7 +284,7 @@ export function CostReportPage() {
             }}
           >
             Total Out :{" "}
-            {summary?.final
+            {summary?.totalOut
               ? Number(summary.totalOut).toLocaleString("id-ID")
               : 0}
           </div>

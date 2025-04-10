@@ -342,48 +342,50 @@ export function StockBookPage() {
         </div>
         <div className="container-fluid d-flex my-4 flex-wrap justify-content-center gap-2">
           <div
-            className="container border rounded-pill d-flex justify-content-center align-items-center py-2 mx-2 blue-lighten"
+            className="badge rounded-pill text-black p-2 px-4 fw-normal blue-lighten"
             style={{
               fontSize: "13px",
-              minWidth: "115px",
               maxHeight: "37.5px",
-              maxWidth: "115px",
             }}
           >
-            Stok Awal : {data?.initial_qty ? data.initial_qty : 0}
+            Stok Awal :{" "}
+            {summary?.initial
+              ? Number(summary.initial).toLocaleString("id-ID")
+              : 0}
           </div>
           <div
-            className="container border rounded-pill d-flex justify-content-center align-items-center py-2 mx-2 green-lighten"
+            className="badge rounded-pill text-black p-2 px-4 fw-normal green-lighten"
             style={{
               fontSize: "13px",
-              minWidth: "115px",
               maxHeight: "37.5px",
-              maxWidth: "115px",
             }}
           >
-            Total Masuk : 0
+            Total Masuk :{" "}
+            {summary?.totalIn
+              ? Number(summary.totalIn).toLocaleString("id-ID")
+              : 0}
           </div>
           <div
-            className="container border rounded-pill d-flex justify-content-center align-items-center py-2 mx-2 red-lighten"
+            className="badge rounded-pill text-black p-2 px-4 fw-normal red-lighten"
             style={{
               fontSize: "13px",
-              minWidth: "115px",
               maxHeight: "37.5px",
-              maxWidth: "115px",
             }}
           >
-            Total keluar : 0
+            Total keluar :{" "}
+            {summary?.totalOut
+              ? Number(summary.totalOut).toLocaleString("id-ID")
+              : 0}
           </div>
           <div
-            className="container border rounded-pill d-flex justify-content-center align-items-center py-2 mx-2 teal-lighten"
+            className="badge rounded-pill text-black p-2 px-4 fw-normal teal-lighten"
             style={{
               fontSize: "13px",
-              minWidth: "115px",
               maxHeight: "37.5px",
-              maxWidth: "115px",
             }}
           >
-            Stok Akhir : 0
+            Stok Akhir :{" "}
+            {summary?.final ? Number(summary.final).toLocaleString("id-ID") : 0}
           </div>
         </div>
         <div className="product-in-list w-100 d-flex flex-column">
