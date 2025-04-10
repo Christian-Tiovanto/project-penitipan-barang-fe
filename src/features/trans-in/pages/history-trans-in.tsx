@@ -5,9 +5,15 @@ import { useNavigate, useParams } from "react-router";
 import { useToast } from "../../../contexts/toastContexts";
 import { getAllProductsPagination } from "../../product/services/product.service";
 import MuiTableTrans from "../../../components/table-mui-trans";
-import { getAllTransInsPagination } from "../services/trans-in.service";
+import { getAllTransInsPaginationByProductId } from "../services/trans-in.service";
 import MuiTableHistory from "../../../components/table-mui-history";
 import { getUserByIdToken } from "../../auth/services/auth.service";
+
+interface FetchFilters {
+  sort?: string;
+  order?: "asc" | "desc";
+  [key: string]: any;
+}
 
 const TransInHistoryPage: React.FC = () => {
   const navigate = useNavigate();
@@ -56,7 +62,6 @@ const TransInHistoryPage: React.FC = () => {
 
   useEffect(() => {
     if (id) {
-      console.log(id);
       const ProductId = parseInt(id, 10);
       setProductId(ProductId);
     }
@@ -64,26 +69,29 @@ const TransInHistoryPage: React.FC = () => {
 
   const fetchTableData = async (
     pageNo: number,
-    PageSize: number,
-    searchQuery: string
-  ) => {
+    pageSize: number,
+    searchQuery: string,
+    filters?: FetchFilters
+  ): Promise<{ data: any[]; total: number }> => {
     try {
       if (productId === null) {
         throw new Error("Product ID belum tersedia");
       }
 
-      const response = await getAllTransInsPagination(
-        PageSize,
-        pageNo,
-        productId
-      );
+      const response = await getAllTransInsPaginationByProductId(productId, {
+        pageNo: pageNo + 1, // backend biasanya 1-based
+        pageSize,
+        search: searchQuery,
+        sort: filters?.sort,
+        order: filters?.order,
+      });
 
       return {
         data: response.data,
         total: response.meta.total_count,
       };
     } catch (error) {
-      console.error("Error fetching data:", error);
+      console.error("Error fetching table data:", error);
       return { data: [], total: 0 };
     }
   };

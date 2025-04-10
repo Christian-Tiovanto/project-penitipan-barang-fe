@@ -1,5 +1,6 @@
 import { useEffect, useRef } from "react";
 import { Outlet } from "react-router";
+import { logout } from "../features/auth/services/auth.service";
 
 export default function MainLayout() {
   const wrapperRef = useRef<HTMLDivElement>(null);
@@ -43,12 +44,12 @@ export default function MainLayout() {
       <div id="wrapper" ref={wrapperRef}>
         <div className="primary-bg" id="sidebar-wrapper" ref={sidebarRef}>
           <div className="list-group list-group-flush my-3">
-            <a
+            {/* <a
               href="#"
               className="list-group-item list-group-item-action bg-transparent primary-text active"
             >
               <i className="fas fa-tachometer-alt me-2"></i>Dashboard
-            </a>
+            </a> */}
             <a
               href="/master"
               className="list-group-item list-group-item-action bg-transparent primary-text fw-bold"
@@ -67,36 +68,12 @@ export default function MainLayout() {
             >
               <i className="fas fa-paperclip me-2"></i>Reports
             </a>
-            <a
-              href="#"
-              className="list-group-item list-group-item-action bg-transparent primary-text fw-bold"
-            >
-              <i className="fas fa-shopping-cart me-2"></i>Store Mng
-            </a>
-            <a
-              href="#"
-              className="list-group-item list-group-item-action bg-transparent primary-text fw-bold"
-            >
-              <i className="fas fa-gift me-2"></i>Products
-            </a>
-            <a
-              href="#"
-              className="list-group-item list-group-item-action bg-transparent primary-text fw-bold"
-            >
-              <i className="fas fa-comment-dots me-2"></i>Chat
-            </a>
-            <a
-              href="#"
-              className="list-group-item list-group-item-action bg-transparent primary-text fw-bold"
-            >
-              <i className="fas fa-map-marker-alt me-2"></i>Outlet
-            </a>
-            <a
-              href="#"
-              className="list-group-item list-group-item-action bg-transparent text-danger fw-bold"
+            <button
+              onClick={logout}
+              className="list-group-item list-group-item-action bg-transparent text-danger fw-bold border-0 w-100 text-start"
             >
               <i className="fas fa-power-off me-2"></i>Logout
-            </a>
+            </button>
           </div>
         </div>
         <nav className="navbar fixed-top shadow-sm navbar-light bg-white px-4 ">

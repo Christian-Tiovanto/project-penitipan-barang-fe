@@ -1,6 +1,7 @@
 import axios from "axios";
 import Cookies from "js-cookie";
 import { jwtDecode } from "jwt-decode";
+import { useNavigate } from "react-router";
 
 const API_URL = "http://127.0.0.1:3000"; // Ganti dengan URL backend-mu
 
@@ -28,6 +29,7 @@ export const getToken = () => {
 // Function untuk logout (hapus token)
 export const logout = () => {
   Cookies.remove("auth_token");
+  window.location.href = "/login"; // redirect manual
 };
 
 export const register = async (
@@ -55,21 +57,53 @@ export const register = async (
   }
 };
 
-export const getAllUsers = async (pageSize: number, pageNo: number) => {
+interface GetAllUsersParams {
+  pageSize?: number;
+  pageNo?: number;
+  search?: string;
+  sort?: string;
+  order?: "asc" | "desc";
+  startDate?: string;
+  endDate?: string;
+}
+
+export const getAllUsers = async (params: GetAllUsersParams = {}) => {
   try {
     const token = Cookies.get("auth_token");
 
+    const {
+      pageSize = 10,
+      pageNo = 1,
+      search,
+      sort,
+      order,
+      startDate,
+      endDate,
+    } = params;
+
+    const queryParams = new URLSearchParams({
+      page_size: pageSize.toString(),
+      page_no: pageNo.toString(),
+    });
+
+    if (search) queryParams.append("search", search);
+    if (sort) queryParams.append("sort", sort);
+    if (order) queryParams.append("order", order);
+    if (startDate) queryParams.append("start_date", startDate);
+    if (endDate) queryParams.append("end_date", endDate);
+
     const response = await axios.get(
-      `${API_URL}/api/v1/user?page_size=${pageSize}&page_no=${pageNo}`,
+      `${API_URL}/api/v1/user?${queryParams.toString()}`,
       {
         headers: {
           Authorization: `Bearer ${token}`,
         },
       }
     );
+
     return response.data;
   } catch (error: any) {
-    throw error.response?.data || "get all Users failed";
+    throw error.response?.data || "Get all users failed";
   }
 };
 
@@ -172,5 +206,36 @@ export const deleteUserById = async (id: number) => {
     return response.data;
   } catch (error: any) {
     throw error.response?.data || "Delete User by id failed";
+  }
+};
+
+export const updatePasswordByIdToken = async (
+  oldPassword: string,
+  password: string
+) => {
+  try {
+    const token = Cookies.get("auth_token");
+
+    if (!token) {
+      console.error("Token is missing");
+      return null;
+    }
+
+    const decoded: any = jwtDecode(token);
+    const id: number = decoded.id;
+
+    const response = await axios.patch(
+      `${API_URL}/api/v1/user/${id}/update-password`,
+      { oldPassword, password },
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+
+    return response.data;
+  } catch (error: any) {
+    throw error.response?.data || "Update Password failed";
   }
 };

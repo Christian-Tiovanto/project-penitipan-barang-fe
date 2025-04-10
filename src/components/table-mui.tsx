@@ -14,6 +14,7 @@ import {
   TextField,
   InputAdornment,
   CircularProgress,
+  TableSortLabel,
 } from "@mui/material";
 import {
   Edit as EditIcon,
@@ -27,26 +28,49 @@ interface Column {
   headerName: string;
 }
 
+interface FetchFilters {
+  [key: string]: any;
+}
+
 interface Props {
   columns: Column[];
-  fetchData: (page: number, rowsPerPage: number, searchQuery: string) => Promise<{ data: any[], total: number }>;
+  fetchData: (
+    page: number,
+    rowsPerPage: number,
+    searchQuery: string,
+    filters?: FetchFilters
+  ) => Promise<{ data: any[]; total: number }>;
   onEdit?: (row: any) => void;
   onDelete?: (row: any) => void;
   onAdd?: () => void;
+  filters?: FetchFilters;
 }
 
-const MuiTable: React.FC<Props> = ({ columns, fetchData, onEdit, onDelete, onAdd }) => {
+const MuiTable: React.FC<Props> = ({
+  columns,
+  fetchData,
+  onEdit,
+  onDelete,
+  onAdd,
+  filters = {},
+}) => {
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(5);
   const [searchQuery, setSearchQuery] = useState("");
   const [data, setData] = useState<any[]>([]);
   const [totalRows, setTotalRows] = useState(0);
   const [loading, setLoading] = useState(false);
+  const [sortField, setSortField] = useState<string | null>(null);
+  const [sortOrder, setSortOrder] = useState<"asc" | "desc">("asc");
 
   const loadData = async () => {
     setLoading(true);
     try {
-      const result = await fetchData(page, rowsPerPage, searchQuery);
+      const result = await fetchData(page, rowsPerPage, searchQuery, {
+        ...filters,
+        sort: sortField ?? undefined,
+        order: sortField ? sortOrder : undefined,
+      });
       setData(result.data);
       setTotalRows(result.total);
     } catch (error) {
@@ -57,13 +81,15 @@ const MuiTable: React.FC<Props> = ({ columns, fetchData, onEdit, onDelete, onAdd
 
   useEffect(() => {
     loadData();
-  }, [page, rowsPerPage, searchQuery]);
+  }, [page, rowsPerPage, searchQuery, sortField, sortOrder]);
 
   const handleChangePage = (_: unknown, newPage: number) => {
     setPage(newPage);
   };
 
-  const handleChangeRowsPerPage = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleChangeRowsPerPage = (
+    event: React.ChangeEvent<HTMLInputElement>
+  ) => {
     setRowsPerPage(parseInt(event.target.value, 10));
     setPage(0);
   };
@@ -73,11 +99,27 @@ const MuiTable: React.FC<Props> = ({ columns, fetchData, onEdit, onDelete, onAdd
       if (onDelete) {
         await onDelete(row);
       }
-
       loadData();
     } catch (error) {
       console.error("Failed to delete data:", error);
     }
+  };
+
+  const handleSort = (field: string) => {
+    const fieldMapping: Record<string, string> = {
+      "customer.name": "customer",
+      "product.name": "product",
+      "payment_method.name": "payment_method",
+      // tambahkan mapping lainnya kalau ada
+    };
+
+    if (sortField === fieldMapping[field] || sortField === field) {
+      setSortOrder((prev) => (prev === "asc" ? "desc" : "asc"));
+    } else {
+      setSortField(fieldMapping[field] || field);
+      setSortOrder("asc");
+    }
+    setPage(0);
   };
 
   return (
@@ -95,7 +137,12 @@ const MuiTable: React.FC<Props> = ({ columns, fetchData, onEdit, onDelete, onAdd
             color="primary"
             startIcon={<AddIcon />}
             onClick={onAdd}
-            sx={{ textTransform: "none", fontSize: "0.9rem", padding: "8px 16px", mb: { xs: 2, sm: 0 } }}
+            sx={{
+              textTransform: "none",
+              fontSize: "0.9rem",
+              padding: "8px 16px",
+              mb: { xs: 2, sm: 0 },
+            }}
           >
             Add New
           </Button>
@@ -124,8 +171,17 @@ const MuiTable: React.FC<Props> = ({ columns, fetchData, onEdit, onDelete, onAdd
             <TableHead>
               <TableRow>
                 {columns.map((col) => (
-                  <TableCell key={col.field}>
-                    <b>{col.headerName}</b>
+                  <TableCell
+                    key={col.field}
+                    sortDirection={sortField === col.field ? sortOrder : false}
+                  >
+                    <TableSortLabel
+                      active={sortField === col.field}
+                      direction={sortField === col.field ? sortOrder : "asc"}
+                      onClick={() => handleSort(col.field)}
+                    >
+                      <b>{col.headerName}</b>
+                    </TableSortLabel>
                   </TableCell>
                 ))}
                 <TableCell>
@@ -137,22 +193,30 @@ const MuiTable: React.FC<Props> = ({ columns, fetchData, onEdit, onDelete, onAdd
               {data.map((row) => (
                 <TableRow key={row.id}>
                   {columns.map((col) => {
-                    const value = col.field.split('.').reduce((acc, part) => acc && acc[part], row);
-                    // console.log(value);
-                    // return <TableCell key={col.field}>{value}</TableCell>;
-
-                    // const value = row[col.field];
+                    const value = col.field
+                      .split(".")
+                      .reduce((acc, part) => acc && acc[part], row);
                     return (
                       <TableCell key={col.field}>
-                        {typeof value === "boolean" ? (value ? "Active" : "Inactive") : value}
+                        {typeof value === "boolean"
+                          ? value
+                            ? "Active"
+                            : "Inactive"
+                          : value}
                       </TableCell>
                     );
                   })}
                   <TableCell>
-                    <IconButton color="primary" onClick={() => onEdit && onEdit(row)}>
+                    <IconButton
+                      color="primary"
+                      onClick={() => onEdit && onEdit(row)}
+                    >
                       <EditIcon />
                     </IconButton>
-                    <IconButton sx={{ color: "red" }} onClick={() => handleDelete(row)}>
+                    <IconButton
+                      sx={{ color: "red" }}
+                      onClick={() => handleDelete(row)}
+                    >
                       <DeleteIcon />
                     </IconButton>
                   </TableCell>

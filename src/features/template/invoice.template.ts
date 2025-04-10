@@ -160,7 +160,7 @@ export function generateJastipInvoiceTemplate({
     `;
 }
 
-//HOW TO USE
+// HOW TO USE
 // const ExampleRouting2: React.FC = () => {
 //     const spb = {
 //       id: 56,
