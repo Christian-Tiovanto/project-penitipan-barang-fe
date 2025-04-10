@@ -6,6 +6,12 @@ import MuiTable from "../../../components/table-mui";
 import { deleteUserById, getAllUsers } from "../services/auth.service";
 import { useToast } from "../../../contexts/toastContexts";
 
+interface FetchFilters {
+  sort?: string;
+  order?: "asc" | "desc";
+  [key: string]: any;
+}
+
 const UserPage: React.FC = () => {
   const navigate = useNavigate();
   const { showToast } = useToast();
@@ -20,18 +26,25 @@ const UserPage: React.FC = () => {
 
   const fetchTableData = async (
     pageNo: number,
-    PageSize: number,
-    searchQuery: string
-  ) => {
+    pageSize: number,
+    searchQuery: string,
+    filters?: FetchFilters
+  ): Promise<{ data: any[]; total: number }> => {
     try {
-      const response = await getAllUsers(PageSize, pageNo);
+      const response = await getAllUsers({
+        pageNo: pageNo + 1, // backend biasanya 1-based
+        pageSize,
+        search: searchQuery,
+        sort: filters?.sort,
+        order: filters?.order,
+      });
 
       return {
         data: response.data,
         total: response.meta.total_count,
       };
     } catch (error) {
-      console.error("Error fetching data:", error);
+      console.error("Error fetching table data:", error);
       return { data: [], total: 0 };
     }
   };

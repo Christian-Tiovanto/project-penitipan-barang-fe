@@ -5,7 +5,7 @@ import InputField from "../../../components/inputfield";
 import { useNavigate, useParams } from "react-router";
 import { useToast } from "../../../contexts/toastContexts";
 import InputFieldNumber from "../../../components/inputfieldnumber";
-import { FaBox, FaClipboardList, FaTag } from "react-icons/fa6";
+import { FaBox, FaTag } from "react-icons/fa6";
 import { getProductById, updateProductById } from "../services/product.service";
 
 const UpdateProductForm: React.FC = () => {
@@ -17,14 +17,14 @@ const UpdateProductForm: React.FC = () => {
   const [form, setForm] = useState({
     name: "",
     price: 0,
-    qty: 0,
+    // qty: 0,
     desc: "",
   });
 
   const [errors, setErrors] = useState({
     name: "",
     price: "",
-    qty: "",
+    // qty: "",
     desc: "",
   });
 
@@ -41,7 +41,7 @@ const UpdateProductForm: React.FC = () => {
       setForm({
         name: ProductData.name || "",
         price: ProductData.price || 0,
-        qty: ProductData.qty || 0,
+        // qty: ProductData.qty || 0,
         desc: ProductData.desc || "",
       });
     } catch (error) {
@@ -67,12 +67,12 @@ const UpdateProductForm: React.FC = () => {
     });
   };
 
-  const handleQtyChange = (newValue: number) => {
-    setForm({
-      ...form,
-      qty: newValue,
-    });
-  };
+  // const handleQtyChange = (newValue: number) => {
+  //   setForm({
+  //     ...form,
+  //     qty: newValue,
+  //   });
+  // };
 
   const handleBlur = (e: React.FocusEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -136,7 +136,7 @@ const UpdateProductForm: React.FC = () => {
         </div>
       </div>
 
-      <InputFieldNumber
+      {/* <InputFieldNumber
         label="Qty *"
         name="qty"
         value={form.qty}
@@ -145,7 +145,7 @@ const UpdateProductForm: React.FC = () => {
         error={!!errors.qty}
         errorMessage={errors.qty}
         icon={<FaClipboardList />}
-      />
+      /> */}
 
       <InputField
         label="Desc *"

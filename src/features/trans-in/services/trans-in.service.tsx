@@ -3,6 +3,16 @@ import Cookies from "js-cookie";
 
 const API_URL = "http://127.0.0.1:3000";
 
+interface GetAllTransInsPaginationByProductIdParams {
+  pageSize?: number;
+  pageNo?: number;
+  search?: string;
+  sort?: string;
+  order?: "asc" | "desc";
+  startDate?: string;
+  endDate?: string;
+}
+
 export const createTransIn = async (
   customerId: number,
   productId: number,
@@ -26,17 +36,62 @@ export const createTransIn = async (
     throw error.response?.data || "Transaction In failed";
   }
 };
+//   pageSize: number,
+//   pageNo: number,
+//   productId: number
+// ) => {
+//   try {
+//     const token = Cookies.get("auth_token");
 
-export const getAllTransInsPagination = async (
-  pageSize: number,
-  pageNo: number,
-  productId: number
+//     const response = await axios.get(
+//       `${API_URL}/api/v1/transaction-in/by-product/${productId}?page_size=${pageSize}&page_no=${pageNo}`,
+//       {
+//         headers: {
+//           Authorization: `Bearer ${token}`,
+//         },
+//       }
+//     );
+
+//     return response.data;
+//   } catch (error: any) {
+//     throw error.response?.data || "get all Trans in failed";
+//   }
+// };
+
+export const getAllTransInsPaginationByProductId = async (
+  productId: number,
+  params: GetAllTransInsPaginationByProductIdParams = {}
 ) => {
   try {
     const token = Cookies.get("auth_token");
 
+    const {
+      pageSize = 10,
+      pageNo = 1,
+      search,
+      sort,
+      order,
+      startDate,
+      endDate,
+    } = params;
+
+    console.log(productId);
+    const queryParams = new URLSearchParams({
+      page_size: pageSize.toString(),
+      page_no: pageNo.toString(),
+    });
+
+    if (search) queryParams.append("search", search);
+    if (sort) queryParams.append("sort", sort);
+    if (order) queryParams.append("order", order);
+    if (startDate) queryParams.append("start_date", startDate);
+    if (endDate) queryParams.append("end_date", endDate);
+
+    console.log(
+      `${API_URL}/api/v1/transaction-in/by-prodcut/${productId}?${queryParams.toString()}`
+    );
     const response = await axios.get(
-      `${API_URL}/api/v1/transaction-in/by-product/${productId}?page_size=${pageSize}&page_no=${pageNo}`,
+      `${API_URL}/api/v1/transaction-in/by-product/${productId}?${queryParams.toString()}`,
       {
         headers: {
           Authorization: `Bearer ${token}`,
@@ -46,7 +101,7 @@ export const getAllTransInsPagination = async (
 
     return response.data;
   } catch (error: any) {
-    throw error.response?.data || "get all Trans in failed";
+    throw error.response?.data || "Get all transaction in by product id failed";
   }
 };
 

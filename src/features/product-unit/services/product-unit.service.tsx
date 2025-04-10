@@ -3,6 +3,16 @@ import Cookies from "js-cookie";
 
 const API_URL = "http://127.0.0.1:3000";
 
+interface GetAllProductUnitsParams {
+  pageSize?: number;
+  pageNo?: number;
+  search?: string;
+  sort?: string;
+  order?: "asc" | "desc";
+  startDate?: string;
+  endDate?: string;
+}
+
 export const createProductUnit = async (
   productId: number,
   name: string,
@@ -26,21 +36,45 @@ export const createProductUnit = async (
   }
 };
 
-export const getAllProductUnits = async (pageSize: number, pageNo: number) => {
+export const getAllProductUnits = async (
+  params: GetAllProductUnitsParams = {}
+) => {
   try {
     const token = Cookies.get("auth_token");
 
+    const {
+      pageSize = 10,
+      pageNo = 1,
+      search,
+      sort,
+      order,
+      startDate,
+      endDate,
+    } = params;
+
+    const queryParams = new URLSearchParams({
+      page_size: pageSize.toString(),
+      page_no: pageNo.toString(),
+    });
+
+    if (search) queryParams.append("search", search);
+    if (sort) queryParams.append("sort", sort);
+    if (order) queryParams.append("order", order);
+    if (startDate) queryParams.append("start_date", startDate);
+    if (endDate) queryParams.append("end_date", endDate);
+
     const response = await axios.get(
-      `${API_URL}/api/v1/product-unit/?page_size=${pageSize}&page_no=${pageNo}`,
+      `${API_URL}/api/v1/product-unit?${queryParams.toString()}`,
       {
         headers: {
           Authorization: `Bearer ${token}`,
         },
       }
     );
+
     return response.data;
   } catch (error: any) {
-    throw error.response?.data || "get all Product Unit failed";
+    throw error.response?.data || "Get all product units failed";
   }
 };
 
@@ -101,7 +135,7 @@ export const deleteProductUnitById = async (id: number) => {
 export const getProductUnitsByProductId = async (productId: number) => {
   try {
     const token = Cookies.get("auth_token");
-
+    console.log(`${API_URL}/api/v1/product-unit/by-product/${productId}`);
     const response = await axios.get(
       `${API_URL}/api/v1/product-unit/by-product/${productId}`,
       {

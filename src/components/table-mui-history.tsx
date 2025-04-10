@@ -10,17 +10,26 @@ import {
   TablePagination,
   IconButton,
   Box,
-  // Button,
+  Button,
   TextField,
   InputAdornment,
   CircularProgress,
+  TableSortLabel,
 } from "@mui/material";
-import { Edit as EditIcon, Search as SearchIcon } from "@mui/icons-material";
-import { FaDolly } from "react-icons/fa6";
+import {
+  Edit as EditIcon,
+  Delete as DeleteIcon,
+  Add as AddIcon,
+  Search as SearchIcon,
+} from "@mui/icons-material";
 
 interface Column {
   field: string;
   headerName: string;
+}
+
+interface FetchFilters {
+  [key: string]: any;
 }
 
 interface Props {
@@ -28,25 +37,40 @@ interface Props {
   fetchData: (
     page: number,
     rowsPerPage: number,
-    searchQuery: string
+    searchQuery: string,
+    filters?: FetchFilters
   ) => Promise<{ data: any[]; total: number }>;
-  //   onAdd?: (row: any) => void;
   onEdit?: (row: any) => void;
-  // onAdd?: () => void;
+  onDelete?: (row: any) => void;
+  onAdd?: () => void;
+  filters?: FetchFilters;
 }
 
-const MuiTableHistory: React.FC<Props> = ({ columns, fetchData, onEdit }) => {
+const MuiTable: React.FC<Props> = ({
+  columns,
+  fetchData,
+  onEdit,
+  onDelete,
+  onAdd,
+  filters = {},
+}) => {
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(5);
   const [searchQuery, setSearchQuery] = useState("");
   const [data, setData] = useState<any[]>([]);
   const [totalRows, setTotalRows] = useState(0);
   const [loading, setLoading] = useState(false);
+  const [sortField, setSortField] = useState<string | null>(null);
+  const [sortOrder, setSortOrder] = useState<"asc" | "desc">("asc");
 
   const loadData = async () => {
     setLoading(true);
     try {
-      const result = await fetchData(page, rowsPerPage, searchQuery);
+      const result = await fetchData(page, rowsPerPage, searchQuery, {
+        ...filters,
+        sort: sortField ?? undefined,
+        order: sortField ? sortOrder : undefined,
+      });
       setData(result.data);
       setTotalRows(result.total);
     } catch (error) {
@@ -57,7 +81,7 @@ const MuiTableHistory: React.FC<Props> = ({ columns, fetchData, onEdit }) => {
 
   useEffect(() => {
     loadData();
-  }, [page, rowsPerPage, searchQuery]);
+  }, [page, rowsPerPage, searchQuery, sortField, sortOrder]);
 
   const handleChangePage = (_: unknown, newPage: number) => {
     setPage(newPage);
@@ -70,16 +94,32 @@ const MuiTableHistory: React.FC<Props> = ({ columns, fetchData, onEdit }) => {
     setPage(0);
   };
 
-  const handleEdit = async (row: any) => {
+  const handleDelete = async (row: any) => {
     try {
-      if (onEdit) {
-        await onEdit(row);
+      if (onDelete) {
+        await onDelete(row);
       }
-
       loadData();
     } catch (error) {
-      console.error("Failed to Edit data:", error);
+      console.error("Failed to delete data:", error);
     }
+  };
+
+  const handleSort = (field: string) => {
+    const fieldMapping: Record<string, string> = {
+      "customer.name": "customer",
+      "product.name": "product",
+      "payment_method.name": "payment_method",
+      // tambahkan mapping lainnya kalau ada
+    };
+
+    if (sortField === fieldMapping[field] || sortField === field) {
+      setSortOrder((prev) => (prev === "asc" ? "desc" : "asc"));
+    } else {
+      setSortField(fieldMapping[field] || field);
+      setSortOrder("asc");
+    }
+    setPage(0);
   };
 
   return (
@@ -95,7 +135,6 @@ const MuiTableHistory: React.FC<Props> = ({ columns, fetchData, onEdit }) => {
           <h4 className="p-3 mb-3 mb-0">
             {data[0]?.product?.name ?? "Tidak ada nama"}
           </h4>
-
           <TextField
             label="Search..."
             variant="standard"
@@ -121,8 +160,17 @@ const MuiTableHistory: React.FC<Props> = ({ columns, fetchData, onEdit }) => {
             <TableHead>
               <TableRow>
                 {columns.map((col) => (
-                  <TableCell key={col.field}>
-                    <b>{col.headerName}</b>
+                  <TableCell
+                    key={col.field}
+                    sortDirection={sortField === col.field ? sortOrder : false}
+                  >
+                    <TableSortLabel
+                      active={sortField === col.field}
+                      direction={sortField === col.field ? sortOrder : "asc"}
+                      onClick={() => handleSort(col.field)}
+                    >
+                      <b>{col.headerName}</b>
+                    </TableSortLabel>
                   </TableCell>
                 ))}
                 <TableCell>
@@ -137,10 +185,6 @@ const MuiTableHistory: React.FC<Props> = ({ columns, fetchData, onEdit }) => {
                     const value = col.field
                       .split(".")
                       .reduce((acc, part) => acc && acc[part], row);
-                    // console.log(value);
-                    // return <TableCell key={col.field}>{value}</TableCell>;
-
-                    // const value = row[col.field];
                     return (
                       <TableCell key={col.field}>
                         {typeof value === "boolean"
@@ -154,10 +198,16 @@ const MuiTableHistory: React.FC<Props> = ({ columns, fetchData, onEdit }) => {
                   <TableCell>
                     <IconButton
                       sx={{ color: "green" }}
-                      onClick={() => handleEdit(row)}
+                      onClick={() => onEdit && onEdit(row)}
                     >
                       <EditIcon />
                     </IconButton>
+                    {/* <IconButton
+                      sx={{ color: "red" }}
+                      onClick={() => handleDelete(row)}
+                    >
+                      <DeleteIcon />
+                    </IconButton> */}
                   </TableCell>
                 </TableRow>
               ))}
@@ -179,4 +229,4 @@ const MuiTableHistory: React.FC<Props> = ({ columns, fetchData, onEdit }) => {
   );
 };
 
-export default MuiTableHistory;
+export default MuiTable;
