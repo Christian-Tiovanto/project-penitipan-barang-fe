@@ -47,6 +47,7 @@ import { CreateTransInPage, TransInPage } from "./features/trans-in";
 import TransInHistoryPage from "./features/trans-in/pages/history-trans-in";
 import UpdateTransInPage from "./features/trans-in/pages/update-trans-in";
 import { CostReportPage } from "./features/report/pages/cost-report";
+import InvoiceListPage from "./features/report/pages/invoice-list";
 
 function ExampleRouting() {
   return <h1>tes</h1>;
@@ -83,8 +84,12 @@ const router = createBrowserRouter([
             element: <NettIncomeReportPage />,
           },
           {
-            path: "input-paidoff",
+            path: "ar-list",
             element: <ArListPage />,
+          },
+          {
+            path: "invoice-list",
+            element: <InvoiceListPage />,
           },
           {
             path: "cost-report",

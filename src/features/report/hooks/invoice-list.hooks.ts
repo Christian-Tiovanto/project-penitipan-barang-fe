@@ -2,9 +2,9 @@ import { useEffect, useRef, useState } from "react";
 import { useToast } from "../../../contexts/toastContexts";
 import { Order } from "../../../enum/SortOrder";
 import { ArStatus } from "../../../enum/ArStatus";
-import { ArListService } from "../services/ar-list.service";
-import { AR } from "../pages/ar-list";
-export const useArList = (query: {
+import { InvoiceListService } from "../services/invoice-list.service";
+import { Invoice } from "../pages/invoice-list";
+export const useInvoiceList = (query: {
   customerId: string;
   status: ArStatus;
   startDate: Date;
@@ -31,7 +31,7 @@ export const useArList = (query: {
       page_no: number;
       page_size: number;
     };
-    data: AR[];
+    data: Invoice[];
   }>({
     meta: {
       total_count: 0,
@@ -55,7 +55,7 @@ export const useArList = (query: {
       try {
         setIsLoading(true);
         setError(null);
-        const arPaidReport = await new ArListService().getArList(
+        const arPaidReport = await new InvoiceListService().getInvoiceList(
           {
             endDate,
             startDate,
@@ -64,7 +64,7 @@ export const useArList = (query: {
             pageSize,
             sortBy,
             order,
-            arStatus: status,
+            invoiceStatus: status,
           },
           { signal: controller.signal }
         );
@@ -90,7 +90,7 @@ export const useArList = (query: {
     return () => {
       abortControllerRef.current?.abort();
     };
-  }, [customerId, startDate, endDate, pageNo, pageSize, order, sortBy]);
+  }, [customerId, startDate, endDate, pageNo, pageSize, order, sortBy, status]);
 
   return {
     response,
