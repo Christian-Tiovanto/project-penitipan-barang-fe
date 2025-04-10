@@ -1,28 +1,11 @@
 import { useEffect, useRef, useState } from "react";
-import { TransactionInReportService } from "../services/report-in.service";
 import { useToast } from "../../../contexts/toastContexts";
-import { Order } from "../../../enum/SortOrder";
-import { PaginationMetaData } from "../../../interfaces/pagination-meta";
-import { ITransactionInData } from "../pages/report-in";
+import { StockReportService } from "../services/stock-report.service";
+import { IStockReportData } from "../pages/stock-report";
 
-export const useTransactionInReport = (query: {
-  startDate: Date;
-  endDate: Date;
-  pageNo: number;
-  pageSize: number;
-  sortBy: string;
-  order: Order;
-}) => {
-  const { startDate, endDate, pageNo, pageSize, order, sortBy } = query;
-  const [response, setData] = useState<PaginationMetaData<ITransactionInData>>({
-    meta: {
-      total_count: 0,
-      total_page: 0,
-      page_no: 0,
-      page_size: 0,
-    },
-    data: [],
-  });
+export const useStockReport = (query: { endDate: Date; customer: string }) => {
+  const { endDate, customer } = query;
+  const [data, setData] = useState<IStockReportData[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<Error | null | any>(null);
   const { showToast } = useToast();
@@ -36,20 +19,16 @@ export const useTransactionInReport = (query: {
       try {
         setIsLoading(true);
         setError(null);
-        const transactionInReport =
-          await new TransactionInReportService().getTransactionIns(
-            {
-              endDate,
-              startDate,
-              pageNo,
-              pageSize,
-              sortBy,
-              order,
-            },
-            { signal: controller.signal }
-          );
-        setData(transactionInReport);
+        const stockReportData = await new StockReportService().getStockReport(
+          {
+            endDate,
+            customer,
+          },
+          { signal: controller.signal }
+        );
+        setData(stockReportData);
       } catch (err) {
+        setData([]);
         if (!controller.signal.aborted) {
           setError(err as Error);
         }
@@ -70,10 +49,10 @@ export const useTransactionInReport = (query: {
     return () => {
       abortControllerRef.current?.abort();
     };
-  }, [startDate, endDate, pageNo, pageSize, order, sortBy]);
+  }, [endDate, customer]);
 
   return {
-    response,
+    data,
     isLoading,
     error,
   };

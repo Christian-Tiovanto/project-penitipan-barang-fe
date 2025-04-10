@@ -1,7 +1,7 @@
 import { createBrowserRouter, RouterProvider } from "react-router"; // Import yang benar dari react-router-dom
 import "./App.css";
 import MainLayout from "./layouts/layouts";
-import { ReportInPage } from "./features/report/report-in";
+import { ReportInPage } from "./features/report/pages/report-in";
 import {
   CreateUserPage,
   LoginPage,
@@ -11,7 +11,7 @@ import {
   UpdateUserPage,
 } from "./features/auth";
 import { MasterPage } from "./features/master";
-import { ReportOutPage } from "./features/report/report-out";
+import { ReportOutPage } from "./features/report/pages/report-out";
 import { ToastProvider } from "./contexts/toastContexts";
 import {
   CreatePaymentMethodPage,
@@ -28,14 +28,13 @@ import {
 import { CreateProductPage, ProductPage } from "./features/product";
 import UpdateProductPage from "./features/product/pages/update-product";
 import CreateCashFlow from "./features/cashflow/cashflow-page";
-import { ArReportPaidPage } from "./features/report/ar-report-paid";
-import { ArToPaidPage } from "./features/report/ar-to-paid";
-import { CustomerProductStockPage } from "./features/report/customer-product-stock";
-import { InvoiceProductStockPage } from "./features/report/invoice-product-stock";
-import { StockBookPage } from "./features/report/stock-book";
-import { StockReportPage } from "./features/report/stock-report";
-import { NettIncomeReportPage } from "./features/report/nett-income-report";
-import InputPaidoffPage from "./features/report/input-paidoff";
+import { ArReportPaidPage } from "./features/report/pages/ar-report-paid";
+import { ArToPaidPage } from "./features/report/pages/ar-to-paid";
+import { CustomerProductStockPage } from "./features/report/pages/customer-product-stock";
+import { StockBookPage } from "./features/report/pages/stock-book";
+import { StockReportPage } from "./features/report/pages/stock-report";
+import { NettIncomeReportPage } from "./features/report/pages/nett-income-report";
+import ArListPage from "./features/report/pages/ar-list";
 import { CreateCustomerPage, CustomerPage } from "./features/customer";
 import UpdateCustomerPage from "./features/customer/pages/update-customer";
 import {
@@ -47,11 +46,14 @@ import { TransactionPage } from "./features/transaction";
 import { CreateTransInPage, TransInPage } from "./features/trans-in";
 import TransInHistoryPage from "./features/trans-in/pages/history-trans-in";
 import UpdateTransInPage from "./features/trans-in/pages/update-trans-in";
+import { CostReportPage } from "./features/report/pages/cost-report";
+import InvoiceListPage from "./features/report/pages/invoice-list";
 import CreateTransOutPage from "./features/trans-out/pages/create-trans-out";
 
 const ExampleRouting: React.FC = () => {
   return <h1>example</h1>;
 };
+
 
 const router = createBrowserRouter([
   { path: "create-cashflow", element: <CreateCashFlow /> },
@@ -65,15 +67,11 @@ const router = createBrowserRouter([
         children: [
           { path: "transaction-in", element: <ReportInPage /> },
           { path: "transaction-out", element: <ReportOutPage /> },
-          { path: "ar", element: <ArReportPaidPage /> },
+          { path: "report-paidoff", element: <ArReportPaidPage /> },
           { path: "ar-to-paid", element: <ArToPaidPage /> },
           {
             path: "customer-product-stock",
             element: <CustomerProductStockPage />,
-          },
-          {
-            path: "invoice-product-stock",
-            element: <InvoiceProductStockPage />,
           },
           {
             path: "stock-book",
@@ -88,8 +86,16 @@ const router = createBrowserRouter([
             element: <NettIncomeReportPage />,
           },
           {
-            path: "input-paidoff",
-            element: <InputPaidoffPage />,
+            path: "ar-list",
+            element: <ArListPage />,
+          },
+          {
+            path: "invoice-list",
+            element: <InvoiceListPage />,
+          },
+          {
+            path: "cost-report",
+            element: <CostReportPage />,
           },
         ],
       },

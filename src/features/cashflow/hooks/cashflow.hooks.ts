@@ -1,28 +1,16 @@
 import { useEffect, useRef, useState } from "react";
-import { TransactionInReportService } from "../services/report-in.service";
+import { CashflowService } from "../services/cashflow.service";
 import { useToast } from "../../../contexts/toastContexts";
 import { Order } from "../../../enum/SortOrder";
-import { PaginationMetaData } from "../../../interfaces/pagination-meta";
-import { ITransactionInData } from "../pages/report-in";
 
-export const useTransactionInReport = (query: {
+export const useCashflowHistory = (query: {
   startDate: Date;
   endDate: Date;
-  pageNo: number;
-  pageSize: number;
-  sortBy: string;
-  order: Order;
+  pageNo?: number;
+  pageSize?: number;
 }) => {
-  const { startDate, endDate, pageNo, pageSize, order, sortBy } = query;
-  const [response, setData] = useState<PaginationMetaData<ITransactionInData>>({
-    meta: {
-      total_count: 0,
-      total_page: 0,
-      page_no: 0,
-      page_size: 0,
-    },
-    data: [],
-  });
+  const { startDate, endDate, pageNo, pageSize } = query;
+  const [data, setData] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<Error | null | any>(null);
   const { showToast } = useToast();
@@ -36,20 +24,18 @@ export const useTransactionInReport = (query: {
       try {
         setIsLoading(true);
         setError(null);
-        const transactionInReport =
-          await new TransactionInReportService().getTransactionIns(
-            {
-              endDate,
-              startDate,
-              pageNo,
-              pageSize,
-              sortBy,
-              order,
-            },
-            { signal: controller.signal }
-          );
-        setData(transactionInReport);
+        const cashflowHistory = await new CashflowService().getCashflowHistory(
+          {
+            endDate,
+            startDate,
+            pageNo,
+            pageSize,
+          },
+          { signal: controller.signal }
+        );
+        setData(cashflowHistory);
       } catch (err) {
+        setData([]);
         if (!controller.signal.aborted) {
           setError(err as Error);
         }
@@ -70,10 +56,10 @@ export const useTransactionInReport = (query: {
     return () => {
       abortControllerRef.current?.abort();
     };
-  }, [startDate, endDate, pageNo, pageSize, order, sortBy]);
+  }, [startDate, endDate]);
 
   return {
-    response,
+    data,
     isLoading,
     error,
   };

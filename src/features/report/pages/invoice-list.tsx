@@ -1,5 +1,4 @@
 import * as React from "react";
-import { alpha } from "@mui/material/styles";
 import Box from "@mui/material/Box";
 import Table from "@mui/material/Table";
 import TableBody from "@mui/material/TableBody";
@@ -9,109 +8,56 @@ import TableHead from "@mui/material/TableHead";
 import TablePagination from "@mui/material/TablePagination";
 import TableRow from "@mui/material/TableRow";
 import TableSortLabel from "@mui/material/TableSortLabel";
-import Toolbar from "@mui/material/Toolbar";
-import Typography from "@mui/material/Typography";
 import Paper from "@mui/material/Paper";
 import Checkbox from "@mui/material/Checkbox";
-import IconButton from "@mui/material/IconButton";
-import Tooltip from "@mui/material/Tooltip";
-import DeleteIcon from "@mui/icons-material/Delete";
-import FilterListIcon from "@mui/icons-material/FilterList";
 import { visuallyHidden } from "@mui/utils";
-import { FaArrowRight } from "react-icons/fa6";
-import { StartDatePicker } from "../../components/date-picker";
-import InputNominal from "../../components/input-nominal";
+import { FaBox } from "react-icons/fa6";
+import {
+  EndDatePicker,
+  StartDatePicker,
+} from "../../../components/date-picker";
+import { startOfToday, startOfTomorrow } from "date-fns";
+import DropdownSecondStyle from "../../../components/dropdown-2";
+import { Customer } from "../../customer-payment/pages/update-customer-payment";
+import { getAllCustomers } from "../../customer/services/customer.service";
+import { ArStatus } from "../../../enum/ArStatus";
+import { useInvoiceList } from "../hooks/invoice-list.hooks";
+import { MdLocalPrintshop } from "react-icons/md";
+import { InvoiceListService } from "../services/invoice-list.service";
 
-interface AR {
+export interface Invoice {
   id: number;
-  ar_date: Date;
-  ar_no: string;
+  created_at: Date;
+  invoice_no: string;
   customer: {
     id: number;
     name: string;
   };
-  paid_payment: string[];
-  total_bill: number;
-  to_paid: number;
-  created_at: Date;
-}
-
-const rows: AR[] = [
-  {
-    id: 1,
-    ar_date: new Date(),
-    ar_no: "FJ-030425-25683",
-    paid_payment: ["CASH,CASH"],
-    customer: { id: 1, name: "Customer Name" },
-    total_bill: 162000,
-    to_paid: 112000,
-    created_at: new Date(),
-  },
-  {
-    id: 2,
-    ar_date: new Date(),
-    ar_no: "FJ-030425-25683",
-    paid_payment: ["CASH,CASH"],
-    customer: { id: 1, name: "Customer Name" },
-    total_bill: 162000,
-    to_paid: 112000,
-    created_at: new Date(),
-  },
-  {
-    id: 3,
-    ar_date: new Date(),
-    ar_no: "FJ-030425-25683",
-    paid_payment: ["CASH,CASH"],
-    customer: { id: 1, name: "Customer Name" },
-    total_bill: 162000,
-    to_paid: 112000,
-    created_at: new Date(),
-  },
-];
-
-function descendingComparator<T>(a: T, b: T, orderBy: keyof T) {
-  if (b[orderBy] < a[orderBy]) {
-    return -1;
-  }
-  if (b[orderBy] > a[orderBy]) {
-    return 1;
-  }
-  return 0;
+  status: number;
+  total_amount: number;
 }
 
 type Order = "asc" | "desc";
-
-function getComparator<Key extends keyof any>(
-  order: Order,
-  orderBy: Key
-): (
-  a: { [key in Key]: number | string },
-  b: { [key in Key]: number | string }
-) => number {
-  return order === "desc"
-    ? (a, b) => descendingComparator(a, b, orderBy)
-    : (a, b) => -descendingComparator(a, b, orderBy);
-}
-
+type TableData = Invoice & { invoice_date: string; cetak: string };
 interface HeadCell {
   disablePadding: boolean;
-  id: keyof AR;
+  id: keyof TableData;
   label: string;
   numeric: boolean;
 }
 
 const headCells: readonly HeadCell[] = [
   {
-    id: "ar_date",
+    id: "created_at",
     numeric: false,
     disablePadding: false,
     label: "AR Date",
   },
   {
-    id: "ar_no",
+    id: "invoice_no",
     numeric: false,
     disablePadding: false,
-    label: "AR No",
+    label: "Invoice No",
   },
   {
     id: "customer",
@@ -120,40 +66,36 @@ const headCells: readonly HeadCell[] = [
     label: "Customer",
   },
   {
-    id: "paid_payment",
+    id: "status",
     numeric: false,
     disablePadding: false,
-    label: "Payment",
+    label: "Status",
   },
   {
-    id: "total_bill",
+    id: "total_amount",
     numeric: false,
     disablePadding: false,
-    label: "Total Bill",
+    label: "Total Amount",
   },
   {
-    id: "to_paid",
+    id: "cetak",
     numeric: false,
     disablePadding: false,
-    label: "To Paid",
-  },
-  {
-    id: "created_at",
-    numeric: false,
-    disablePadding: false,
-    label: "created At",
+    label: "Cetak",
   },
 ];
 
 interface EnhancedTableProps {
   numSelected: number;
-  onRequestSort: (event: React.MouseEvent<unknown>, property: keyof AR) => void;
+  onRequestSort: (
+    event: React.MouseEvent<unknown>,
+    property: keyof TableData
+  ) => void;
   onSelectAllClick: (event: React.ChangeEvent<HTMLInputElement>) => void;
   order: Order;
   orderBy: string;
   rowCount: number;
 }
-
 function EnhancedTableHead(props: EnhancedTableProps) {
   const {
     onSelectAllClick,
@@ -164,7 +106,7 @@ function EnhancedTableHead(props: EnhancedTableProps) {
     onRequestSort,
   } = props;
   const createSortHandler =
-    (property: keyof AR) => (event: React.MouseEvent<unknown>) => {
+    (property: keyof TableData) => (event: React.MouseEvent<unknown>) => {
       onRequestSort(event, property);
     };
 
@@ -178,12 +120,9 @@ function EnhancedTableHead(props: EnhancedTableProps) {
             indeterminate={numSelected > 0 && numSelected < rowCount}
             checked={rowCount > 0 && numSelected === rowCount}
             onChange={onSelectAllClick}
-            // inputProps={{
-            //   "aria-label": "select all desserts",
-            // }}
           />
         </TableCell>
-        {headCells.map((headCell) => (
+        {headCells.slice(0, headCells.length - 1).map((headCell) => (
           <TableCell
             className="fw-bold text-nowrap"
             key={headCell.id}
@@ -205,27 +144,37 @@ function EnhancedTableHead(props: EnhancedTableProps) {
             </TableSortLabel>
           </TableCell>
         ))}
+        <TableCell className="fw-bold text-nowrap">Cetak</TableCell>
       </TableRow>
     </TableHead>
   );
 }
-export default function InputPaidoffPage() {
+export default function InvoiceListPage() {
+  const [customerId, setCustomerId] = React.useState<string>("");
+  const [customers, setCustomers] = React.useState<Customer[]>([]);
+  const [status, setStatus] = React.useState<ArStatus>(ArStatus.PENDING);
+  const [startDate, setStartDate] = React.useState(startOfToday());
+  const [endDate, setEndDate] = React.useState(startOfTomorrow());
   const [order, setOrder] = React.useState<Order>("asc");
-  const [orderBy, setOrderBy] = React.useState<keyof AR>("ar_date");
+  const [orderBy, setOrderBy] = React.useState<keyof TableData>("created_at");
   const [selected, setSelected] = React.useState<readonly number[]>([]);
   const [page, setPage] = React.useState(0);
   const [rowsPerPage, setRowsPerPage] = React.useState(5);
-  const [nominal, setNominal] = React.useState(0);
 
-  const handleNominalChange = (event: any) => {
-    const value = event.target.value;
-    if (value === "" || /^[0-9\b]+$/.test(value)) {
-      setNominal(value);
-    }
-  };
+  const { response, isLoading } = useInvoiceList({
+    startDate,
+    endDate,
+    customerId,
+    order,
+    sortBy: orderBy,
+    pageNo: page,
+    pageSize: rowsPerPage,
+    status,
+  });
+
   const handleRequestSort = (
     event: React.MouseEvent<unknown>,
-    property: keyof AR
+    property: keyof TableData
   ) => {
     const isAsc = orderBy === property && order === "asc";
     setOrder(isAsc ? "desc" : "asc");
@@ -234,11 +183,20 @@ export default function InputPaidoffPage() {
 
   const handleSelectAllClick = (event: React.ChangeEvent<HTMLInputElement>) => {
     if (event.target.checked) {
-      const newSelected = rows.map((n) => n.id);
+      const newSelected = response.data.map((n) => n.id);
       setSelected(newSelected);
       return;
     }
     setSelected([]);
+  };
+
+  const handlePrintSpb = async (invoiceId: number) => {
+    const data = await new InvoiceListService().getSpb(invoiceId);
+    console.log(data);
+  };
+  const handlePrintInvoice = async (invoiceId: number) => {
+    const data = await new InvoiceListService().getTransOut(invoiceId);
+    console.log(data);
   };
 
   const handleClick = (event: React.MouseEvent<unknown>, id: number) => {
@@ -261,7 +219,7 @@ export default function InputPaidoffPage() {
   };
 
   const handleChangePage = (event: unknown, newPage: number) => {
-    setPage(newPage);
+    setPage(newPage + 1);
   };
 
   const handleChangeRowsPerPage = (
@@ -271,17 +229,23 @@ export default function InputPaidoffPage() {
     setPage(0);
   };
 
-  // Avoid a layout jump when reaching the last page with empty rows.
-  const emptyRows =
-    page > 0 ? Math.max(0, (1 + page) * rowsPerPage - rows.length) : 0;
-
-  const visibleRows = React.useMemo(
-    () =>
-      [...rows]
-        // .sort(getComparator(order, orderBy))
-        .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage),
-    [order, orderBy, page, rowsPerPage]
-  );
+  const handleCustomerDropdownChange = (value: string) => {
+    setCustomerId(value);
+  };
+  const handleStatusDropdownChange = (value: string) => {
+    setStatus(value as ArStatus);
+  };
+  const fetchCustomers = async () => {
+    try {
+      const customers = await getAllCustomers();
+      setCustomers(customers);
+    } catch (error) {
+      console.error("Error fetching customers:", error);
+    }
+  };
+  React.useEffect(() => {
+    fetchCustomers();
+  }, []);
 
   return (
     <>
@@ -292,27 +256,53 @@ export default function InputPaidoffPage() {
               idDatePicker="tanggal-awal-masuk-barang"
               titleText="Tanggal Awal"
               datetime={false}
+              value={startDate}
+              onDateClick={(date: Date) => {
+                setStartDate(date);
+              }}
             />
           </div>
           <div className="col-md-6 col-lg-4 position-relative mb-2">
-            <StartDatePicker
+            <EndDatePicker
               idDatePicker="tanggal-akhir-masuk-barang"
               titleText="Tanggal Akhir"
               datetime={false}
+              value={endDate}
+              onDateClick={(date: Date) => {
+                setEndDate(date);
+              }}
             />
           </div>
           <div className="col-md-6 col-lg-4 position-relative mb-2">
-            <StartDatePicker
-              idDatePicker="tanggal-akhir-masuk-barang"
-              titleText="Status"
-              datetime={false}
+            <DropdownSecondStyle
+              id="Status"
+              label="Status *"
+              value={status}
+              options={[
+                {
+                  id: ArStatus.PENDING,
+                  name: "Belum Lunas",
+                },
+                { id: ArStatus.COMPLETED, name: "Lunas" },
+              ].map((customer) => ({
+                value: customer.id.toString(),
+                label: customer.name,
+              }))}
+              onChange={handleStatusDropdownChange}
             />
           </div>
+
           <div className="col-md-6 col-lg-4 position-relative mb-2">
-            <StartDatePicker
-              idDatePicker="tanggal-akhir-masuk-barang"
-              titleText="Pick Customer"
-              datetime={false}
+            <DropdownSecondStyle
+              id="customer"
+              label="Customer *"
+              value={customerId}
+              options={customers.map((customer) => ({
+                value: customer.id.toString(),
+                label: customer.name,
+              }))}
+              onChange={handleCustomerDropdownChange}
+              icon={<FaBox />}
             />
           </div>
         </div>
@@ -329,10 +319,10 @@ export default function InputPaidoffPage() {
                     orderBy={orderBy}
                     onSelectAllClick={handleSelectAllClick}
                     onRequestSort={handleRequestSort}
-                    rowCount={rows.length}
+                    rowCount={response?.data.length}
                   />
                   <TableBody>
-                    {visibleRows.map((row, index) => {
+                    {response.data.map((row, index) => {
                       const isItemSelected = selected.includes(row.id);
                       const labelId = `enhanced-table-checkbox-${index}`;
 
@@ -345,7 +335,21 @@ export default function InputPaidoffPage() {
                           tabIndex={-1}
                           key={row.id}
                           selected={isItemSelected}
-                          sx={{ cursor: "pointer" }}
+                          sx={{
+                            cursor: "pointer",
+                            border: 1, // Add border to row
+                            borderColor: "divider", // Use theme's divider color
+                            "&:hover": {
+                              borderColor: "primary.main", // Change border color on hover
+                            },
+                            // Remove cell borders
+                            "& .MuiTableCell-root": {
+                              border: "none",
+                              "&:last-child": {
+                                paddingRight: "16px", // Maintain padding
+                              },
+                            },
+                          }}
                         >
                           <TableCell padding="checkbox">
                             <Checkbox
@@ -357,109 +361,66 @@ export default function InputPaidoffPage() {
                             />
                           </TableCell>
                           <TableCell component="th" id={labelId} scope="row">
-                            {row.ar_date.toDateString()}
+                            {new Date(row.created_at).toDateString()}
                           </TableCell>
-                          <TableCell align="left">{row.ar_no}</TableCell>
+                          <TableCell align="left">{row.invoice_no}</TableCell>
                           <TableCell align="left">
                             {row.customer.name}
                           </TableCell>
-                          <TableCell align="left">{row.paid_payment}</TableCell>
-                          <TableCell align="left">{row.total_bill}</TableCell>
-                          <TableCell align="left">{row.to_paid}</TableCell>
+                          <TableCell align="left">{row.status}</TableCell>
                           <TableCell align="left">
-                            {row.created_at.toDateString()}
+                            {Number(row.total_amount).toLocaleString("id-ID")}
+                          </TableCell>
+                          <TableCell align="left">
+                            <div className="btn-group" role="group">
+                              <button
+                                type="button"
+                                className="btn btn-primary dropdown-toggle round-0 d-flex justify-content-center align-items-center gap-2"
+                                data-bs-toggle="dropdown"
+                                aria-expanded="false"
+                              >
+                                <MdLocalPrintshop />
+                                Cetak
+                              </button>
+                              <ul className="dropdown-menu">
+                                <li>
+                                  <button
+                                    className="dropdown-item"
+                                    onClick={() => handlePrintSpb(row.id)}
+                                  >
+                                    Print SPB
+                                  </button>
+                                </li>
+                                <li>
+                                  <button
+                                    className="dropdown-item"
+                                    onClick={() => handlePrintInvoice(row.id)}
+                                  >
+                                    Print Invoice
+                                  </button>
+                                </li>
+                              </ul>
+                            </div>{" "}
                           </TableCell>
                         </TableRow>
                       );
                     })}
-                    {emptyRows > 0 && (
-                      <TableRow>
-                        <TableCell colSpan={6} />
-                      </TableRow>
-                    )}
                   </TableBody>
                 </Table>
               </TableContainer>
               <TablePagination
                 rowsPerPageOptions={[5, 10, 25]}
                 component="div"
-                count={rows.length}
-                rowsPerPage={rowsPerPage}
-                page={page}
+                count={response.data.length > 0 ? response.meta.total_count : 0}
+                rowsPerPage={
+                  response.data.length > 0 ? response.meta.page_size : 5
+                }
+                page={response.data.length > 0 ? response.meta.page_no - 1 : 0}
                 onPageChange={handleChangePage}
                 onRowsPerPageChange={handleChangeRowsPerPage}
               />
             </Paper>
           </Box>
-        </div>
-      </div>
-      <button
-        type="button"
-        className="btn btn-primary position-fixed rounded-0 dark-blue"
-        data-bs-target="#paidoff-form"
-        data-bs-toggle="modal"
-        style={{
-          bottom: "16px",
-          right: "16px",
-          fontSize: "16px",
-          height: "44px",
-          padding: "0 32px",
-        }}
-      >
-        {` PELUNASAN ( 1 )`}
-        <FaArrowRight className="ms-3" />
-      </button>
-      <div
-        className="modal fade"
-        id="paidoff-form"
-        tabIndex={-1}
-        aria-labelledby="exampleModalLabel"
-        aria-hidden="true"
-      >
-        <div className="modal-dialog modal-dialog-centered">
-          <div className="modal-content">
-            <div className="modal-header d-flex flex-wrap gap-2 justify-content-center">
-              <span className="badge rounded-pill gray px-3 py-2 text-black">
-                Total Item : 1
-              </span>
-              <span className="badge rounded-pill gray px-3 py-2 text-black">
-                Total Piutang : 162.000.000
-              </span>
-              <span className="badge rounded-pill gray px-3 py-2 text-black">
-                Customer : 1 asdfasdfasdfadsf
-              </span>
-            </div>
-            <div className="modal-body d-flex flex-column gap-3">
-              <div className="container-fluid p-0">
-                <StartDatePicker
-                  idDatePicker="tanggal-input-pelunasan"
-                  titleText="Tanggal Lunas"
-                  datetime={false}
-                />
-              </div>
-              <InputNominal
-                title="Total Paid"
-                nominal={nominal}
-                handleNominalChange={handleNominalChange}
-              />
-              <InputNominal
-                title="Payment Type"
-                nominal={nominal}
-                handleNominalChange={handleNominalChange}
-              />
-            </div>
-            <div className="modal-footer">
-              <button
-                type="button"
-                className="btn-close me-auto ms-4"
-                data-bs-dismiss="modal"
-                aria-label="Close"
-              ></button>
-              <button type="button" className="btn btn-primary">
-                Save changes
-              </button>
-            </div>
-          </div>
         </div>
       </div>
     </>

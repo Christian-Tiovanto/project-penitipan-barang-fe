@@ -1,11 +1,11 @@
 import { useEffect, useRef, useState } from "react";
-import { TransactionInReportService } from "../services/report-in.service";
 import { useToast } from "../../../contexts/toastContexts";
 import { Order } from "../../../enum/SortOrder";
-import { PaginationMetaData } from "../../../interfaces/pagination-meta";
-import { ITransactionInData } from "../pages/report-in";
-
-export const useTransactionInReport = (query: {
+import { StockBookReportService } from "../services/stock-book.service";
+import { ArPaidReportService } from "../services/ar-report-paid.service";
+import { IArReportPaidData } from "../pages/ar-report-paid";
+export const useArPaidReport = (query: {
+  customerId: string;
   startDate: Date;
   endDate: Date;
   pageNo: number;
@@ -13,16 +13,9 @@ export const useTransactionInReport = (query: {
   sortBy: string;
   order: Order;
 }) => {
-  const { startDate, endDate, pageNo, pageSize, order, sortBy } = query;
-  const [response, setData] = useState<PaginationMetaData<ITransactionInData>>({
-    meta: {
-      total_count: 0,
-      total_page: 0,
-      page_no: 0,
-      page_size: 0,
-    },
-    data: [],
-  });
+  const { startDate, endDate, customerId, pageNo, pageSize, sortBy, order } =
+    query;
+  const [data, setData] = useState<IArReportPaidData[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<Error | null | any>(null);
   const { showToast } = useToast();
@@ -33,29 +26,22 @@ export const useTransactionInReport = (query: {
       abortControllerRef.current?.abort();
       const controller = new AbortController();
       abortControllerRef.current = controller;
+
       try {
         setIsLoading(true);
         setError(null);
-        const transactionInReport =
-          await new TransactionInReportService().getTransactionIns(
-            {
-              endDate,
-              startDate,
-              pageNo,
-              pageSize,
-              sortBy,
-              order,
-            },
-            { signal: controller.signal }
-          );
-        setData(transactionInReport);
+        const arPaidReport = await new ArPaidReportService().getArPaidReport(
+          { endDate, startDate, customerId, pageNo, pageSize, sortBy, order },
+          { signal: controller.signal }
+        );
+        setData(arPaidReport);
       } catch (err) {
         if (!controller.signal.aborted) {
-          setError(err as Error);
-        }
-        if (error) {
+          setError(err);
           const finalMessage = `Failed to get data.\n${
-            error?.response?.data?.message || error?.message || "Unknown error"
+            (err as any)?.response?.data?.message ||
+            (err as Error)?.message ||
+            "Unknown error"
           }`;
           showToast(finalMessage, "danger");
         }
@@ -70,10 +56,10 @@ export const useTransactionInReport = (query: {
     return () => {
       abortControllerRef.current?.abort();
     };
-  }, [startDate, endDate, pageNo, pageSize, order, sortBy]);
+  }, [customerId, startDate, endDate, pageNo, pageSize, order, sortBy]);
 
   return {
-    response,
+    data,
     isLoading,
     error,
   };

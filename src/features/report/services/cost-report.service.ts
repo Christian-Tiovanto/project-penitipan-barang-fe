@@ -1,30 +1,18 @@
 import axios, { AxiosRequestConfig } from "axios";
-import { ITransactionInData } from "../pages/report-in";
 import Cookies from "js-cookie";
-import { Order } from "../../../enum/SortOrder";
-import { PaginationMetaData } from "../../../interfaces/pagination-meta";
+import { ICostReportData } from "../pages/cost-report";
 const URL = "http://127.0.0.1:3000";
-export class TransactionInReportService {
-  async getTransactionIns(
+export class CostReportService {
+  async getCostReport(
     query?: {
       startDate: Date;
       endDate: Date;
-      pageSize: number;
-      pageNo: number;
-      sortBy: string;
-      order: Order;
     },
     config?: AxiosRequestConfig
   ) {
     const token = Cookies.get("auth_token");
     // Create filtered query object
     const queryParams: Record<string, string> = {};
-    if (query?.sortBy) {
-      queryParams.sort = query?.sortBy;
-    }
-    if (query?.order) {
-      queryParams.order = query?.order;
-    }
     // Conditional parameter formatting
     if (query?.startDate) {
       queryParams.start_date = query.startDate.toISOString();
@@ -32,16 +20,10 @@ export class TransactionInReportService {
     if (query?.endDate) {
       queryParams.end_date = query.endDate.toISOString();
     }
-    if (query?.pageSize) {
-      queryParams.page_size = query.pageSize.toString();
-    }
-    if (query?.pageNo !== undefined) {
-      queryParams.page_no = query.pageNo.toString();
-    }
-
+    console.log(query);
     // Build URL with filtered parameters
-    const response = await axios.get<PaginationMetaData<ITransactionInData>>(
-      `${URL}/api/v1/transaction-in`,
+    const response = await axios.get<ICostReportData>(
+      `${URL}/api/v1/report/cashflow-report`,
       {
         params: queryParams,
         signal: config?.signal,

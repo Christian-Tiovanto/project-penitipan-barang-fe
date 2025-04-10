@@ -1,11 +1,11 @@
 import axios, { AxiosRequestConfig } from "axios";
-import { ITransactionInData } from "../pages/report-in";
 import Cookies from "js-cookie";
 import { Order } from "../../../enum/SortOrder";
 import { PaginationMetaData } from "../../../interfaces/pagination-meta";
+import { ITransactionOutData } from "../pages/report-out";
 const URL = "http://127.0.0.1:3000";
-export class TransactionInReportService {
-  async getTransactionIns(
+export class TransactionOutReportService {
+  async getTransactionOuts(
     query?: {
       startDate: Date;
       endDate: Date;
@@ -39,9 +39,8 @@ export class TransactionInReportService {
       queryParams.page_no = query.pageNo.toString();
     }
 
-    // Build URL with filtered parameters
-    const response = await axios.get<PaginationMetaData<ITransactionInData>>(
-      `${URL}/api/v1/transaction-in`,
+    const response = await axios.get<PaginationMetaData<ITransactionOutData>>(
+      `${URL}/api/v1/transaction-out`,
       {
         params: queryParams,
         signal: config?.signal,

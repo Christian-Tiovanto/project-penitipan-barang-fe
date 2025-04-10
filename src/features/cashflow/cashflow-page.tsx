@@ -1,17 +1,85 @@
-import { useState } from "react";
+import { FormEvent, useState } from "react";
 import { IoCloseSharp } from "react-icons/io5";
 import InputNominal from "../../components/input-nominal";
+import { CashflowService } from "./services/cashflow.service";
+import { useToast } from "../../contexts/toastContexts";
+import { useCashflowHistory } from "./hooks/cashflow.hooks";
+import { startOfToday, startOfTomorrow, format } from "date-fns";
+
+export interface ICashflowHistory {
+  created_at: Date;
+  type: "in" | "out";
+  amount: number;
+  descriptions: string;
+}
+
+export interface CreateCashflowDto {
+  type: "in" | "out";
+  amount: number;
+  descriptions?: string;
+}
 export default function CreateCashFlow() {
   const [cashflowType, setCashflowType] = useState(null);
-  const [nominal, setNominal] = useState(0);
+  const [amount, setAmount] = useState("0");
+  const [descriptions, setDescriptions] = useState("");
+  const [startDate] = useState(startOfToday());
+  const [endDate] = useState(startOfTomorrow());
+  const { showToast } = useToast();
+  const { data, isLoading } = useCashflowHistory({
+    startDate,
+    endDate,
+  });
+
   const handleCashflowTypeChange = (event: any) => {
     setCashflowType(event.target.value);
   };
-
   const handleNominalChange = (event: any) => {
     const value = event.target.value;
-    if (value === "" || /^[0-9\b]+$/.test(value)) {
-      setNominal(value);
+
+    // Allow only digits (including empty string)
+    if (/^\d*$/.test(value)) {
+      let processedValue = value;
+
+      // Remove leading zeros if the value has multiple digits
+      if (processedValue.length > 1) {
+        processedValue = processedValue.replace(/^0+/, "");
+      }
+
+      // Ensure the value isn't empty (default to "0")
+      if (processedValue === "") {
+        processedValue = "0";
+      }
+
+      setAmount(processedValue);
+    }
+  };
+  const handleSubmit = async (e: FormEvent) => {
+    e.preventDefault();
+    if (!cashflowType || !amount) {
+      return;
+    } else {
+      try {
+        const createCashflowDto: CreateCashflowDto = {
+          type: cashflowType,
+          amount: parseFloat(amount),
+        };
+        if (descriptions) createCashflowDto.descriptions = descriptions;
+        const response = await new CashflowService().createCashflow(
+          createCashflowDto
+        );
+        if (response?.status === 201) {
+          showToast("Data created successfully", "success");
+        }
+      } catch (error: any) {
+        const finalMessage = `Failed to create Cashflow.\n${
+          error?.response?.data?.message || error?.message || "Unknown error"
+        }`;
+        showToast(finalMessage, "danger");
+      } finally {
+        setCashflowType(null);
+        setAmount("0");
+        setDescriptions("");
+      }
     }
   };
   return (
@@ -44,10 +112,14 @@ export default function CreateCashFlow() {
           <div className="col-12 col-md-6 mb-5">
             <div className="form-floating rounded-top border-bottom border-dark">
               <textarea
-                className="form-control gray rounded-0 rounded-top border-top border-start border-end"
+                className="form-control third-bg rounded-0 rounded-top border-top border-start border-end"
                 id="cashflow-desc"
                 rows={3}
                 placeholder="Descriptions"
+                value={descriptions}
+                onChange={(event: any) => {
+                  setDescriptions(event.target.value);
+                }}
               />
               <label htmlFor="cashflow-desc">Descriptions</label>
             </div>
@@ -91,16 +163,17 @@ export default function CreateCashFlow() {
             </div>
             <InputNominal
               title="Nominal *"
-              nominal={nominal}
+              nominal={parseFloat(amount)}
               handleNominalChange={handleNominalChange}
             />
             <button
               type="button"
               className={`btn w-100 h-50 mt-3 ${
-                nominal && cashflowType
+                amount != "0" && cashflowType
                   ? "btn-success"
                   : "btn-secondary disabled"
               }`}
+              onClick={handleSubmit}
             >
               Simpan
             </button>
@@ -108,10 +181,22 @@ export default function CreateCashFlow() {
           <div className="col-12 col-md-6 d-flex justify-content-center align-items-center flex-column">
             <h2>Kas Masuk / Kas Keluar</h2>
             <div className="container mt-4">
-              <div className="row">
-                <div className="col-6">17:21:20</div>
-                <div className="col-6 text-end">+ 15.000</div>
-              </div>
+              {data.map((value: ICashflowHistory, index) => (
+                <div className="row" key={index}>
+                  <div className="col-4">
+                    {format(
+                      new Date(value.created_at).toISOString(),
+                      "HH:mm:ss"
+                    )}
+                  </div>
+                  <div className="col-4">{value.descriptions}</div>
+                  <div
+                    className={`col-4 text-end ${
+                      value.type === "in" ? "text-success" : "text-danger"
+                    }`}
+                  >{`${value.type === "in" ? "+" : "-"} ${value.amount}`}</div>
+                </div>
+              ))}
             </div>
           </div>
         </div>

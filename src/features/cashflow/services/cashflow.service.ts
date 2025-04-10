@@ -1,30 +1,20 @@
 import axios, { AxiosRequestConfig } from "axios";
-import { ITransactionInData } from "../pages/report-in";
 import Cookies from "js-cookie";
-import { Order } from "../../../enum/SortOrder";
-import { PaginationMetaData } from "../../../interfaces/pagination-meta";
+import { ICashflowHistory, CreateCashflowDto } from "../cashflow-page";
 const URL = "http://127.0.0.1:3000";
-export class TransactionInReportService {
-  async getTransactionIns(
+export class CashflowService {
+  async getCashflowHistory(
     query?: {
       startDate: Date;
       endDate: Date;
-      pageSize: number;
-      pageNo: number;
-      sortBy: string;
-      order: Order;
+      pageSize?: number;
+      pageNo?: number;
     },
     config?: AxiosRequestConfig
   ) {
     const token = Cookies.get("auth_token");
     // Create filtered query object
     const queryParams: Record<string, string> = {};
-    if (query?.sortBy) {
-      queryParams.sort = query?.sortBy;
-    }
-    if (query?.order) {
-      queryParams.order = query?.order;
-    }
     // Conditional parameter formatting
     if (query?.startDate) {
       queryParams.start_date = query.startDate.toISOString();
@@ -38,10 +28,8 @@ export class TransactionInReportService {
     if (query?.pageNo !== undefined) {
       queryParams.page_no = query.pageNo.toString();
     }
-
-    // Build URL with filtered parameters
-    const response = await axios.get<PaginationMetaData<ITransactionInData>>(
-      `${URL}/api/v1/transaction-in`,
+    const response = await axios.get<{ data: ICashflowHistory[] }>(
+      `${URL}/api/v1/cashflow`,
       {
         params: queryParams,
         signal: config?.signal,
@@ -51,6 +39,20 @@ export class TransactionInReportService {
         },
       }
     );
-    return response.data;
+    return response.data.data;
+  }
+
+  async createCashflow(createCashflowDto: CreateCashflowDto) {
+    const token = Cookies.get("auth_token");
+    const response = await axios.post(
+      `${URL}/api/v1/cashflow`,
+      createCashflowDto,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+    return response;
   }
 }

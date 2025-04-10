@@ -1,28 +1,12 @@
 import { useEffect, useRef, useState } from "react";
-import { TransactionInReportService } from "../services/report-in.service";
 import { useToast } from "../../../contexts/toastContexts";
 import { Order } from "../../../enum/SortOrder";
-import { PaginationMetaData } from "../../../interfaces/pagination-meta";
-import { ITransactionInData } from "../pages/report-in";
+import { NettIncomeService } from "../services/nett-income.service";
+import { INettIncomeReport } from "../pages/nett-income-report";
 
-export const useTransactionInReport = (query: {
-  startDate: Date;
-  endDate: Date;
-  pageNo: number;
-  pageSize: number;
-  sortBy: string;
-  order: Order;
-}) => {
-  const { startDate, endDate, pageNo, pageSize, order, sortBy } = query;
-  const [response, setData] = useState<PaginationMetaData<ITransactionInData>>({
-    meta: {
-      total_count: 0,
-      total_page: 0,
-      page_no: 0,
-      page_size: 0,
-    },
-    data: [],
-  });
+export const useNettIncome = (query: { startDate: Date; endDate: Date }) => {
+  const { startDate, endDate } = query;
+  const [data, setData] = useState<INettIncomeReport>();
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<Error | null | any>(null);
   const { showToast } = useToast();
@@ -36,18 +20,13 @@ export const useTransactionInReport = (query: {
       try {
         setIsLoading(true);
         setError(null);
-        const transactionInReport =
-          await new TransactionInReportService().getTransactionIns(
-            {
-              endDate,
-              startDate,
-              pageNo,
-              pageSize,
-              sortBy,
-              order,
-            },
-            { signal: controller.signal }
-          );
+        const transactionInReport = await new NettIncomeService().getNettIncome(
+          {
+            endDate,
+            startDate,
+          },
+          { signal: controller.signal }
+        );
         setData(transactionInReport);
       } catch (err) {
         if (!controller.signal.aborted) {
@@ -70,10 +49,10 @@ export const useTransactionInReport = (query: {
     return () => {
       abortControllerRef.current?.abort();
     };
-  }, [startDate, endDate, pageNo, pageSize, order, sortBy]);
+  }, [startDate, endDate]);
 
   return {
-    response,
+    data,
     isLoading,
     error,
   };
