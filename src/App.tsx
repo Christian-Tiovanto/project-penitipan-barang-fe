@@ -47,13 +47,11 @@ import { TransactionPage } from "./features/transaction";
 import { CreateTransInPage, TransInPage } from "./features/trans-in";
 import TransInHistoryPage from "./features/trans-in/pages/history-trans-in";
 import UpdateTransInPage from "./features/trans-in/pages/update-trans-in";
-import { TransOutPage } from "./features/trans-out";
 import CreateTransOutPage from "./features/trans-out/pages/create-trans-out";
 
-
-function ExampleRouting() {
-  return <h1>tes</h1>;
-}
+const ExampleRouting: React.FC = () => {
+  return <h1>example</h1>;
+};
 
 const router = createBrowserRouter([
   { path: "create-cashflow", element: <CreateCashFlow /> },
