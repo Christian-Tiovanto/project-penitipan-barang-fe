@@ -1,29 +1,15 @@
 import { useEffect, useRef, useState } from "react";
 import { useToast } from "../../../contexts/toastContexts";
-import { Order } from "../../../enum/SortOrder";
-import { StockBookReportService } from "../services/stock-book.service";
-import { IStockBookData } from "../pages/stock-book";
-export const useStockBookReport = (
-  productId: string,
-  customerId: string,
-  query: {
-    startDate: Date;
-    endDate: Date;
-  }
-) => {
+import { CostReportService } from "../services/cost-report.service";
+import { ICostReportData } from "../pages/cost-report";
+export const useCostReport = (query: { startDate: Date; endDate: Date }) => {
   const { startDate, endDate } = query;
-  const [data, setData] = useState<IStockBookData>();
+  const [data, setData] = useState<ICostReportData>();
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<Error | null | any>(null);
   const { showToast } = useToast();
   const abortControllerRef = useRef<AbortController | null>(null);
   useEffect(() => {
-    // Only fetch if both IDs exist
-    if (!productId || !customerId) {
-      setData(undefined); // Clear previous data
-      return;
-    }
-
     const fetchData = async () => {
       abortControllerRef.current?.abort();
       const controller = new AbortController();
@@ -32,13 +18,10 @@ export const useStockBookReport = (
       try {
         setIsLoading(true);
         setError(null);
-        const stockBookReport =
-          await new StockBookReportService().getStockBookReport(
-            productId,
-            customerId,
-            { endDate, startDate },
-            { signal: controller.signal }
-          );
+        const stockBookReport = await new CostReportService().getCostReport(
+          { endDate, startDate },
+          { signal: controller.signal }
+        );
 
         setData(stockBookReport);
       } catch (err) {
@@ -62,7 +45,7 @@ export const useStockBookReport = (
     return () => {
       abortControllerRef.current?.abort();
     };
-  }, [productId, customerId, startDate, endDate]);
+  }, [startDate, endDate]);
 
   return {
     data,

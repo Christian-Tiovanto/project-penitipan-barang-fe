@@ -1,11 +1,9 @@
 import axios, { AxiosRequestConfig } from "axios";
 import Cookies from "js-cookie";
-import { IStockBookData } from "../pages/stock-book";
+import { ICostReportData } from "../pages/cost-report";
 const URL = "http://127.0.0.1:3000";
-export class StockBookReportService {
-  async getStockBookReport(
-    productId: string,
-    customerId: string,
+export class CostReportService {
+  async getCostReport(
     query?: {
       startDate: Date;
       endDate: Date;
@@ -24,8 +22,8 @@ export class StockBookReportService {
     }
     console.log(query);
     // Build URL with filtered parameters
-    const response = await axios.get<IStockBookData>(
-      `${URL}/api/v1/report/stock-book/product/${productId}/customer/${customerId}`,
+    const response = await axios.get<ICostReportData>(
+      `${URL}/api/v1/report/cashflow-report`,
       {
         params: queryParams,
         signal: config?.signal,

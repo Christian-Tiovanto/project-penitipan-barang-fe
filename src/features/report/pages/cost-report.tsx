@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import {
   EndDatePicker,
   StartDatePicker,
@@ -21,42 +21,25 @@ import {
 } from "../../../components/table-component";
 import { startOfToday, startOfTomorrow } from "date-fns";
 import { Order } from "../../../enum/SortOrder";
-import { useStockBookReport } from "../hooks/stock-book.hooks";
-import { FaBox } from "react-icons/fa6";
-import { getAllProducts } from "../../product/services/product.service";
-import { Product } from "../../product-unit/pages/create-product-unit";
-import DropdownSecondStyle from "../../../components/dropdown-2";
-import { getAllCustomers } from "../../customer/services/customer.service";
-import { Customer } from "../../customer-payment/pages/update-customer-payment";
 import React from "react";
+import { useCostReport } from "../hooks/cost-report.hooks";
 
-export interface IStockBookData {
-  initial_qty: number;
-  product: {
-    id: number;
-    name: string;
-  };
-  transactions: {
+export interface ICostReportData {
+  initial_balance: number;
+  cashflows: {
     date: Date;
-    type: "Add" | "Out";
-    qty: number;
+    type: "in" | "out";
+    amount: number;
   }[];
-  final_qty: number;
+  final_balance: number;
 }
-type TableData = IStockBookData & {
+type TableData = ICostReportData & {
   row_no: number;
   date: Date;
-  type: "Add" | "Out";
-  qty: number;
+  type: "in" | "out";
+  amount: number;
 };
-const columns: HeadCell<
-  IStockBookData & {
-    row_no: number;
-    date: Date;
-    type: "Add" | "Out";
-    qty: number;
-  }
->[] = [
+const columns: HeadCell<TableData>[] = [
   {
     field: "row_no",
     headerName: "No",
@@ -79,22 +62,15 @@ const columns: HeadCell<
     },
   },
   {
-    field: "product",
-    headerName: "Product",
-    headerStyle: {
-      width: "20%",
-    },
-  },
-  {
-    field: "qty",
-    headerName: "Stock",
+    field: "amount",
+    headerName: "Amount",
     headerStyle: {
       width: "10%",
     },
   },
   {
-    field: "final_qty",
-    headerName: "Final Stock",
+    field: "final_balance",
+    headerName: "Final Balance",
     headerStyle: {
       width: "10%",
       textAlign: "center",
@@ -103,13 +79,13 @@ const columns: HeadCell<
 ];
 // Add this utility function to calculate running totals
 const calculateRunningTotals = (
-  transactions: IStockBookData["transactions"],
+  cashflows: ICostReportData["cashflows"],
   initialQty: number
 ) => {
   let runningTotal = initialQty;
-  return transactions.map((transaction) => {
+  return cashflows.map((transaction) => {
     runningTotal +=
-      transaction.type === "Add" ? transaction.qty : -transaction.qty;
+      transaction.type === "in" ? transaction.amount : -transaction.amount;
     return {
       ...transaction,
       final_qty: runningTotal,
@@ -137,7 +113,7 @@ function EnhancedTableHead(props: EnhancedTableProps<TableData>) {
           No
         </TableCell>
 
-        {columns.slice(1, 3).map((col) => (
+        {columns.slice(1, 4).map((col) => (
           <TableCell
             className="fw-bold text-nowrap"
             key={col.field}
@@ -163,7 +139,7 @@ function EnhancedTableHead(props: EnhancedTableProps<TableData>) {
             </TableSortLabel>
           </TableCell>
         ))}
-        {columns.slice(3).map((col) => (
+        {columns.slice(4).map((col) => (
           <TableCell
             className="fw-bold text-nowrap"
             key={col.field}
@@ -189,6 +165,11 @@ export function CostReportPage() {
   const [order, setOrder] = useState<Order>("asc");
   const [orderBy, setOrderBy] = useState<keyof TableData>("date");
 
+  const { data, isLoading } = useCostReport({
+    startDate,
+    endDate,
+  });
+
   const handleRequestSort = (
     event: React.MouseEvent<unknown>,
     property: keyof TableData
@@ -200,7 +181,7 @@ export function CostReportPage() {
 
   const sortedTransactions = React.useMemo(() => {
     if (!data) return [];
-    const transactionsCopy = [...data.transactions];
+    const transactionsCopy = [...data.cashflows];
 
     // Sort transactions
     const sorted = transactionsCopy.sort((a, b) => {
@@ -214,29 +195,32 @@ export function CostReportPage() {
           ? a.type.localeCompare(b.type)
           : b.type.localeCompare(a.type);
       }
+      if (orderBy === "amount") {
+        return order === "asc" ? a.amount - b.amount : b.amount - a.amount;
+      }
       return 0;
     });
 
-    return calculateRunningTotals(sorted, data.initial_qty);
+    return calculateRunningTotals(sorted, data.initial_balance);
   }, [data, order, orderBy]);
 
   // Calculate summary values
   const summary = React.useMemo(() => {
     if (!data) return null;
 
-    const totalIn = data.transactions
-      .filter((t) => t.type === "Add")
-      .reduce((sum, t) => sum + t.qty, 0);
+    const totalIn = data.cashflows
+      .filter((t) => t.type === "in")
+      .reduce((sum, t) => sum + t.amount, 0);
 
-    const totalOut = data.transactions
-      .filter((t) => t.type === "Out")
-      .reduce((sum, t) => sum + t.qty, 0);
+    const totalOut = data.cashflows
+      .filter((t) => t.type === "out")
+      .reduce((sum, t) => sum + t.amount, 0);
 
     return {
-      initial: data.initial_qty,
+      initial: data.initial_balance,
       totalIn,
       totalOut,
-      final: data.final_qty,
+      final: data.final_balance,
     };
   }, [data]);
 
@@ -269,48 +253,51 @@ export function CostReportPage() {
         </div>
         <div className="container-fluid d-flex my-4 flex-wrap justify-content-center gap-2">
           <div
-            className="container border rounded-pill d-flex justify-content-center align-items-center py-2 mx-2 blue-lighten"
+            className="badge rounded-pill text-black p-2 px-4 fw-normal blue-lighten"
             style={{
               fontSize: "13px",
               minWidth: "115px",
               maxHeight: "37.5px",
-              maxWidth: "115px",
             }}
           >
-            Stok Awal : {data?.initial_qty ? data.initial_qty : 0}
+            Initial Balance :{" "}
+            {summary?.final
+              ? Number(summary.initial).toLocaleString("id-ID")
+              : 0}
           </div>
           <div
-            className="container border rounded-pill d-flex justify-content-center align-items-center py-2 mx-2 green-lighten"
+            className="badge rounded-pill text-black p-2 px-4 fw-normal green-lighten"
             style={{
               fontSize: "13px",
-              minWidth: "115px",
               maxHeight: "37.5px",
-              maxWidth: "115px",
             }}
           >
-            Total Masuk : 0
+            Total In :{" "}
+            {summary?.final
+              ? Number(summary.totalIn).toLocaleString("id-ID")
+              : 0}
           </div>
           <div
-            className="container border rounded-pill d-flex justify-content-center align-items-center py-2 mx-2 red-lighten"
+            className="badge rounded-pill text-black p-2 px-4 red-lighten fw-normal"
             style={{
               fontSize: "13px",
-              minWidth: "115px",
               maxHeight: "37.5px",
-              maxWidth: "115px",
             }}
           >
-            Total keluar : 0
+            Total Out :{" "}
+            {summary?.final
+              ? Number(summary.totalOut).toLocaleString("id-ID")
+              : 0}
           </div>
           <div
-            className="container border rounded-pill d-flex justify-content-center align-items-center py-2 mx-2 teal-lighten"
+            className="badge rounded-pill teal-lighten text-black p-2 px-4 fw-normal"
             style={{
               fontSize: "13px",
-              minWidth: "115px",
               maxHeight: "37.5px",
-              maxWidth: "115px",
             }}
           >
-            Stok Akhir : 0
+            Final Balance :{" "}
+            {summary?.final ? Number(summary.final).toLocaleString("id-ID") : 0}
           </div>
         </div>
         <div className="product-in-list w-100 d-flex flex-column">
@@ -323,7 +310,7 @@ export function CostReportPage() {
                   orderBy={orderBy}
                 />
                 <TableBody>
-                  {productId && customerId && data ? (
+                  {!isLoading && data ? (
                     <>
                       {/* Initial Stock Row */}
                       <TableRow className="blue-lighten">
@@ -332,12 +319,11 @@ export function CostReportPage() {
                           {new Date().toLocaleString("en-GB")}
                         </TableCell>
                         <TableCell>INITIAL BALANCE</TableCell>
-                        <TableCell>{data.product.name}</TableCell>
-                        <TableCell className="text-end">
-                          {data.initial_qty}
+                        <TableCell className="text-start">
+                          {data.initial_balance}
                         </TableCell>
-                        <TableCell className="text-end">
-                          {Number(data.initial_qty).toLocaleString("id-ID")}
+                        <TableCell className="text-center">
+                          {Number(data.initial_balance).toLocaleString("id-ID")}
                         </TableCell>
                       </TableRow>
 
@@ -346,7 +332,7 @@ export function CostReportPage() {
                         <TableRow
                           key={index}
                           className={`${
-                            transaction.type === "Add"
+                            transaction.type === "in"
                               ? "green-lighten"
                               : "red-lighten"
                           }`}
@@ -355,16 +341,15 @@ export function CostReportPage() {
                           <TableCell>
                             {new Date(transaction.date).toLocaleString("en-GB")}
                           </TableCell>
-                          <TableCell>{transaction.type}</TableCell>
-                          <TableCell>{data.product.name}</TableCell>
-                          <TableCell className="text-end">
-                            {`${
-                              transaction.type === "Add" ? "+" : "-"
-                            } ${Number(transaction.qty).toLocaleString(
-                              "id-ID"
-                            )}`}
+                          <TableCell>
+                            {`${transaction.type === "in" ? "In" : "Out"}`}
                           </TableCell>
-                          <TableCell className="text-end">
+                          <TableCell className="text-start">
+                            {`${transaction.type === "in" ? "+" : "-"} ${Number(
+                              transaction.amount
+                            ).toLocaleString("id-ID")}`}
+                          </TableCell>
+                          <TableCell className="text-center">
                             {Number(transaction.final_qty).toLocaleString(
                               "id-ID"
                             )}
@@ -379,19 +364,25 @@ export function CostReportPage() {
                           {new Date().toLocaleString("en-GB")}
                         </TableCell>
                         <TableCell>FINAL BALANCE</TableCell>
-                        <TableCell>{data.product.name}</TableCell>
-                        <TableCell className="text-end">
-                          {Number(data.final_qty).toLocaleString("id-ID")}
+                        <TableCell className="text-start">
+                          {Number(data.final_balance).toLocaleString("id-ID")}
                         </TableCell>
-                        <TableCell className="text-end">
-                          {Number(data.final_qty).toLocaleString("id-ID")}
+                        <TableCell className="text-center">
+                          {Number(data.final_balance).toLocaleString("id-ID")}
                         </TableCell>
                       </TableRow>
                     </>
                   ) : (
                     <TableRow>
-                      <TableCell colSpan={6} align="center">
-                        No Data Available
+                      <TableCell colSpan={6}>
+                        <div className="w-100 d-flex justify-content-center">
+                          <div
+                            className="spinner-border d-flex justify-content-center"
+                            role="status"
+                          >
+                            <span className="visually-hidden">Loading...</span>
+                          </div>
+                        </div>
                       </TableCell>
                     </TableRow>
                   )}

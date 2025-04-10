@@ -46,6 +46,7 @@ import { TransactionPage } from "./features/transaction";
 import { CreateTransInPage, TransInPage } from "./features/trans-in";
 import TransInHistoryPage from "./features/trans-in/pages/history-trans-in";
 import UpdateTransInPage from "./features/trans-in/pages/update-trans-in";
+import { CostReportPage } from "./features/report/pages/cost-report";
 
 function ExampleRouting() {
   return <h1>tes</h1>;
@@ -63,7 +64,7 @@ const router = createBrowserRouter([
         children: [
           { path: "transaction-in", element: <ReportInPage /> },
           { path: "transaction-out", element: <ReportOutPage /> },
-          { path: "ar", element: <ArReportPaidPage /> },
+          { path: "report-paidoff", element: <ArReportPaidPage /> },
           { path: "ar-to-paid", element: <ArToPaidPage /> },
           {
             path: "customer-product-stock",
@@ -84,6 +85,10 @@ const router = createBrowserRouter([
           {
             path: "input-paidoff",
             element: <ArListPage />,
+          },
+          {
+            path: "cost-report",
+            element: <CostReportPage />,
           },
         ],
       },
