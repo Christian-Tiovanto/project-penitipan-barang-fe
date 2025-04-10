@@ -48,10 +48,12 @@ import TransInHistoryPage from "./features/trans-in/pages/history-trans-in";
 import UpdateTransInPage from "./features/trans-in/pages/update-trans-in";
 import { CostReportPage } from "./features/report/pages/cost-report";
 import InvoiceListPage from "./features/report/pages/invoice-list";
+import CreateTransOutPage from "./features/trans-out/pages/create-trans-out";
 
-function ExampleRouting() {
-  return <h1>tes</h1>;
-}
+const ExampleRouting: React.FC = () => {
+  return <h1>example</h1>;
+};
+
 
 const router = createBrowserRouter([
   { path: "create-cashflow", element: <CreateCashFlow /> },
@@ -204,6 +206,10 @@ const router = createBrowserRouter([
       {
         path: "transaction/in/edit-in/:id",
         element: <UpdateTransInPage />,
+      },
+      {
+        path: "transaction/out/create-out",
+        element: <CreateTransOutPage />,
       },
     ],
   },
