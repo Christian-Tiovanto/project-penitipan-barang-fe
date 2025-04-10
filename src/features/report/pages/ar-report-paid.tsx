@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import {
   EndDatePicker,
   StartDatePicker,
@@ -142,7 +142,7 @@ export function ArReportPaidPage() {
   const [order, setOrder] = useState<Order>("asc");
   const [orderBy, setOrderBy] = useState<keyof TableData>("ar_no");
 
-  const { data, isLoading } = useArPaidReport({
+  const { response, isLoading } = useArPaidReport({
     startDate,
     endDate,
     customerId,
@@ -162,7 +162,7 @@ export function ArReportPaidPage() {
   };
 
   const handleChangePage = (_: unknown, newPage: number) => {
-    setPage(newPage);
+    setPage(newPage + 1);
   };
 
   const handleChangeRowsPerPage = (
@@ -185,6 +185,25 @@ export function ArReportPaidPage() {
   useEffect(() => {
     fetchCustomers();
   }, []);
+
+  const summary = useMemo(() => {
+    if (!response.data) return null;
+
+    let totalBill = 0;
+    let totalPaid = 0;
+    let totalToPaid = 0;
+    for (let i = 0; i < response.data.length; i++) {
+      totalBill += response.data[i].total_bill;
+      totalPaid += response.data[i].total_paid;
+      totalToPaid += response.data[i].to_paid;
+    }
+
+    return {
+      totalBill,
+      totalPaid,
+      totalToPaid,
+    };
+  }, [response.data]);
 
   return (
     <>
@@ -237,9 +256,9 @@ export function ArReportPaidPage() {
                 />
 
                 <TableBody>
-                  {data ? (
+                  {!isLoading && response.data ? (
                     <>
-                      {data.map((value, index) => (
+                      {response.data.map((value, index) => (
                         <TableRow key={value.id}>
                           <TableCell>{index + 1}</TableCell>
                           <TableCell>
@@ -264,27 +283,40 @@ export function ArReportPaidPage() {
                         <TableCell colSpan={3}></TableCell>
                         <TableCell sx={{ fontWeight: "bold" }}>Total</TableCell>
                         <TableCell sx={{ fontWeight: "bold" }}>
-                          {Number(10000).toLocaleString("id-ID")}
+                          {Number(summary?.totalBill).toLocaleString("id-ID")}
                         </TableCell>
                         <TableCell sx={{ fontWeight: "bold" }}>
-                          {Number(10000).toLocaleString("id-ID")}
+                          {Number(summary?.totalPaid).toLocaleString("id-ID")}
                         </TableCell>
                         <TableCell sx={{ fontWeight: "bold" }}>
-                          {Number(10000).toLocaleString("id-ID")}
+                          {Number(summary?.totalToPaid).toLocaleString("id-ID")}
                         </TableCell>
                       </TableRow>
                     </>
                   ) : (
-                    <h1>tes</h1>
+                    <TableRow>
+                      <TableCell colSpan={7}>
+                        <div className="w-100 d-flex justify-content-center">
+                          <div
+                            className="spinner-border d-flex justify-content-center"
+                            role="status"
+                          >
+                            <span className="visually-hidden">Loading...</span>
+                          </div>
+                        </div>
+                      </TableCell>
+                    </TableRow>
                   )}
                 </TableBody>
               </Table>
               <TablePagination
                 sx={{ fontSize: "1.1rem" }}
                 component="div"
-                count={data.length}
-                page={page}
-                rowsPerPage={rowsPerPage}
+                count={response.data.length > 0 ? response.meta.total_count : 0}
+                rowsPerPage={
+                  response.data.length > 0 ? response.meta.page_size : 5
+                }
+                page={response.data.length > 0 ? response.meta.page_no - 1 : 0}
                 onPageChange={handleChangePage}
                 onRowsPerPageChange={handleChangeRowsPerPage}
                 rowsPerPageOptions={[5, 10, 25]}

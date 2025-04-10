@@ -100,7 +100,7 @@ export function NettIncomeReportPage() {
                   </TableRow>
                 </TableHead>
                 <TableBody>
-                  {data ? (
+                  {data && !isLoading ? (
                     <>
                       <TableRow>
                         <TableCell className="nett-income-table-border fw-bold text-decoration-underline p-0 ps-2">
@@ -168,7 +168,18 @@ export function NettIncomeReportPage() {
                       </TableRow>
                     </>
                   ) : (
-                    <h1>tes</h1>
+                    <TableRow>
+                      <TableCell colSpan={2}>
+                        <div className="w-100 d-flex justify-content-center">
+                          <div
+                            className="spinner-border d-flex justify-content-center"
+                            role="status"
+                          >
+                            <span className="visually-hidden">Loading...</span>
+                          </div>
+                        </div>
+                      </TableCell>
+                    </TableRow>
                   )}
                 </TableBody>
               </Table>

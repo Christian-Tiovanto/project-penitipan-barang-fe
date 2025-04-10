@@ -478,69 +478,94 @@ export default function ArListPage() {
                     rowCount={response?.data.length}
                   />
                   <TableBody>
-                    {response.data.map((row, index) => {
-                      const isItemSelected = selected.includes(row.id);
-                      const labelId = `enhanced-table-checkbox-${index}`;
+                    {response.data && !isLoading ? (
+                      <>
+                        {response.data.map((row, index) => {
+                          const isItemSelected = selected.includes(row.id);
+                          const labelId = `enhanced-table-checkbox-${index}`;
 
-                      return (
-                        <TableRow
-                          hover
-                          onClick={(event) => handleClick(event, row.id)}
-                          role="checkbox"
-                          aria-checked={isItemSelected}
-                          tabIndex={-1}
-                          key={row.id}
-                          selected={isItemSelected}
-                          sx={{
-                            cursor: "pointer",
-                            border: 1, // Add border to row
-                            borderColor: "divider", // Use theme's divider color
-                            "&:hover": {
-                              borderColor: "primary.main", // Change border color on hover
-                            },
-                            // Remove cell borders
-                            "& .MuiTableCell-root": {
-                              border: "none",
-                              "&:last-child": {
-                                paddingRight: "16px", // Maintain padding
-                              },
-                            },
-                          }}
-                        >
-                          <TableCell padding="checkbox">
-                            <Checkbox
-                              color="primary"
-                              checked={isItemSelected}
-                              inputProps={{
-                                "aria-labelledby": labelId,
+                          return (
+                            <TableRow
+                              hover
+                              onClick={(event) => handleClick(event, row.id)}
+                              role="checkbox"
+                              aria-checked={isItemSelected}
+                              tabIndex={-1}
+                              key={row.id}
+                              selected={isItemSelected}
+                              sx={{
+                                cursor: "pointer",
+                                border: 1, // Add border to row
+                                borderColor: "divider", // Use theme's divider color
+                                "&:hover": {
+                                  borderColor: "primary.main", // Change border color on hover
+                                },
+                                // Remove cell borders
+                                "& .MuiTableCell-root": {
+                                  border: "none",
+                                  "&:last-child": {
+                                    paddingRight: "16px", // Maintain padding
+                                  },
+                                },
                               }}
-                            />
-                          </TableCell>
-                          <TableCell component="th" id={labelId} scope="row">
-                            {new Date(row.created_at).toDateString()}
-                          </TableCell>
-                          <TableCell align="left">{row.ar_no}</TableCell>
-                          <TableCell align="left">
-                            {row.customer.name}
-                          </TableCell>
-                          <TableCell
-                            align="left"
-                            className="d-flex flex-column"
-                            style={{ fontSize: "13px" }}
-                          >
-                            {row.ar_payment.map((payment, index) => (
-                              <span key={index}>
-                                <strong>
-                                  {"- " + payment.payment_method_name}
-                                </strong>
+                            >
+                              <TableCell padding="checkbox">
+                                <Checkbox
+                                  color="primary"
+                                  checked={isItemSelected}
+                                  inputProps={{
+                                    "aria-labelledby": labelId,
+                                  }}
+                                />
+                              </TableCell>
+                              <TableCell
+                                component="th"
+                                id={labelId}
+                                scope="row"
+                              >
+                                {new Date(row.created_at).toDateString()}
+                              </TableCell>
+                              <TableCell align="left">{row.ar_no}</TableCell>
+                              <TableCell align="left">
+                                {row.customer.name}
+                              </TableCell>
+                              <TableCell
+                                align="left"
+                                className="d-flex flex-column"
+                                style={{ fontSize: "13px" }}
+                              >
+                                {row.ar_payment.map((payment, index) => (
+                                  <span key={index}>
+                                    <strong>
+                                      {"- " + payment.payment_method_name}
+                                    </strong>
+                                  </span>
+                                ))}
+                              </TableCell>
+                              <TableCell align="left">
+                                {row.total_bill}
+                              </TableCell>
+                              <TableCell align="left">{row.to_paid}</TableCell>
+                            </TableRow>
+                          );
+                        })}
+                      </>
+                    ) : (
+                      <TableRow>
+                        <TableCell colSpan={7}>
+                          <div className="w-100 d-flex justify-content-center">
+                            <div
+                              className="spinner-border d-flex justify-content-center"
+                              role="status"
+                            >
+                              <span className="visually-hidden">
+                                Loading...
                               </span>
-                            ))}
-                          </TableCell>
-                          <TableCell align="left">{row.total_bill}</TableCell>
-                          <TableCell align="left">{row.to_paid}</TableCell>
-                        </TableRow>
-                      );
-                    })}
+                            </div>
+                          </div>
+                        </TableCell>
+                      </TableRow>
+                    )}
                   </TableBody>
                 </Table>
               </TableContainer>

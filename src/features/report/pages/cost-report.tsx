@@ -319,7 +319,7 @@ export function CostReportPage() {
                         </TableCell>
                         <TableCell>INITIAL BALANCE</TableCell>
                         <TableCell className="text-start">
-                          {data.initial_balance}
+                          {Number(data.initial_balance).toLocaleString("id-ID")}
                         </TableCell>
                         <TableCell className="text-center">
                           {Number(data.initial_balance).toLocaleString("id-ID")}

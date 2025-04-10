@@ -3,15 +3,27 @@ import { useToast } from "../../../contexts/toastContexts";
 import { Order } from "../../../enum/SortOrder";
 import { ArToPaidService } from "../services/ar-to-paid.service";
 import { IArToPaidData } from "../pages/ar-to-paid";
+import { PaginationMetaData } from "../../../interfaces/pagination-meta";
 export const useArToPaidReport = (query: {
   customerId: string;
   startDate: Date;
   endDate: Date;
   sortBy: string;
   order: Order;
+  pageNo: number;
+  pageSize: number;
 }) => {
-  const { startDate, endDate, customerId, sortBy, order } = query;
-  const [data, setData] = useState<IArToPaidData[]>([]);
+  const { startDate, endDate, customerId, sortBy, order, pageNo, pageSize } =
+    query;
+  const [response, setData] = useState<PaginationMetaData<IArToPaidData>>({
+    meta: {
+      total_count: 0,
+      total_page: 0,
+      page_no: 0,
+      page_size: 0,
+    },
+    data: [],
+  });
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<Error | null | any>(null);
   const { showToast } = useToast();
@@ -27,7 +39,7 @@ export const useArToPaidReport = (query: {
         setIsLoading(true);
         setError(null);
         const arPaidReport = await new ArToPaidService().getArToPaidReport(
-          { endDate, startDate, customerId, sortBy, order },
+          { endDate, startDate, customerId, sortBy, order, pageNo, pageSize },
           { signal: controller.signal }
         );
         setData(arPaidReport);
@@ -55,7 +67,7 @@ export const useArToPaidReport = (query: {
   }, [customerId, startDate, endDate, order, sortBy]);
 
   return {
-    data,
+    response,
     isLoading,
     error,
   };

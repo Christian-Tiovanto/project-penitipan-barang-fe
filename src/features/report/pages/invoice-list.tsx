@@ -500,89 +500,118 @@ export default function InvoiceListPage() {
                     rowCount={response?.data.length}
                   />
                   <TableBody>
-                    {response.data.map((row, index) => {
-                      const isItemSelected = selected.includes(row.id);
-                      const labelId = `enhanced-table-checkbox-${index}`;
+                    {response.data && !isLoading ? (
+                      <>
+                        {response.data.map((row, index) => {
+                          const isItemSelected = selected.includes(row.id);
+                          const labelId = `enhanced-table-checkbox-${index}`;
 
-                      return (
-                        <TableRow
-                          hover
-                          onClick={(event) => handleClick(event, row.id)}
-                          role="checkbox"
-                          aria-checked={isItemSelected}
-                          tabIndex={-1}
-                          key={row.id}
-                          selected={isItemSelected}
-                          sx={{
-                            cursor: "pointer",
-                            border: 1, // Add border to row
-                            borderColor: "divider", // Use theme's divider color
-                            "&:hover": {
-                              borderColor: "primary.main", // Change border color on hover
-                            },
-                            // Remove cell borders
-                            "& .MuiTableCell-root": {
-                              border: "none",
-                              "&:last-child": {
-                                paddingRight: "16px", // Maintain padding
-                              },
-                            },
-                          }}
-                        >
-                          <TableCell padding="checkbox">
-                            <Checkbox
-                              color="primary"
-                              checked={isItemSelected}
-                              inputProps={{
-                                "aria-labelledby": labelId,
+                          return (
+                            <TableRow
+                              hover
+                              onClick={(event) => handleClick(event, row.id)}
+                              role="checkbox"
+                              aria-checked={isItemSelected}
+                              tabIndex={-1}
+                              key={row.id}
+                              selected={isItemSelected}
+                              sx={{
+                                cursor: "pointer",
+                                border: 1, // Add border to row
+                                borderColor: "divider", // Use theme's divider color
+                                "&:hover": {
+                                  borderColor: "primary.main", // Change border color on hover
+                                },
+                                // Remove cell borders
+                                "& .MuiTableCell-root": {
+                                  border: "none",
+                                  "&:last-child": {
+                                    paddingRight: "16px", // Maintain padding
+                                  },
+                                },
                               }}
-                            />
-                          </TableCell>
-                          <TableCell component="th" id={labelId} scope="row">
-                            {new Date(row.created_at).toDateString()}
-                          </TableCell>
-                          <TableCell align="left">{row.invoice_no}</TableCell>
-                          <TableCell align="left">
-                            {row.customer.name}
-                          </TableCell>
-                          <TableCell align="left">{row.status}</TableCell>
-                          <TableCell align="left">
-                            {Number(row.total_amount).toLocaleString("id-ID")}
-                          </TableCell>
-                          <TableCell align="left">
-                            <div className="btn-group" role="group">
-                              <button
-                                type="button"
-                                className="btn btn-primary dropdown-toggle round-0 d-flex justify-content-center align-items-center gap-2"
-                                data-bs-toggle="dropdown"
-                                aria-expanded="false"
+                            >
+                              <TableCell padding="checkbox">
+                                <Checkbox
+                                  color="primary"
+                                  checked={isItemSelected}
+                                  inputProps={{
+                                    "aria-labelledby": labelId,
+                                  }}
+                                />
+                              </TableCell>
+                              <TableCell
+                                component="th"
+                                id={labelId}
+                                scope="row"
                               >
-                                <MdLocalPrintshop />
-                                Cetak
-                              </button>
-                              <ul className="dropdown-menu">
-                                <li>
+                                {new Date(row.created_at).toDateString()}
+                              </TableCell>
+                              <TableCell align="left">
+                                {row.invoice_no}
+                              </TableCell>
+                              <TableCell align="left">
+                                {row.customer.name}
+                              </TableCell>
+                              <TableCell align="left">{row.status}</TableCell>
+                              <TableCell align="left">
+                                {Number(row.total_amount).toLocaleString(
+                                  "id-ID"
+                                )}
+                              </TableCell>
+                              <TableCell align="left">
+                                <div className="btn-group" role="group">
                                   <button
-                                    className="dropdown-item"
-                                    onClick={() => handlePrintSpb(row.id)}
+                                    type="button"
+                                    className="btn btn-primary dropdown-toggle round-0 d-flex justify-content-center align-items-center gap-2"
+                                    data-bs-toggle="dropdown"
+                                    aria-expanded="false"
                                   >
-                                    Print SPB
+                                    <MdLocalPrintshop />
+                                    Cetak
                                   </button>
-                                </li>
-                                <li>
-                                  <button
-                                    className="dropdown-item"
-                                    onClick={() => handlePrintInvoice(row.id)}
-                                  >
-                                    Print Invoice
-                                  </button>
-                                </li>
-                              </ul>
-                            </div>{" "}
-                          </TableCell>
-                        </TableRow>
-                      );
-                    })}
+                                  <ul className="dropdown-menu">
+                                    <li>
+                                      <button
+                                        className="dropdown-item"
+                                        onClick={() => handlePrintSpb(row.id)}
+                                      >
+                                        Print SPB
+                                      </button>
+                                    </li>
+                                    <li>
+                                      <button
+                                        className="dropdown-item"
+                                        onClick={() =>
+                                          handlePrintInvoice(row.id)
+                                        }
+                                      >
+                                        Print Invoice
+                                      </button>
+                                    </li>
+                                  </ul>
+                                </div>{" "}
+                              </TableCell>
+                            </TableRow>
+                          );
+                        })}
+                      </>
+                    ) : (
+                      <TableRow>
+                        <TableCell colSpan={7}>
+                          <div className="w-100 d-flex justify-content-center">
+                            <div
+                              className="spinner-border d-flex justify-content-center"
+                              role="status"
+                            >
+                              <span className="visually-hidden">
+                                Loading...
+                              </span>
+                            </div>
+                          </div>
+                        </TableCell>
+                      </TableRow>
+                    )}
                   </TableBody>
                 </Table>
               </TableContainer>

@@ -290,7 +290,7 @@ export function StockBookPage() {
           <div className="col-md-6 col-lg-4 position-relative mb-2">
             <StartDatePicker
               idDatePicker="tanggal-awal"
-              titleText="Tanggal Awal"
+              titleText="Start Date"
               datetime={false}
               value={startDate}
               onDateClick={(date: Date) => {
@@ -301,7 +301,7 @@ export function StockBookPage() {
           <div className="col-md-6 col-lg-4 position-relative mb-2">
             <EndDatePicker
               idDatePicker="tanggal-akhir"
-              titleText="Tanggal Akhir"
+              titleText="End Date"
               datetime={false}
               value={endDate}
               onDateClick={(date: Date) => {
@@ -398,7 +398,7 @@ export function StockBookPage() {
                   orderBy={orderBy}
                 />
                 <TableBody>
-                  {productId && customerId && data ? (
+                  {productId && customerId && data && !isLoading ? (
                     <>
                       {/* Initial Stock Row */}
                       <TableRow className="blue-lighten">
@@ -466,7 +466,14 @@ export function StockBookPage() {
                   ) : (
                     <TableRow>
                       <TableCell colSpan={6} align="center">
-                        No Data Available
+                        <div className="w-100 d-flex justify-content-center">
+                          <div
+                            className="spinner-border d-flex justify-content-center"
+                            role="status"
+                          >
+                            <span className="visually-hidden">Loading...</span>
+                          </div>
+                        </div>
                       </TableCell>
                     </TableRow>
                   )}

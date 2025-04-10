@@ -193,7 +193,12 @@ export function CustomerProductStockPage() {
                         <TableCell colSpan={2}></TableCell>
                         <TableCell sx={{ fontWeight: "bold" }}>Total</TableCell>
                         <TableCell sx={{ fontWeight: "bold" }}>
-                          {Number(10000).toLocaleString("id-ID")}
+                          {Number(
+                            sortedCustomerProductReport.reduce(
+                              (sum, t) => sum + t.product_in - t.product_out,
+                              0
+                            )
+                          ).toLocaleString("id-ID")}
                         </TableCell>
                       </TableRow>
                     </>

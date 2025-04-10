@@ -1,9 +1,9 @@
 import axios, { AxiosRequestConfig } from "axios";
 import Cookies from "js-cookie";
 import { Order } from "../../../enum/SortOrder";
-import { IArReportPaidData } from "../pages/ar-report-paid";
 import { IArToPaidData } from "../pages/ar-to-paid";
 import { AR } from "../pages/ar-list";
+import { PaginationMetaData } from "../../../interfaces/pagination-meta";
 const URL = "http://127.0.0.1:3000";
 
 export interface BulkArPaymentDetailDto {
@@ -24,6 +24,8 @@ export class ArToPaidService {
       sortBy: string;
       order: Order;
       customerId: string;
+      pageSize: number;
+      pageNo: number;
     },
     config?: AxiosRequestConfig
   ) {
@@ -46,9 +48,17 @@ export class ArToPaidService {
     if (query?.order) {
       queryParams.order = query?.order;
     }
+
+    if (query?.pageSize) {
+      queryParams.page_size = query.pageSize.toString();
+    }
+    if (query?.pageNo !== undefined) {
+      queryParams.page_no = query.pageNo.toString();
+    }
+
     queryParams.compact = "true";
     // Build URL with filtered parameters
-    const response = await axios.get<{ data: IArToPaidData[] }>(
+    const response = await axios.get<PaginationMetaData<IArToPaidData>>(
       `${URL}/api/v1/report/ar-paid-report`,
       {
         params: queryParams,
@@ -59,7 +69,7 @@ export class ArToPaidService {
         },
       }
     );
-    return response.data.data;
+    return response.data;
   }
 
   async createBulkArPayment(

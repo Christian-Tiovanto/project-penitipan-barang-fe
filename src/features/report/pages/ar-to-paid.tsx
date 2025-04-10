@@ -11,6 +11,7 @@ import {
   TableCell,
   TableContainer,
   TableHead,
+  TablePagination,
   TableRow,
   TableSortLabel,
 } from "@mui/material";
@@ -129,13 +130,17 @@ export function ArToPaidPage() {
   const [endDate, setEndDate] = useState(startOfTomorrow());
   const [order, setOrder] = useState<Order>("asc");
   const [orderBy, setOrderBy] = useState<keyof TableData>("ar_no");
+  const [page, setPage] = useState(0);
+  const [rowsPerPage, setRowsPerPage] = useState(5);
 
-  const { data, isLoading } = useArToPaidReport({
+  const { response, isLoading } = useArToPaidReport({
     startDate,
     endDate,
     customerId,
     order,
     sortBy: orderBy,
+    pageNo: page,
+    pageSize: rowsPerPage,
   });
 
   const handleRequestSort = (
@@ -145,6 +150,17 @@ export function ArToPaidPage() {
     const isAsc = orderBy === property && order === "asc";
     setOrder(isAsc ? "desc" : "asc");
     setOrderBy(property);
+  };
+
+  const handleChangePage = (_: unknown, newPage: number) => {
+    setPage(newPage + 1);
+  };
+
+  const handleChangeRowsPerPage = (
+    event: React.ChangeEvent<HTMLInputElement>
+  ) => {
+    setRowsPerPage(parseInt(event.target.value, 10));
+    setPage(0);
   };
 
   const handleCustomerDropdownChange = (value: string) => {
@@ -212,9 +228,9 @@ export function ArToPaidPage() {
                   orderBy={orderBy}
                 />
                 <TableBody>
-                  {data ? (
+                  {!isLoading && response.data ? (
                     <>
-                      {data.map((value, index) => (
+                      {response.data.map((value, index) => (
                         <TableRow key={value.id}>
                           <TableCell>{index + 1}</TableCell>
                           <TableCell>
@@ -237,21 +253,50 @@ export function ArToPaidPage() {
                         <TableCell sx={{ fontWeight: "bold" }}>Total</TableCell>
                         <TableCell sx={{ fontWeight: "bold" }}>
                           {Number(
-                            data.reduce((sum, ar) => sum + ar.total_bill, 0)
+                            response.data.reduce(
+                              (sum, ar) => sum + ar.total_bill,
+                              0
+                            )
                           ).toLocaleString("id-ID")}
                         </TableCell>
                         <TableCell sx={{ fontWeight: "bold" }}>
                           {Number(
-                            data.reduce((sum, ar) => sum + ar.to_paid, 0)
+                            response.data.reduce(
+                              (sum, ar) => sum + ar.to_paid,
+                              0
+                            )
                           ).toLocaleString("id-ID")}
                         </TableCell>
                       </TableRow>
                     </>
                   ) : (
-                    <h1>tes</h1>
+                    <TableRow>
+                      <TableCell colSpan={6}>
+                        <div className="w-100 d-flex justify-content-center">
+                          <div
+                            className="spinner-border d-flex justify-content-center"
+                            role="status"
+                          >
+                            <span className="visually-hidden">Loading...</span>
+                          </div>
+                        </div>
+                      </TableCell>
+                    </TableRow>
                   )}
                 </TableBody>
               </Table>
+              <TablePagination
+                sx={{ fontSize: "1.1rem" }}
+                component="div"
+                count={response.data.length > 0 ? response.meta.total_count : 0}
+                rowsPerPage={
+                  response.data.length > 0 ? response.meta.page_size : 5
+                }
+                page={response.data.length > 0 ? response.meta.page_no - 1 : 0}
+                onPageChange={handleChangePage}
+                onRowsPerPageChange={handleChangeRowsPerPage}
+                rowsPerPageOptions={[5, 10, 25]}
+              />
             </TableContainer>
           </div>
         </div>
