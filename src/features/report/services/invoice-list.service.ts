@@ -61,4 +61,40 @@ export class InvoiceListService {
     );
     return response.data;
   }
+
+  async getSpb(invoiceId: number, config?: AxiosRequestConfig) {
+    const token = Cookies.get("auth_token");
+
+    const queryParams: Record<string, string> = {};
+    const response = await axios.get<PaginationMetaData<Invoice>>(
+      `${URL}/api/v1/spb/by-invoice/${invoiceId}`,
+      {
+        params: queryParams,
+        signal: config?.signal,
+        paramsSerializer: (params) => new URLSearchParams(params).toString(),
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+    return response.data;
+  }
+
+  async getTransOut(invoiceId: number, config?: AxiosRequestConfig) {
+    const token = Cookies.get("auth_token");
+
+    const queryParams: Record<string, string> = {};
+    const response = await axios.get<PaginationMetaData<Invoice>>(
+      `${URL}/api/v1/transaction-out/by-invoice/${invoiceId}`,
+      {
+        params: queryParams,
+        signal: config?.signal,
+        paramsSerializer: (params) => new URLSearchParams(params).toString(),
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+    return response.data;
+  }
 }

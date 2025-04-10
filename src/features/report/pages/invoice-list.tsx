@@ -11,20 +11,19 @@ import TableSortLabel from "@mui/material/TableSortLabel";
 import Paper from "@mui/material/Paper";
 import Checkbox from "@mui/material/Checkbox";
 import { visuallyHidden } from "@mui/utils";
-import { FaArrowRight, FaBox } from "react-icons/fa6";
+import { FaBox } from "react-icons/fa6";
 import {
   EndDatePicker,
   StartDatePicker,
 } from "../../../components/date-picker";
-import InputNominal from "../../../components/input-nominal";
 import { startOfToday, startOfTomorrow } from "date-fns";
 import DropdownSecondStyle from "../../../components/dropdown-2";
 import { Customer } from "../../customer-payment/pages/update-customer-payment";
 import { getAllCustomers } from "../../customer/services/customer.service";
 import { ArStatus } from "../../../enum/ArStatus";
-import { getAllPaymentMethods } from "../../payment-method/services/payment-method.service";
-import { PaymentMethod } from "../../customer-payment/pages/create-customer-payment";
 import { useInvoiceList } from "../hooks/invoice-list.hooks";
+import { MdLocalPrintshop } from "react-icons/md";
+import { InvoiceListService } from "../services/invoice-list.service";
 
 export interface Invoice {
   id: number;
@@ -39,7 +38,7 @@ export interface Invoice {
 }
 
 type Order = "asc" | "desc";
-type TableData = Invoice & { ar_date: string };
+type TableData = Invoice & { invoice_date: string; cetak: string };
 interface HeadCell {
   disablePadding: boolean;
   id: keyof TableData;
@@ -77,6 +76,12 @@ const headCells: readonly HeadCell[] = [
     numeric: false,
     disablePadding: false,
     label: "Total Amount",
+  },
+  {
+    id: "cetak",
+    numeric: false,
+    disablePadding: false,
+    label: "Cetak",
   },
 ];
 
@@ -117,7 +122,7 @@ function EnhancedTableHead(props: EnhancedTableProps) {
             onChange={onSelectAllClick}
           />
         </TableCell>
-        {headCells.map((headCell) => (
+        {headCells.slice(0, headCells.length - 1).map((headCell) => (
           <TableCell
             className="fw-bold text-nowrap"
             key={headCell.id}
@@ -139,166 +144,9 @@ function EnhancedTableHead(props: EnhancedTableProps) {
             </TableSortLabel>
           </TableCell>
         ))}
+        <TableCell className="fw-bold text-nowrap">Cetak</TableCell>
       </TableRow>
     </TableHead>
-  );
-}
-function PrintInvoice({
-  selected,
-  data,
-}: {
-  selected: readonly number[];
-  data: Invoice[];
-}) {
-  const modalRef = React.useRef<HTMLDivElement>(null);
-  const [startDate, setStartDate] = React.useState(startOfToday());
-  const [nominal, setNominal] = React.useState("0");
-  const [isLoading, setIsLoading] = React.useState(false);
-  const [paymentMethodId, setPaymentMethodId] = React.useState<string>("");
-  const [paymentMethods, setpaymentMethods] = React.useState<PaymentMethod[]>(
-    []
-  );
-  const [error, setError] = React.useState(null);
-  const handleDropdownPaymentMethodChange = (value: string) => {
-    setPaymentMethodId(value);
-  };
-  const fetchPaymentMethods = async () => {
-    try {
-      const paymentMethods = await getAllPaymentMethods();
-      setpaymentMethods(paymentMethods);
-    } catch (error) {
-      console.error("Error fetching Payment Methods:", error);
-    }
-  };
-
-  const handleSave = async () => {
-    try {
-      setIsLoading(true);
-      setError(null);
-      const selectedAr = data.filter((value) => selected.includes(value.id));
-      if (selected.length == 1) {
-        selectedAr[0].status = parseFloat(nominal);
-      }
-    } catch (err: any) {
-      setError(err.message || "Failed to save changes");
-    } finally {
-      setIsLoading(false);
-      // Close modal regardless of success/failure
-      if (modalRef.current) {
-        const modal = bootstrap.Modal.getInstance(modalRef.current);
-        modal?.hide();
-      }
-
-      // Reset form state
-      setNominal("0");
-      setPaymentMethodId("");
-
-      // Reset selection in parent component
-    }
-  };
-  const handleNominalChange = (event: any) => {
-    const value = event.target.value;
-
-    // Allow only digits (including empty string)
-    if (/^\d*$/.test(value)) {
-      let processedValue = value;
-
-      // Remove leading zeros if the value has multiple digits
-      if (processedValue.length > 1) {
-        processedValue = processedValue.replace(/^0+/, "");
-      }
-
-      // Ensure the value isn't empty (default to "0")
-      if (processedValue === "") {
-        processedValue = "0";
-      }
-
-      setNominal(processedValue);
-    }
-  };
-  React.useEffect(() => {
-    fetchPaymentMethods();
-  }, []);
-
-  const totalAr = data
-    .filter((value) => selected.includes(value.id))
-    .reduce((sum, ar) => sum + ar.status, 0);
-
-  return (
-    <div
-      className="modal fade"
-      id="paidoff-form"
-      tabIndex={-1}
-      aria-labelledby="exampleModalLabel"
-      aria-hidden="true"
-      ref={modalRef}
-    >
-      <div className="modal-dialog modal-dialog-centered">
-        <div className="modal-content">
-          <div className="modal-header d-flex flex-wrap gap-2 justify-content-center">
-            <span className="badge rounded-pill gray px-3 py-2 text-black">
-              Total Item : {selected.length}
-            </span>
-            <span className="badge rounded-pill gray px-3 py-2 text-black">
-              {"Total Piutang : " + totalAr}
-            </span>
-          </div>
-          <div className="modal-body d-flex flex-column gap-3">
-            <div className="container-fluid p-0">
-              <StartDatePicker
-                idDatePicker="tanggal-input-pelunasan"
-                titleText="Tanggal Lunas"
-                datetime={false}
-                value={startDate}
-                onDateClick={(date: Date) => {
-                  setStartDate(date);
-                }}
-              />
-            </div>
-            <InputNominal
-              title="Total Paid"
-              nominal={parseFloat(nominal)}
-              handleNominalChange={handleNominalChange}
-            />
-            <div className="container-fluid p-0">
-              <DropdownSecondStyle
-                id="payment-method"
-                label="Payment Method *"
-                value={paymentMethodId}
-                options={paymentMethods.map((paymentMethod) => ({
-                  value: paymentMethod.id.toString(),
-                  label: paymentMethod.name,
-                }))}
-                onChange={handleDropdownPaymentMethodChange}
-                icon={<FaBox />}
-              />{" "}
-            </div>
-          </div>
-          <div className="modal-footer">
-            <button
-              type="button"
-              className="btn-close me-auto ms-4"
-              data-bs-dismiss="modal"
-              aria-label="Close"
-            ></button>
-            <button
-              type="button"
-              className={`btn ${
-                nominal != "0" && paymentMethodId
-                  ? selected.length > 1 && parseFloat(nominal) != totalAr
-                    ? "btn-secondary disabled"
-                    : "btn-success"
-                  : "btn-secondary disabled"
-              }`}
-              onClick={handleSave}
-              disabled={isLoading}
-            >
-              Save
-            </button>
-          </div>
-        </div>
-      </div>
-    </div>
   );
 }
 export default function InvoiceListPage() {
@@ -340,6 +188,15 @@ export default function InvoiceListPage() {
       return;
     }
     setSelected([]);
+  };
+
+  const handlePrintSpb = async (invoiceId: number) => {
+    const data = await new InvoiceListService().getSpb(invoiceId);
+    console.log(data);
+  };
+  const handlePrintInvoice = async (invoiceId: number) => {
+    const data = await new InvoiceListService().getTransOut(invoiceId);
+    console.log(data);
   };
 
   const handleClick = (event: React.MouseEvent<unknown>, id: number) => {
@@ -514,6 +371,37 @@ export default function InvoiceListPage() {
                           <TableCell align="left">
                             {Number(row.total_amount).toLocaleString("id-ID")}
                           </TableCell>
+                          <TableCell align="left">
+                            <div className="btn-group" role="group">
+                              <button
+                                type="button"
+                                className="btn btn-primary dropdown-toggle round-0 d-flex justify-content-center align-items-center gap-2"
+                                data-bs-toggle="dropdown"
+                                aria-expanded="false"
+                              >
+                                <MdLocalPrintshop />
+                                Cetak
+                              </button>
+                              <ul className="dropdown-menu">
+                                <li>
+                                  <button
+                                    className="dropdown-item"
+                                    onClick={() => handlePrintSpb(row.id)}
+                                  >
+                                    Print SPB
+                                  </button>
+                                </li>
+                                <li>
+                                  <button
+                                    className="dropdown-item"
+                                    onClick={() => handlePrintInvoice(row.id)}
+                                  >
+                                    Print Invoice
+                                  </button>
+                                </li>
+                              </ul>
+                            </div>{" "}
+                          </TableCell>
                         </TableRow>
                       );
                     })}
@@ -535,25 +423,6 @@ export default function InvoiceListPage() {
           </Box>
         </div>
       </div>
-      <button
-        type="button"
-        className={`btn btn-primary position-fixed rounded-0 dark-blue ${
-          selected.length > 0 ? "d-block" : "d-none"
-        }`}
-        data-bs-target="#paidoff-form"
-        data-bs-toggle="modal"
-        style={{
-          bottom: "16px",
-          right: "16px",
-          fontSize: "16px",
-          height: "44px",
-          padding: "0 32px",
-        }}
-      >
-        {` CETAK INVOICE ( ${selected.length} )`}
-        <FaArrowRight className="ms-3" />
-      </button>
-      <PrintInvoice selected={selected} data={response!.data} />
     </>
   );
 }
