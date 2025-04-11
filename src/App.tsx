@@ -50,6 +50,7 @@ import { CostReportPage } from "./features/report/pages/cost-report";
 import InvoiceListPage from "./features/report/pages/invoice-list";
 import CreateTransOutPage from "./features/trans-out/pages/create-trans-out";
 import ReportPage from "./features/report/report-page";
+import { StockInvoiceReportPage } from "./features/report/pages/stock-invoice-report";
 
 const router = createBrowserRouter([
   { path: "create-cashflow", element: <CreateCashFlow /> },
@@ -76,6 +77,10 @@ const router = createBrowserRouter([
           {
             path: "stock-report",
             element: <StockReportPage />,
+          },
+          {
+            path: "stock-invoice-report",
+            element: <StockInvoiceReportPage />,
           },
           {
             path: "nett-income",
