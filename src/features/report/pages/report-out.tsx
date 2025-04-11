@@ -25,6 +25,7 @@ import {
 import { startOfToday, startOfTomorrow } from "date-fns";
 import { Order } from "../../../enum/SortOrder";
 import { useTransactionOutReport } from "../hooks/report-out.hooks";
+import PageLayout from "../../../components/page-location";
 export interface ITransactionOutData {
   id: number;
   product: {
@@ -150,41 +151,42 @@ export function ReportOutPage() {
 
   return (
     <>
-      <div className="container-fluid m-0 p-0">
-        <div className="row">
-          <div className="col-md-6 position-relative mb-2">
-            <StartDatePicker
-              idDatePicker="tanggal-awal-keluar-barang"
-              titleText="Start Date"
-              datetime={false}
-              value={startDate}
-              onDateClick={(date: Date) => {
-                setStartDate(date);
-              }}
-            />
+      <PageLayout title="Report" items={["Transaction Out"]}>
+        <div className="container-fluid m-0 p-0">
+          <div className="row">
+            <div className="col-md-6 position-relative mb-2">
+              <StartDatePicker
+                idDatePicker="tanggal-awal-keluar-barang"
+                titleText="Start Date"
+                datetime={false}
+                value={startDate}
+                onDateClick={(date: Date) => {
+                  setStartDate(date);
+                }}
+              />
+            </div>
+            <div className="col-md-6 position-relative mb-2">
+              <EndDatePicker
+                idDatePicker="tanggal-akhir-keluar-barang"
+                titleText="End Date"
+                datetime={false}
+                value={endDate}
+                onDateClick={(date: Date) => {
+                  setEndDate(date);
+                }}
+              />
+            </div>
           </div>
-          <div className="col-md-6 position-relative mb-2">
-            <EndDatePicker
-              idDatePicker="tanggal-akhir-keluar-barang"
-              titleText="End Date"
-              datetime={false}
-              value={endDate}
-              onDateClick={(date: Date) => {
-                setEndDate(date);
-              }}
-            />
-          </div>
-        </div>
-        <div className="product-in-list w-100 d-flex flex-column">
-          <div className="mui-table-container">
-            <TableContainer component={Paper} sx={{ padding: 2 }}>
-              <Table>
-                <EnhancedTableHead
-                  onRequestSort={handleRequestSort}
-                  order={order}
-                  orderBy={orderBy}
-                />
-                {/* <TableHead>
+          <div className="product-in-list w-100 d-flex flex-column">
+            <div className="mui-table-container">
+              <TableContainer component={Paper} sx={{ padding: 2 }}>
+                <Table>
+                  <EnhancedTableHead
+                    onRequestSort={handleRequestSort}
+                    order={order}
+                    orderBy={orderBy}
+                  />
+                  {/* <TableHead>
                   <TableRow>
                     {columns.map((col) => (
                       <TableCell
@@ -201,52 +203,59 @@ export function ReportOutPage() {
                     ))}
                   </TableRow>
                 </TableHead> */}
-                <TableBody>
-                  {isLoading ? (
-                    <TableRow>
-                      <TableCell colSpan={5}>
-                        <div className="w-100 d-flex justify-content-center">
-                          <div
-                            className="spinner-border d-flex justify-content-center"
-                            role="status"
-                          >
-                            <span className="visually-hidden">Loading...</span>
+                  <TableBody>
+                    {isLoading ? (
+                      <TableRow>
+                        <TableCell colSpan={5}>
+                          <div className="w-100 d-flex justify-content-center">
+                            <div
+                              className="spinner-border d-flex justify-content-center"
+                              role="status"
+                            >
+                              <span className="visually-hidden">
+                                Loading...
+                              </span>
+                            </div>
                           </div>
-                        </div>
-                      </TableCell>
-                    </TableRow>
-                  ) : (
-                    response.data.map((value) => (
-                      <TableRow key={value.id}>
-                        <TableCell>{value.product.name}</TableCell>
-                        <TableCell>{value.customer.name}</TableCell>
-                        <TableCell sx={{ textAlign: "center" }}>
-                          {value.converted_qty}
-                        </TableCell>
-                        <TableCell sx={{ textAlign: "center" }}>
-                          {value.total_days}
                         </TableCell>
                       </TableRow>
-                    ))
-                  )}
-                </TableBody>
-              </Table>
-              <TablePagination
-                sx={{ fontSize: "1.1rem" }}
-                component="div"
-                count={response.data.length > 0 ? response.meta.total_count : 0}
-                rowsPerPage={
-                  response.data.length > 0 ? response.meta.page_size : 5
-                }
-                page={response.data.length > 0 ? response.meta.page_no - 1 : 0}
-                onPageChange={handleChangePage}
-                onRowsPerPageChange={handleChangeRowsPerPage}
-                rowsPerPageOptions={[5, 10, 25]}
-              />
-            </TableContainer>
+                    ) : (
+                      response.data.map((value) => (
+                        <TableRow key={value.id}>
+                          <TableCell>{value.product.name}</TableCell>
+                          <TableCell>{value.customer.name}</TableCell>
+                          <TableCell sx={{ textAlign: "center" }}>
+                            {value.converted_qty}
+                          </TableCell>
+                          <TableCell sx={{ textAlign: "center" }}>
+                            {value.total_days}
+                          </TableCell>
+                        </TableRow>
+                      ))
+                    )}
+                  </TableBody>
+                </Table>
+                <TablePagination
+                  sx={{ fontSize: "1.1rem" }}
+                  component="div"
+                  count={
+                    response.data.length > 0 ? response.meta.total_count : 0
+                  }
+                  rowsPerPage={
+                    response.data.length > 0 ? response.meta.page_size : 5
+                  }
+                  page={
+                    response.data.length > 0 ? response.meta.page_no - 1 : 0
+                  }
+                  onPageChange={handleChangePage}
+                  onRowsPerPageChange={handleChangeRowsPerPage}
+                  rowsPerPageOptions={[5, 10, 25]}
+                />
+              </TableContainer>
+            </div>
           </div>
         </div>
-      </div>
+      </PageLayout>
     </>
   );
 }

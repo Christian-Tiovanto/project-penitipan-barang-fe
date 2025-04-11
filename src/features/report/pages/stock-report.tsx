@@ -27,6 +27,7 @@ import { getAllCustomers } from "../../customer/services/customer.service";
 import { useStockReport } from "../hooks/stock-report.hooks";
 import { FaBox } from "react-icons/fa6";
 import React from "react";
+import PageLayout from "../../../components/page-location";
 export interface IStockReportData {
   product_name: string;
   customer_name: string;
@@ -211,67 +212,69 @@ export function StockReportPage() {
   }, [data, order, orderBy]);
   return (
     <>
-      <div className="container-fluid m-0 p-0">
-        <div className="row">
-          <div className="col-md-6 position-relative">
-            <EndDatePicker
-              idDatePicker="tanggal-akhir"
-              titleText="Tanggal"
-              datetime={false}
-              value={endDate}
-              onDateClick={(date: Date) => {
-                setEndDate(date);
-              }}
-            />
+      <PageLayout title="Report" items={["Stock Report"]}>
+        <div className="container-fluid m-0 p-0">
+          <div className="row">
+            <div className="col-md-6 position-relative">
+              <EndDatePicker
+                idDatePicker="tanggal-akhir"
+                titleText="Tanggal"
+                datetime={false}
+                value={endDate}
+                onDateClick={(date: Date) => {
+                  setEndDate(date);
+                }}
+              />
+            </div>
+            <div className="col-md-6 position-relative">
+              <DropdownSecondStyle
+                id="customer"
+                label="Customer *"
+                value={customerId}
+                options={customers.map((product) => ({
+                  value: product.id.toString(),
+                  label: product.name,
+                }))}
+                onChange={handleCustomerDropdownChange}
+                icon={<FaBox />}
+              />
+            </div>
           </div>
-          <div className="col-md-6 position-relative">
-            <DropdownSecondStyle
-              id="customer"
-              label="Customer *"
-              value={customerId}
-              options={customers.map((product) => ({
-                value: product.id.toString(),
-                label: product.name,
-              }))}
-              onChange={handleCustomerDropdownChange}
-              icon={<FaBox />}
-            />
+          <div className="product-in-list w-100 d-flex flex-column">
+            <div className="mui-table-container">
+              <TableContainer component={Paper} sx={{ padding: 2 }}>
+                <Table>
+                  <EnhancedTableHead
+                    onRequestSort={handleRequestSort}
+                    order={order}
+                    orderBy={orderBy}
+                  />
+                  <TableBody>
+                    {sortedStockReport.map((value, index) => (
+                      <TableRow key={index}>
+                        <TableCell>{index + 1}</TableCell>
+                        <TableCell>{value.product_name}</TableCell>
+                        <TableCell>{value.customer_name}</TableCell>
+                        <TableCell>
+                          {Number(value.product_in).toLocaleString("id-ID")}
+                        </TableCell>
+                        <TableCell>
+                          {Number(value.product_out).toLocaleString("id-ID")}
+                        </TableCell>
+                        <TableCell>
+                          {Number(
+                            value.product_in - value.product_out
+                          ).toLocaleString("id-ID")}
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </TableContainer>
+            </div>
           </div>
         </div>
-        <div className="product-in-list w-100 d-flex flex-column">
-          <div className="mui-table-container">
-            <TableContainer component={Paper} sx={{ padding: 2 }}>
-              <Table>
-                <EnhancedTableHead
-                  onRequestSort={handleRequestSort}
-                  order={order}
-                  orderBy={orderBy}
-                />
-                <TableBody>
-                  {sortedStockReport.map((value, index) => (
-                    <TableRow key={index}>
-                      <TableCell>{index + 1}</TableCell>
-                      <TableCell>{value.product_name}</TableCell>
-                      <TableCell>{value.customer_name}</TableCell>
-                      <TableCell>
-                        {Number(value.product_in).toLocaleString("id-ID")}
-                      </TableCell>
-                      <TableCell>
-                        {Number(value.product_out).toLocaleString("id-ID")}
-                      </TableCell>
-                      <TableCell>
-                        {Number(
-                          value.product_in - value.product_out
-                        ).toLocaleString("id-ID")}
-                      </TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            </TableContainer>
-          </div>
-        </div>
-      </div>
+      </PageLayout>
     </>
   );
 }

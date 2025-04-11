@@ -23,6 +23,7 @@ import { startOfToday, startOfTomorrow } from "date-fns";
 import { Order } from "../../../enum/SortOrder";
 import React from "react";
 import { useCostReport } from "../hooks/cost-report.hooks";
+import PageLayout from "../../../components/page-location";
 
 export interface ICostReportData {
   initial_balance: number;
@@ -226,171 +227,185 @@ export function CostReportPage() {
 
   return (
     <>
-      <div className="container-fluid m-0 p-0">
-        <div className="row">
-          <div className="col-md-6 position-relative mb-2">
-            <StartDatePicker
-              idDatePicker="tanggal-awal"
-              titleText="Tanggal Awal"
-              datetime={false}
-              value={startDate}
-              onDateClick={(date: Date) => {
-                setStartDate(date);
+      <PageLayout title="Report" items={["Cost Report"]}>
+        <div className="container-fluid m-0 p-0">
+          <div className="row">
+            <div className="col-md-6 position-relative mb-2">
+              <StartDatePicker
+                idDatePicker="tanggal-awal"
+                titleText="Tanggal Awal"
+                datetime={false}
+                value={startDate}
+                onDateClick={(date: Date) => {
+                  setStartDate(date);
+                }}
+              />
+            </div>
+            <div className="col-md-6 position-relative mb-2">
+              <EndDatePicker
+                idDatePicker="tanggal-akhir"
+                titleText="Tanggal Akhir"
+                datetime={false}
+                value={endDate}
+                onDateClick={(date: Date) => {
+                  setEndDate(date);
+                }}
+              />
+            </div>
+          </div>
+          <div className="container-fluid d-flex my-4 flex-wrap justify-content-center gap-2">
+            <div
+              className="badge rounded-pill text-black p-2 px-4 fw-normal blue-lighten"
+              style={{
+                fontSize: "13px",
+                maxHeight: "37.5px",
               }}
-            />
-          </div>
-          <div className="col-md-6 position-relative mb-2">
-            <EndDatePicker
-              idDatePicker="tanggal-akhir"
-              titleText="Tanggal Akhir"
-              datetime={false}
-              value={endDate}
-              onDateClick={(date: Date) => {
-                setEndDate(date);
+            >
+              Initial Balance :{" "}
+              {summary?.initial
+                ? Number(summary.initial).toLocaleString("id-ID")
+                : 0}
+            </div>
+            <div
+              className="badge rounded-pill text-black p-2 px-4 fw-normal green-lighten"
+              style={{
+                fontSize: "13px",
+                maxHeight: "37.5px",
               }}
-            />
+            >
+              Total In :{" "}
+              {summary?.totalIn
+                ? Number(summary.totalIn).toLocaleString("id-ID")
+                : 0}
+            </div>
+            <div
+              className="badge rounded-pill text-black p-2 px-4 red-lighten fw-normal"
+              style={{
+                fontSize: "13px",
+                maxHeight: "37.5px",
+              }}
+            >
+              Total Out :{" "}
+              {summary?.totalOut
+                ? Number(summary.totalOut).toLocaleString("id-ID")
+                : 0}
+            </div>
+            <div
+              className="badge rounded-pill teal-lighten text-black p-2 px-4 fw-normal"
+              style={{
+                fontSize: "13px",
+                maxHeight: "37.5px",
+              }}
+            >
+              Final Balance :{" "}
+              {summary?.final
+                ? Number(summary.final).toLocaleString("id-ID")
+                : 0}
+            </div>
           </div>
-        </div>
-        <div className="container-fluid d-flex my-4 flex-wrap justify-content-center gap-2">
-          <div
-            className="badge rounded-pill text-black p-2 px-4 fw-normal blue-lighten"
-            style={{
-              fontSize: "13px",
-              maxHeight: "37.5px",
-            }}
-          >
-            Initial Balance :{" "}
-            {summary?.initial
-              ? Number(summary.initial).toLocaleString("id-ID")
-              : 0}
-          </div>
-          <div
-            className="badge rounded-pill text-black p-2 px-4 fw-normal green-lighten"
-            style={{
-              fontSize: "13px",
-              maxHeight: "37.5px",
-            }}
-          >
-            Total In :{" "}
-            {summary?.totalIn
-              ? Number(summary.totalIn).toLocaleString("id-ID")
-              : 0}
-          </div>
-          <div
-            className="badge rounded-pill text-black p-2 px-4 red-lighten fw-normal"
-            style={{
-              fontSize: "13px",
-              maxHeight: "37.5px",
-            }}
-          >
-            Total Out :{" "}
-            {summary?.totalOut
-              ? Number(summary.totalOut).toLocaleString("id-ID")
-              : 0}
-          </div>
-          <div
-            className="badge rounded-pill teal-lighten text-black p-2 px-4 fw-normal"
-            style={{
-              fontSize: "13px",
-              maxHeight: "37.5px",
-            }}
-          >
-            Final Balance :{" "}
-            {summary?.final ? Number(summary.final).toLocaleString("id-ID") : 0}
-          </div>
-        </div>
-        <div className="product-in-list w-100 d-flex flex-column">
-          <div className="mui-table-container">
-            <TableContainer component={Paper} sx={{ padding: 2 }}>
-              <Table>
-                <EnhancedTableHead
-                  onRequestSort={handleRequestSort}
-                  order={order}
-                  orderBy={orderBy}
-                />
-                <TableBody>
-                  {!isLoading && data ? (
-                    <>
-                      {/* Initial Stock Row */}
-                      <TableRow className="blue-lighten">
-                        <TableCell>1</TableCell>
-                        <TableCell>
-                          {new Date().toLocaleString("en-GB")}
-                        </TableCell>
-                        <TableCell>INITIAL BALANCE</TableCell>
-                        <TableCell className="text-start">
-                          {Number(data.initial_balance).toLocaleString("id-ID")}
-                        </TableCell>
-                        <TableCell className="text-center">
-                          {Number(data.initial_balance).toLocaleString("id-ID")}
-                        </TableCell>
-                      </TableRow>
-
-                      {/* Transaction Rows */}
-                      {sortedTransactions.map((transaction, index) => (
-                        <TableRow
-                          key={index}
-                          className={`${
-                            transaction.type === "in"
-                              ? "green-lighten"
-                              : "red-lighten"
-                          }`}
-                        >
-                          <TableCell>{index + 2}</TableCell>
+          <div className="product-in-list w-100 d-flex flex-column">
+            <div className="mui-table-container">
+              <TableContainer component={Paper} sx={{ padding: 2 }}>
+                <Table>
+                  <EnhancedTableHead
+                    onRequestSort={handleRequestSort}
+                    order={order}
+                    orderBy={orderBy}
+                  />
+                  <TableBody>
+                    {!isLoading && data ? (
+                      <>
+                        {/* Initial Stock Row */}
+                        <TableRow className="blue-lighten">
+                          <TableCell>1</TableCell>
                           <TableCell>
-                            {new Date(transaction.date).toLocaleString("en-GB")}
+                            {new Date().toLocaleString("en-GB")}
                           </TableCell>
-                          <TableCell>
-                            {`${transaction.type === "in" ? "In" : "Out"}`}
-                          </TableCell>
+                          <TableCell>INITIAL BALANCE</TableCell>
                           <TableCell className="text-start">
-                            {`${transaction.type === "in" ? "+" : "-"} ${Number(
-                              transaction.amount
-                            ).toLocaleString("id-ID")}`}
+                            {Number(data.initial_balance).toLocaleString(
+                              "id-ID"
+                            )}
                           </TableCell>
                           <TableCell className="text-center">
-                            {Number(transaction.final_qty).toLocaleString(
+                            {Number(data.initial_balance).toLocaleString(
                               "id-ID"
                             )}
                           </TableCell>
                         </TableRow>
-                      ))}
 
-                      {/* Final Stock Row */}
-                      <TableRow className="blue-lighten">
-                        <TableCell>{sortedTransactions.length + 2}</TableCell>
-                        <TableCell>
-                          {new Date().toLocaleString("en-GB")}
-                        </TableCell>
-                        <TableCell>FINAL BALANCE</TableCell>
-                        <TableCell className="text-start">
-                          {Number(data.final_balance).toLocaleString("id-ID")}
-                        </TableCell>
-                        <TableCell className="text-center">
-                          {Number(data.final_balance).toLocaleString("id-ID")}
+                        {/* Transaction Rows */}
+                        {sortedTransactions.map((transaction, index) => (
+                          <TableRow
+                            key={index}
+                            className={`${
+                              transaction.type === "in"
+                                ? "green-lighten"
+                                : "red-lighten"
+                            }`}
+                          >
+                            <TableCell>{index + 2}</TableCell>
+                            <TableCell>
+                              {new Date(transaction.date).toLocaleString(
+                                "en-GB"
+                              )}
+                            </TableCell>
+                            <TableCell>
+                              {`${transaction.type === "in" ? "In" : "Out"}`}
+                            </TableCell>
+                            <TableCell className="text-start">
+                              {`${
+                                transaction.type === "in" ? "+" : "-"
+                              } ${Number(transaction.amount).toLocaleString(
+                                "id-ID"
+                              )}`}
+                            </TableCell>
+                            <TableCell className="text-center">
+                              {Number(transaction.final_qty).toLocaleString(
+                                "id-ID"
+                              )}
+                            </TableCell>
+                          </TableRow>
+                        ))}
+
+                        {/* Final Stock Row */}
+                        <TableRow className="blue-lighten">
+                          <TableCell>{sortedTransactions.length + 2}</TableCell>
+                          <TableCell>
+                            {new Date().toLocaleString("en-GB")}
+                          </TableCell>
+                          <TableCell>FINAL BALANCE</TableCell>
+                          <TableCell className="text-start">
+                            {Number(data.final_balance).toLocaleString("id-ID")}
+                          </TableCell>
+                          <TableCell className="text-center">
+                            {Number(data.final_balance).toLocaleString("id-ID")}
+                          </TableCell>
+                        </TableRow>
+                      </>
+                    ) : (
+                      <TableRow>
+                        <TableCell colSpan={6}>
+                          <div className="w-100 d-flex justify-content-center">
+                            <div
+                              className="spinner-border d-flex justify-content-center"
+                              role="status"
+                            >
+                              <span className="visually-hidden">
+                                Loading...
+                              </span>
+                            </div>
+                          </div>
                         </TableCell>
                       </TableRow>
-                    </>
-                  ) : (
-                    <TableRow>
-                      <TableCell colSpan={6}>
-                        <div className="w-100 d-flex justify-content-center">
-                          <div
-                            className="spinner-border d-flex justify-content-center"
-                            role="status"
-                          >
-                            <span className="visually-hidden">Loading...</span>
-                          </div>
-                        </div>
-                      </TableCell>
-                    </TableRow>
-                  )}
-                </TableBody>
-              </Table>
-            </TableContainer>
+                    )}
+                  </TableBody>
+                </Table>
+              </TableContainer>
+            </div>
           </div>
         </div>
-      </div>
+      </PageLayout>
     </>
   );
 }

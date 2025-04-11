@@ -26,6 +26,7 @@ import { MdLocalPrintshop } from "react-icons/md";
 import { InvoiceListService } from "../services/invoice-list.service";
 import { generateJastipInvoiceTemplate } from "../../template/invoice.template";
 import { generateSpbHtml } from "../../template/spb.template";
+import PageLayout from "../../../components/page-location";
 
 interface Product {
   id: number;
@@ -427,209 +428,215 @@ export default function InvoiceListPage() {
 
   return (
     <>
-      <div className="container-fluid m-0 p-0">
-        <div className="row mb-4">
-          <div className="col-md-6 col-lg-4 position-relative mb-2">
-            <StartDatePicker
-              idDatePicker="tanggal-awal-masuk-barang"
-              titleText="Tanggal Awal"
-              datetime={false}
-              value={startDate}
-              onDateClick={(date: Date) => {
-                setStartDate(date);
-              }}
-            />
-          </div>
-          <div className="col-md-6 col-lg-4 position-relative mb-2">
-            <EndDatePicker
-              idDatePicker="tanggal-akhir-masuk-barang"
-              titleText="Tanggal Akhir"
-              datetime={false}
-              value={endDate}
-              onDateClick={(date: Date) => {
-                setEndDate(date);
-              }}
-            />
-          </div>
-          <div className="col-md-6 col-lg-4 position-relative mb-2">
-            <DropdownSecondStyle
-              id="Status"
-              label="Status *"
-              value={status}
-              options={[
-                {
-                  id: ArStatus.PENDING,
-                  name: "Belum Lunas",
-                },
-                { id: ArStatus.COMPLETED, name: "Lunas" },
-              ].map((customer) => ({
-                value: customer.id.toString(),
-                label: customer.name,
-              }))}
-              onChange={handleStatusDropdownChange}
-            />
-          </div>
-
-          <div className="col-md-6 col-lg-4 position-relative mb-2">
-            <DropdownSecondStyle
-              id="customer"
-              label="Customer *"
-              value={customerId}
-              options={customers.map((customer) => ({
-                value: customer.id.toString(),
-                label: customer.name,
-              }))}
-              onChange={handleCustomerDropdownChange}
-              icon={<FaBox />}
-            />
-          </div>
-        </div>
-      </div>
-      <div className="w-100 d-flex flex-column">
-        <div className="mui-table-container">
-          <Box sx={{ width: "100%" }}>
-            <Paper sx={{ width: "100%", mb: 2 }}>
-              <TableContainer>
-                <Table sx={{ minWidth: 750 }} aria-labelledby="tableTitle">
-                  <EnhancedTableHead
-                    numSelected={selected.length}
-                    order={order}
-                    orderBy={orderBy}
-                    onSelectAllClick={handleSelectAllClick}
-                    onRequestSort={handleRequestSort}
-                    rowCount={response?.data.length}
-                  />
-                  <TableBody>
-                    {response.data && !isLoading ? (
-                      <>
-                        {response.data.map((row, index) => {
-                          const isItemSelected = selected.includes(row.id);
-                          const labelId = `enhanced-table-checkbox-${index}`;
-
-                          return (
-                            <TableRow
-                              hover
-                              onClick={(event) => handleClick(event, row.id)}
-                              role="checkbox"
-                              aria-checked={isItemSelected}
-                              tabIndex={-1}
-                              key={row.id}
-                              selected={isItemSelected}
-                              sx={{
-                                cursor: "pointer",
-                                border: 1, // Add border to row
-                                borderColor: "divider", // Use theme's divider color
-                                "&:hover": {
-                                  borderColor: "primary.main", // Change border color on hover
-                                },
-                                // Remove cell borders
-                                "& .MuiTableCell-root": {
-                                  border: "none",
-                                  "&:last-child": {
-                                    paddingRight: "16px", // Maintain padding
-                                  },
-                                },
-                              }}
-                            >
-                              <TableCell padding="checkbox">
-                                <Checkbox
-                                  color="primary"
-                                  checked={isItemSelected}
-                                  inputProps={{
-                                    "aria-labelledby": labelId,
-                                  }}
-                                />
-                              </TableCell>
-                              <TableCell
-                                component="th"
-                                id={labelId}
-                                scope="row"
-                              >
-                                {new Date(row.created_at).toDateString()}
-                              </TableCell>
-                              <TableCell align="left">
-                                {row.invoice_no}
-                              </TableCell>
-                              <TableCell align="left">
-                                {row.customer.name}
-                              </TableCell>
-                              <TableCell align="left">{row.status}</TableCell>
-                              <TableCell align="left">
-                                {Number(row.total_amount).toLocaleString(
-                                  "id-ID"
-                                )}
-                              </TableCell>
-                              <TableCell align="left">
-                                <div className="btn-group" role="group">
-                                  <button
-                                    type="button"
-                                    className="btn btn-primary dropdown-toggle round-0 d-flex justify-content-center align-items-center gap-2"
-                                    data-bs-toggle="dropdown"
-                                    aria-expanded="false"
-                                  >
-                                    <MdLocalPrintshop />
-                                    Cetak
-                                  </button>
-                                  <ul className="dropdown-menu">
-                                    <li>
-                                      <button
-                                        className="dropdown-item"
-                                        onClick={() => handlePrintSpb(row.id)}
-                                      >
-                                        Print SPB
-                                      </button>
-                                    </li>
-                                    <li>
-                                      <button
-                                        className="dropdown-item"
-                                        onClick={() =>
-                                          handlePrintInvoice(row.id)
-                                        }
-                                      >
-                                        Print Invoice
-                                      </button>
-                                    </li>
-                                  </ul>
-                                </div>{" "}
-                              </TableCell>
-                            </TableRow>
-                          );
-                        })}
-                      </>
-                    ) : (
-                      <TableRow>
-                        <TableCell colSpan={7}>
-                          <div className="w-100 d-flex justify-content-center">
-                            <div
-                              className="spinner-border d-flex justify-content-center"
-                              role="status"
-                            >
-                              <span className="visually-hidden">
-                                Loading...
-                              </span>
-                            </div>
-                          </div>
-                        </TableCell>
-                      </TableRow>
-                    )}
-                  </TableBody>
-                </Table>
-              </TableContainer>
-              <TablePagination
-                rowsPerPageOptions={[5, 10, 25]}
-                component="div"
-                count={response.data.length > 0 ? response.meta.total_count : 0}
-                rowsPerPage={
-                  response.data.length > 0 ? response.meta.page_size : 5
-                }
-                page={response.data.length > 0 ? response.meta.page_no - 1 : 0}
-                onPageChange={handleChangePage}
-                onRowsPerPageChange={handleChangeRowsPerPage}
+      <PageLayout title="Report" items={["Daftar Invoice"]}>
+        <div className="container-fluid m-0 p-0">
+          <div className="row mb-4">
+            <div className="col-md-6 col-lg-4 position-relative mb-2">
+              <StartDatePicker
+                idDatePicker="tanggal-awal-masuk-barang"
+                titleText="Tanggal Awal"
+                datetime={false}
+                value={startDate}
+                onDateClick={(date: Date) => {
+                  setStartDate(date);
+                }}
               />
-            </Paper>
-          </Box>
+            </div>
+            <div className="col-md-6 col-lg-4 position-relative mb-2">
+              <EndDatePicker
+                idDatePicker="tanggal-akhir-masuk-barang"
+                titleText="Tanggal Akhir"
+                datetime={false}
+                value={endDate}
+                onDateClick={(date: Date) => {
+                  setEndDate(date);
+                }}
+              />
+            </div>
+            <div className="col-md-6 col-lg-4 position-relative mb-2">
+              <DropdownSecondStyle
+                id="Status"
+                label="Status *"
+                value={status}
+                options={[
+                  {
+                    id: ArStatus.PENDING,
+                    name: "Belum Lunas",
+                  },
+                  { id: ArStatus.COMPLETED, name: "Lunas" },
+                ].map((customer) => ({
+                  value: customer.id.toString(),
+                  label: customer.name,
+                }))}
+                onChange={handleStatusDropdownChange}
+              />
+            </div>
+
+            <div className="col-md-6 col-lg-4 position-relative mb-2">
+              <DropdownSecondStyle
+                id="customer"
+                label="Customer *"
+                value={customerId}
+                options={customers.map((customer) => ({
+                  value: customer.id.toString(),
+                  label: customer.name,
+                }))}
+                onChange={handleCustomerDropdownChange}
+                icon={<FaBox />}
+              />
+            </div>
+          </div>
         </div>
-      </div>
+        <div className="w-100 d-flex flex-column">
+          <div className="mui-table-container">
+            <Box sx={{ width: "100%" }}>
+              <Paper sx={{ width: "100%", mb: 2 }}>
+                <TableContainer>
+                  <Table sx={{ minWidth: 750 }} aria-labelledby="tableTitle">
+                    <EnhancedTableHead
+                      numSelected={selected.length}
+                      order={order}
+                      orderBy={orderBy}
+                      onSelectAllClick={handleSelectAllClick}
+                      onRequestSort={handleRequestSort}
+                      rowCount={response?.data.length}
+                    />
+                    <TableBody>
+                      {response.data && !isLoading ? (
+                        <>
+                          {response.data.map((row, index) => {
+                            const isItemSelected = selected.includes(row.id);
+                            const labelId = `enhanced-table-checkbox-${index}`;
+
+                            return (
+                              <TableRow
+                                hover
+                                onClick={(event) => handleClick(event, row.id)}
+                                role="checkbox"
+                                aria-checked={isItemSelected}
+                                tabIndex={-1}
+                                key={row.id}
+                                selected={isItemSelected}
+                                sx={{
+                                  cursor: "pointer",
+                                  border: 1, // Add border to row
+                                  borderColor: "divider", // Use theme's divider color
+                                  "&:hover": {
+                                    borderColor: "primary.main", // Change border color on hover
+                                  },
+                                  // Remove cell borders
+                                  "& .MuiTableCell-root": {
+                                    border: "none",
+                                    "&:last-child": {
+                                      paddingRight: "16px", // Maintain padding
+                                    },
+                                  },
+                                }}
+                              >
+                                <TableCell padding="checkbox">
+                                  <Checkbox
+                                    color="primary"
+                                    checked={isItemSelected}
+                                    inputProps={{
+                                      "aria-labelledby": labelId,
+                                    }}
+                                  />
+                                </TableCell>
+                                <TableCell
+                                  component="th"
+                                  id={labelId}
+                                  scope="row"
+                                >
+                                  {new Date(row.created_at).toDateString()}
+                                </TableCell>
+                                <TableCell align="left">
+                                  {row.invoice_no}
+                                </TableCell>
+                                <TableCell align="left">
+                                  {row.customer.name}
+                                </TableCell>
+                                <TableCell align="left">{row.status}</TableCell>
+                                <TableCell align="left">
+                                  {Number(row.total_amount).toLocaleString(
+                                    "id-ID"
+                                  )}
+                                </TableCell>
+                                <TableCell align="left">
+                                  <div className="btn-group" role="group">
+                                    <button
+                                      type="button"
+                                      className="btn btn-primary dropdown-toggle round-0 d-flex justify-content-center align-items-center gap-2"
+                                      data-bs-toggle="dropdown"
+                                      aria-expanded="false"
+                                    >
+                                      <MdLocalPrintshop />
+                                      Cetak
+                                    </button>
+                                    <ul className="dropdown-menu">
+                                      <li>
+                                        <button
+                                          className="dropdown-item"
+                                          onClick={() => handlePrintSpb(row.id)}
+                                        >
+                                          Print SPB
+                                        </button>
+                                      </li>
+                                      <li>
+                                        <button
+                                          className="dropdown-item"
+                                          onClick={() =>
+                                            handlePrintInvoice(row.id)
+                                          }
+                                        >
+                                          Print Invoice
+                                        </button>
+                                      </li>
+                                    </ul>
+                                  </div>{" "}
+                                </TableCell>
+                              </TableRow>
+                            );
+                          })}
+                        </>
+                      ) : (
+                        <TableRow>
+                          <TableCell colSpan={7}>
+                            <div className="w-100 d-flex justify-content-center">
+                              <div
+                                className="spinner-border d-flex justify-content-center"
+                                role="status"
+                              >
+                                <span className="visually-hidden">
+                                  Loading...
+                                </span>
+                              </div>
+                            </div>
+                          </TableCell>
+                        </TableRow>
+                      )}
+                    </TableBody>
+                  </Table>
+                </TableContainer>
+                <TablePagination
+                  rowsPerPageOptions={[5, 10, 25]}
+                  component="div"
+                  count={
+                    response.data.length > 0 ? response.meta.total_count : 0
+                  }
+                  rowsPerPage={
+                    response.data.length > 0 ? response.meta.page_size : 5
+                  }
+                  page={
+                    response.data.length > 0 ? response.meta.page_no - 1 : 0
+                  }
+                  onPageChange={handleChangePage}
+                  onRowsPerPageChange={handleChangeRowsPerPage}
+                />
+              </Paper>
+            </Box>
+          </div>
+        </div>
+      </PageLayout>
     </>
   );
 }

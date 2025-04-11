@@ -24,6 +24,7 @@ import { visuallyHidden } from "@mui/utils";
 import { Order } from "../../../enum/SortOrder";
 import { IStockReportData } from "./stock-report";
 import { useCustomerProductReport } from "../hooks/customer-product.hooks";
+import PageLayout from "../../../components/page-location";
 
 type TableData = IStockReportData & { final_qty: number };
 const columns: HeadCell<TableData>[] = [
@@ -151,77 +152,83 @@ export function CustomerProductStockPage() {
 
   return (
     <>
-      <div className="container-fluid m-0 p-0">
-        <div className="row">
-          <div className="col-md-6 position-relative">
-            <EndDatePicker
-              idDatePicker="tanggal-akhir"
-              titleText="End Date"
-              value={endDate}
-              onDateClick={(date: Date) => {
-                setEndDate(date);
-              }}
-              datetime={false}
-            />
+      <PageLayout title="Report" items={["Customer Product Stock"]}>
+        <div className="container-fluid m-0 p-0">
+          <div className="row">
+            <div className="col-md-6 position-relative">
+              <EndDatePicker
+                idDatePicker="tanggal-akhir"
+                titleText="End Date"
+                value={endDate}
+                onDateClick={(date: Date) => {
+                  setEndDate(date);
+                }}
+                datetime={false}
+              />
+            </div>
           </div>
-        </div>
-        <div className="w-100 d-flex flex-column">
-          <div className="mui-table-container">
-            <TableContainer component={Paper} sx={{ padding: 2 }}>
-              <Table>
-                <EnhancedTableHead
-                  onRequestSort={handleRequestSort}
-                  order={order}
-                  orderBy={orderBy}
-                />
-                <TableBody>
-                  {!isLoading ? (
-                    <>
-                      {sortedCustomerProductReport.map((value, index) => (
-                        <TableRow key={index}>
-                          <TableCell>{index + 1}</TableCell>
-                          <TableCell>{value.product_name}</TableCell>
-                          <TableCell>{value.customer_name}</TableCell>
-                          <TableCell>
+          <div className="w-100 d-flex flex-column">
+            <div className="mui-table-container">
+              <TableContainer component={Paper} sx={{ padding: 2 }}>
+                <Table>
+                  <EnhancedTableHead
+                    onRequestSort={handleRequestSort}
+                    order={order}
+                    orderBy={orderBy}
+                  />
+                  <TableBody>
+                    {!isLoading ? (
+                      <>
+                        {sortedCustomerProductReport.map((value, index) => (
+                          <TableRow key={index}>
+                            <TableCell>{index + 1}</TableCell>
+                            <TableCell>{value.product_name}</TableCell>
+                            <TableCell>{value.customer_name}</TableCell>
+                            <TableCell>
+                              {Number(
+                                value.product_in - value.product_out
+                              ).toLocaleString("id-ID")}
+                            </TableCell>
+                          </TableRow>
+                        ))}
+                        <TableRow>
+                          <TableCell colSpan={2}></TableCell>
+                          <TableCell sx={{ fontWeight: "bold" }}>
+                            Total
+                          </TableCell>
+                          <TableCell sx={{ fontWeight: "bold" }}>
                             {Number(
-                              value.product_in - value.product_out
+                              sortedCustomerProductReport.reduce(
+                                (sum, t) => sum + t.product_in - t.product_out,
+                                0
+                              )
                             ).toLocaleString("id-ID")}
                           </TableCell>
                         </TableRow>
-                      ))}
+                      </>
+                    ) : (
                       <TableRow>
-                        <TableCell colSpan={2}></TableCell>
-                        <TableCell sx={{ fontWeight: "bold" }}>Total</TableCell>
-                        <TableCell sx={{ fontWeight: "bold" }}>
-                          {Number(
-                            sortedCustomerProductReport.reduce(
-                              (sum, t) => sum + t.product_in - t.product_out,
-                              0
-                            )
-                          ).toLocaleString("id-ID")}
+                        <TableCell colSpan={4}>
+                          <div className="w-100 d-flex justify-content-center">
+                            <div
+                              className="spinner-border d-flex justify-content-center"
+                              role="status"
+                            >
+                              <span className="visually-hidden">
+                                Loading...
+                              </span>
+                            </div>
+                          </div>
                         </TableCell>
                       </TableRow>
-                    </>
-                  ) : (
-                    <TableRow>
-                      <TableCell colSpan={4}>
-                        <div className="w-100 d-flex justify-content-center">
-                          <div
-                            className="spinner-border d-flex justify-content-center"
-                            role="status"
-                          >
-                            <span className="visually-hidden">Loading...</span>
-                          </div>
-                        </div>
-                      </TableCell>
-                    </TableRow>
-                  )}
-                </TableBody>
-              </Table>
-            </TableContainer>
+                    )}
+                  </TableBody>
+                </Table>
+              </TableContainer>
+            </div>
           </div>
         </div>
-      </div>
+      </PageLayout>
     </>
   );
 }

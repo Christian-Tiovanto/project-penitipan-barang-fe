@@ -29,6 +29,7 @@ import DropdownSecondStyle from "../../../components/dropdown-2";
 import { getAllCustomers } from "../../customer/services/customer.service";
 import { Customer } from "../../customer-payment/pages/update-customer-payment";
 import React from "react";
+import PageLayout from "../../../components/page-location";
 
 export interface IStockBookData {
   initial_qty: number;
@@ -196,14 +197,6 @@ export function StockBookPage() {
     customerId: "",
     productId: "",
   });
-  const fetchCustomers = async () => {
-    try {
-      const customers = await getAllCustomers();
-      setCustomers(customers);
-    } catch (error) {
-      console.error("Error fetching customers:", error);
-    }
-  };
 
   // In your component, remove the early return and use:
   const { data, isLoading } = useStockBookReport(productId, customerId, {
@@ -220,6 +213,13 @@ export function StockBookPage() {
     setOrderBy(property);
   };
 
+  const handleProductDropdownChange = (value: string) => {
+    setProductId(value);
+  };
+  const handleCustomerDropdownChange = (value: string) => {
+    setCustomerId(value);
+  };
+
   const fetchProducts = async () => {
     try {
       const products = await getAllProducts();
@@ -228,14 +228,14 @@ export function StockBookPage() {
       console.error("Error fetching products:", error);
     }
   };
-
-  const handleProductDropdownChange = (value: string) => {
-    setProductId(value);
+  const fetchCustomers = async () => {
+    try {
+      const customers = await getAllCustomers();
+      setCustomers(customers);
+    } catch (error) {
+      console.error("Error fetching customers:", error);
+    }
   };
-  const handleCustomerDropdownChange = (value: string) => {
-    setCustomerId(value);
-  };
-
   useEffect(() => {
     fetchProducts();
     fetchCustomers();
@@ -285,204 +285,212 @@ export function StockBookPage() {
 
   return (
     <>
-      <div className="container-fluid m-0 p-0">
-        <div className="row">
-          <div className="col-md-6 col-lg-4 position-relative mb-2">
-            <StartDatePicker
-              idDatePicker="tanggal-awal"
-              titleText="Start Date"
-              datetime={false}
-              value={startDate}
-              onDateClick={(date: Date) => {
-                setStartDate(date);
+      <PageLayout title="Report" items={["Stock Book"]}>
+        <div className="container-fluid m-0 p-0">
+          <div className="row">
+            <div className="col-md-6 col-lg-4 position-relative mb-2">
+              <StartDatePicker
+                idDatePicker="tanggal-awal"
+                titleText="Start Date"
+                datetime={false}
+                value={startDate}
+                onDateClick={(date: Date) => {
+                  setStartDate(date);
+                }}
+              />
+            </div>
+            <div className="col-md-6 col-lg-4 position-relative mb-2">
+              <EndDatePicker
+                idDatePicker="tanggal-akhir"
+                titleText="End Date"
+                datetime={false}
+                value={endDate}
+                onDateClick={(date: Date) => {
+                  setEndDate(date);
+                }}
+              />
+            </div>
+            <div className="col-md-6 col-lg-4 position-relative">
+              <DropdownSecondStyle
+                id="product"
+                label="Product *"
+                value={productId}
+                options={products.map((product) => ({
+                  value: product.id.toString(),
+                  label: product.name,
+                }))}
+                onChange={handleProductDropdownChange}
+                error={!!errors.productId}
+                errorMessage={errors.productId}
+                icon={<FaBox />}
+              />
+            </div>
+            <div className="col-md-6 col-lg-4 position-relative">
+              <DropdownSecondStyle
+                id="customer"
+                label="Customer *"
+                value={customerId}
+                options={customers.map((customer) => ({
+                  value: customer.id.toString(),
+                  label: customer.name,
+                }))}
+                onChange={handleCustomerDropdownChange}
+                error={!!errors.customerId}
+                errorMessage={errors.customerId}
+                icon={<FaBox />}
+              />
+            </div>
+          </div>
+          <div className="container-fluid d-flex my-4 flex-wrap justify-content-center gap-2">
+            <div
+              className="badge rounded-pill text-black p-2 px-4 fw-normal blue-lighten"
+              style={{
+                fontSize: "13px",
+                maxHeight: "37.5px",
               }}
-            />
-          </div>
-          <div className="col-md-6 col-lg-4 position-relative mb-2">
-            <EndDatePicker
-              idDatePicker="tanggal-akhir"
-              titleText="End Date"
-              datetime={false}
-              value={endDate}
-              onDateClick={(date: Date) => {
-                setEndDate(date);
+            >
+              Stok Awal :{" "}
+              {summary?.initial
+                ? Number(summary.initial).toLocaleString("id-ID")
+                : 0}
+            </div>
+            <div
+              className="badge rounded-pill text-black p-2 px-4 fw-normal green-lighten"
+              style={{
+                fontSize: "13px",
+                maxHeight: "37.5px",
               }}
-            />
+            >
+              Total Masuk :{" "}
+              {summary?.totalIn
+                ? Number(summary.totalIn).toLocaleString("id-ID")
+                : 0}
+            </div>
+            <div
+              className="badge rounded-pill text-black p-2 px-4 fw-normal red-lighten"
+              style={{
+                fontSize: "13px",
+                maxHeight: "37.5px",
+              }}
+            >
+              Total keluar :{" "}
+              {summary?.totalOut
+                ? Number(summary.totalOut).toLocaleString("id-ID")
+                : 0}
+            </div>
+            <div
+              className="badge rounded-pill text-black p-2 px-4 fw-normal teal-lighten"
+              style={{
+                fontSize: "13px",
+                maxHeight: "37.5px",
+              }}
+            >
+              Stok Akhir :{" "}
+              {summary?.final
+                ? Number(summary.final).toLocaleString("id-ID")
+                : 0}
+            </div>
           </div>
-          <div className="col-md-6 col-lg-4 position-relative">
-            <DropdownSecondStyle
-              id="product"
-              label="Product *"
-              value={productId}
-              options={products.map((product) => ({
-                value: product.id.toString(),
-                label: product.name,
-              }))}
-              onChange={handleProductDropdownChange}
-              error={!!errors.productId}
-              errorMessage={errors.productId}
-              icon={<FaBox />}
-            />
-          </div>
-          <div className="col-md-6 col-lg-4 position-relative">
-            <DropdownSecondStyle
-              id="customer"
-              label="Customer *"
-              value={customerId}
-              options={customers.map((customer) => ({
-                value: customer.id.toString(),
-                label: customer.name,
-              }))}
-              onChange={handleCustomerDropdownChange}
-              error={!!errors.customerId}
-              errorMessage={errors.customerId}
-              icon={<FaBox />}
-            />
-          </div>
-        </div>
-        <div className="container-fluid d-flex my-4 flex-wrap justify-content-center gap-2">
-          <div
-            className="badge rounded-pill text-black p-2 px-4 fw-normal blue-lighten"
-            style={{
-              fontSize: "13px",
-              maxHeight: "37.5px",
-            }}
-          >
-            Stok Awal :{" "}
-            {summary?.initial
-              ? Number(summary.initial).toLocaleString("id-ID")
-              : 0}
-          </div>
-          <div
-            className="badge rounded-pill text-black p-2 px-4 fw-normal green-lighten"
-            style={{
-              fontSize: "13px",
-              maxHeight: "37.5px",
-            }}
-          >
-            Total Masuk :{" "}
-            {summary?.totalIn
-              ? Number(summary.totalIn).toLocaleString("id-ID")
-              : 0}
-          </div>
-          <div
-            className="badge rounded-pill text-black p-2 px-4 fw-normal red-lighten"
-            style={{
-              fontSize: "13px",
-              maxHeight: "37.5px",
-            }}
-          >
-            Total keluar :{" "}
-            {summary?.totalOut
-              ? Number(summary.totalOut).toLocaleString("id-ID")
-              : 0}
-          </div>
-          <div
-            className="badge rounded-pill text-black p-2 px-4 fw-normal teal-lighten"
-            style={{
-              fontSize: "13px",
-              maxHeight: "37.5px",
-            }}
-          >
-            Stok Akhir :{" "}
-            {summary?.final ? Number(summary.final).toLocaleString("id-ID") : 0}
-          </div>
-        </div>
-        <div className="product-in-list w-100 d-flex flex-column">
-          <div className="mui-table-container">
-            <TableContainer component={Paper} sx={{ padding: 2 }}>
-              <Table>
-                <EnhancedTableHead
-                  onRequestSort={handleRequestSort}
-                  order={order}
-                  orderBy={orderBy}
-                />
-                <TableBody>
-                  {productId && customerId && data && !isLoading ? (
-                    <>
-                      {/* Initial Stock Row */}
-                      <TableRow className="blue-lighten">
-                        <TableCell>1</TableCell>
-                        <TableCell>
-                          {new Date().toLocaleString("en-GB")}
-                        </TableCell>
-                        <TableCell>INITIAL STOCK</TableCell>
-                        <TableCell>{data.product.name}</TableCell>
-                        <TableCell className="text-end">
-                          {data.initial_qty}
-                        </TableCell>
-                        <TableCell className="text-end">
-                          {Number(data.initial_qty).toLocaleString("id-ID")}
-                        </TableCell>
-                      </TableRow>
-
-                      {/* Transaction Rows */}
-                      {sortedTransactions.map((transaction, index) => (
-                        <TableRow
-                          key={index}
-                          className={`${
-                            transaction.type === "Add"
-                              ? "green-lighten"
-                              : "red-lighten"
-                          }`}
-                        >
-                          <TableCell>{index + 2}</TableCell>
+          <div className="product-in-list w-100 d-flex flex-column">
+            <div className="mui-table-container">
+              <TableContainer component={Paper} sx={{ padding: 2 }}>
+                <Table>
+                  <EnhancedTableHead
+                    onRequestSort={handleRequestSort}
+                    order={order}
+                    orderBy={orderBy}
+                  />
+                  <TableBody>
+                    {productId && customerId && data && !isLoading ? (
+                      <>
+                        {/* Initial Stock Row */}
+                        <TableRow className="blue-lighten">
+                          <TableCell>1</TableCell>
                           <TableCell>
-                            {new Date(transaction.date).toLocaleString("en-GB")}
+                            {new Date().toLocaleString("en-GB")}
                           </TableCell>
-                          <TableCell>{transaction.type}</TableCell>
+                          <TableCell>INITIAL STOCK</TableCell>
                           <TableCell>{data.product.name}</TableCell>
                           <TableCell className="text-end">
-                            {`${
-                              transaction.type === "Add" ? "+" : "-"
-                            } ${Number(transaction.qty).toLocaleString(
-                              "id-ID"
-                            )}`}
+                            {data.initial_qty}
                           </TableCell>
                           <TableCell className="text-end">
-                            {Number(transaction.final_qty).toLocaleString(
-                              "id-ID"
-                            )}
+                            {Number(data.initial_qty).toLocaleString("id-ID")}
                           </TableCell>
                         </TableRow>
-                      ))}
 
-                      {/* Final Stock Row */}
-                      <TableRow className="blue-lighten">
-                        <TableCell>{sortedTransactions.length + 2}</TableCell>
-                        <TableCell>
-                          {new Date().toLocaleString("en-GB")}
-                        </TableCell>
-                        <TableCell>FINAL STOCK</TableCell>
-                        <TableCell>{data.product.name}</TableCell>
-                        <TableCell className="text-end">
-                          {Number(data.final_qty).toLocaleString("id-ID")}
-                        </TableCell>
-                        <TableCell className="text-end">
-                          {Number(data.final_qty).toLocaleString("id-ID")}
+                        {/* Transaction Rows */}
+                        {sortedTransactions.map((transaction, index) => (
+                          <TableRow
+                            key={index}
+                            className={`${
+                              transaction.type === "Add"
+                                ? "green-lighten"
+                                : "red-lighten"
+                            }`}
+                          >
+                            <TableCell>{index + 2}</TableCell>
+                            <TableCell>
+                              {new Date(transaction.date).toLocaleString(
+                                "en-GB"
+                              )}
+                            </TableCell>
+                            <TableCell>{transaction.type}</TableCell>
+                            <TableCell>{data.product.name}</TableCell>
+                            <TableCell className="text-end">
+                              {`${
+                                transaction.type === "Add" ? "+" : "-"
+                              } ${Number(transaction.qty).toLocaleString(
+                                "id-ID"
+                              )}`}
+                            </TableCell>
+                            <TableCell className="text-end">
+                              {Number(transaction.final_qty).toLocaleString(
+                                "id-ID"
+                              )}
+                            </TableCell>
+                          </TableRow>
+                        ))}
+
+                        {/* Final Stock Row */}
+                        <TableRow className="blue-lighten">
+                          <TableCell>{sortedTransactions.length + 2}</TableCell>
+                          <TableCell>
+                            {new Date().toLocaleString("en-GB")}
+                          </TableCell>
+                          <TableCell>FINAL STOCK</TableCell>
+                          <TableCell>{data.product.name}</TableCell>
+                          <TableCell className="text-end">
+                            {Number(data.final_qty).toLocaleString("id-ID")}
+                          </TableCell>
+                          <TableCell className="text-end">
+                            {Number(data.final_qty).toLocaleString("id-ID")}
+                          </TableCell>
+                        </TableRow>
+                      </>
+                    ) : (
+                      <TableRow>
+                        <TableCell colSpan={6} align="center">
+                          <div className="w-100 d-flex justify-content-center">
+                            {/* <div
+                              className="spinner-border d-flex justify-content-center"
+                              role="status"
+                            >
+                              <span className="visually-hidden">
+                                Loading...
+                              </span>
+                            </div> */}
+                          </div>
                         </TableCell>
                       </TableRow>
-                    </>
-                  ) : (
-                    <TableRow>
-                      <TableCell colSpan={6} align="center">
-                        <div className="w-100 d-flex justify-content-center">
-                          <div
-                            className="spinner-border d-flex justify-content-center"
-                            role="status"
-                          >
-                            <span className="visually-hidden">Loading...</span>
-                          </div>
-                        </div>
-                      </TableCell>
-                    </TableRow>
-                  )}
-                </TableBody>
-              </Table>
-            </TableContainer>
+                    )}
+                  </TableBody>
+                </Table>
+              </TableContainer>
+            </div>
           </div>
         </div>
-      </div>
+      </PageLayout>
     </>
   );
 }

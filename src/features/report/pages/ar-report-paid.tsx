@@ -27,6 +27,7 @@ import { FaBox } from "react-icons/fa6";
 import { Customer } from "../../customer-payment/pages/update-customer-payment";
 import { getAllCustomers } from "../../customer/services/customer.service";
 import { useArPaidReport } from "../hooks/ar-report-paid.hooks";
+import PageLayout from "../../../components/page-location";
 export interface IArReportPaidData {
   id: number;
   created_at: Date;
@@ -207,124 +208,136 @@ export function ArReportPaidPage() {
 
   return (
     <>
-      <div className="container-fluid m-0 p-0">
-        <div className="row">
-          <div className="col-md-6 col-lg-4 position-relative mb-2">
-            <StartDatePicker
-              idDatePicker="tanggal-awal-masuk-barang"
-              titleText="Tanggal Awal"
-              datetime={false}
-              value={startDate}
-              onDateClick={(date: Date) => {
-                setStartDate(date);
-              }}
-            />
+      <PageLayout title="Report" items={["Paid off"]}>
+        <div className="container-fluid m-0 p-0">
+          <div className="row">
+            <div className="col-md-6 col-lg-4 position-relative mb-2">
+              <StartDatePicker
+                idDatePicker="tanggal-awal-masuk-barang"
+                titleText="Tanggal Awal"
+                datetime={false}
+                value={startDate}
+                onDateClick={(date: Date) => {
+                  setStartDate(date);
+                }}
+              />
+            </div>
+            <div className="col-md-6 col-lg-4 position-relative mb-2">
+              <EndDatePicker
+                idDatePicker="tanggal-akhir-masuk-barang"
+                titleText="Tanggal Akhir"
+                datetime={false}
+                value={endDate}
+                onDateClick={(date: Date) => {
+                  setEndDate(date);
+                }}
+              />
+            </div>
+            <div className="col-md-6 col-lg-4 position-relative mb-2">
+              <DropdownSecondStyle
+                id="customer"
+                label="Customer *"
+                value={customerId}
+                options={customers.map((customer) => ({
+                  value: customer.id.toString(),
+                  label: customer.name,
+                }))}
+                onChange={handleCustomerDropdownChange}
+                icon={<FaBox />}
+              />
+            </div>
           </div>
-          <div className="col-md-6 col-lg-4 position-relative mb-2">
-            <EndDatePicker
-              idDatePicker="tanggal-akhir-masuk-barang"
-              titleText="Tanggal Akhir"
-              datetime={false}
-              value={endDate}
-              onDateClick={(date: Date) => {
-                setEndDate(date);
-              }}
-            />
-          </div>
-          <div className="col-md-6 col-lg-4 position-relative mb-2">
-            <DropdownSecondStyle
-              id="customer"
-              label="Customer *"
-              value={customerId}
-              options={customers.map((customer) => ({
-                value: customer.id.toString(),
-                label: customer.name,
-              }))}
-              onChange={handleCustomerDropdownChange}
-              icon={<FaBox />}
-            />
-          </div>
-        </div>
-        <div className="product-in-list w-100 d-flex flex-column">
-          <div className="mui-table-container">
-            <TableContainer component={Paper} sx={{ padding: 2 }}>
-              <Table>
-                <EnhancedTableHead
-                  onRequestSort={handleRequestSort}
-                  order={order}
-                  orderBy={orderBy}
-                />
+          <div className="product-in-list w-100 d-flex flex-column">
+            <div className="mui-table-container">
+              <TableContainer component={Paper} sx={{ padding: 2 }}>
+                <Table>
+                  <EnhancedTableHead
+                    onRequestSort={handleRequestSort}
+                    order={order}
+                    orderBy={orderBy}
+                  />
 
-                <TableBody>
-                  {!isLoading && response.data ? (
-                    <>
-                      {response.data.map((value, index) => (
-                        <TableRow key={value.id}>
-                          <TableCell>{index + 1}</TableCell>
-                          <TableCell>
-                            {new Date(value.created_at).toLocaleDateString(
-                              "en-GB"
+                  <TableBody>
+                    {!isLoading && response.data ? (
+                      <>
+                        {response.data.map((value, index) => (
+                          <TableRow key={value.id}>
+                            <TableCell>{index + 1}</TableCell>
+                            <TableCell>
+                              {new Date(value.created_at).toLocaleDateString(
+                                "en-GB"
+                              )}
+                            </TableCell>
+                            <TableCell>{value.ar_no}</TableCell>
+                            <TableCell>{value.customer.name}</TableCell>
+                            <TableCell>
+                              {Number(value.total_bill).toLocaleString("id-ID")}
+                            </TableCell>
+                            <TableCell>
+                              {Number(value.total_paid).toLocaleString("id-ID")}
+                            </TableCell>
+                            <TableCell>
+                              {Number(value.to_paid).toLocaleString("id-ID")}
+                            </TableCell>
+                          </TableRow>
+                        ))}
+                        <TableRow>
+                          <TableCell colSpan={3}></TableCell>
+                          <TableCell sx={{ fontWeight: "bold" }}>
+                            Total
+                          </TableCell>
+                          <TableCell sx={{ fontWeight: "bold" }}>
+                            {Number(summary?.totalBill).toLocaleString("id-ID")}
+                          </TableCell>
+                          <TableCell sx={{ fontWeight: "bold" }}>
+                            {Number(summary?.totalPaid).toLocaleString("id-ID")}
+                          </TableCell>
+                          <TableCell sx={{ fontWeight: "bold" }}>
+                            {Number(summary?.totalToPaid).toLocaleString(
+                              "id-ID"
                             )}
                           </TableCell>
-                          <TableCell>{value.ar_no}</TableCell>
-                          <TableCell>{value.customer.name}</TableCell>
-                          <TableCell>
-                            {Number(value.total_bill).toLocaleString("id-ID")}
-                          </TableCell>
-                          <TableCell>
-                            {Number(value.total_paid).toLocaleString("id-ID")}
-                          </TableCell>
-                          <TableCell>
-                            {Number(value.to_paid).toLocaleString("id-ID")}
-                          </TableCell>
                         </TableRow>
-                      ))}
+                      </>
+                    ) : (
                       <TableRow>
-                        <TableCell colSpan={3}></TableCell>
-                        <TableCell sx={{ fontWeight: "bold" }}>Total</TableCell>
-                        <TableCell sx={{ fontWeight: "bold" }}>
-                          {Number(summary?.totalBill).toLocaleString("id-ID")}
-                        </TableCell>
-                        <TableCell sx={{ fontWeight: "bold" }}>
-                          {Number(summary?.totalPaid).toLocaleString("id-ID")}
-                        </TableCell>
-                        <TableCell sx={{ fontWeight: "bold" }}>
-                          {Number(summary?.totalToPaid).toLocaleString("id-ID")}
+                        <TableCell colSpan={7}>
+                          <div className="w-100 d-flex justify-content-center">
+                            <div
+                              className="spinner-border d-flex justify-content-center"
+                              role="status"
+                            >
+                              <span className="visually-hidden">
+                                Loading...
+                              </span>
+                            </div>
+                          </div>
                         </TableCell>
                       </TableRow>
-                    </>
-                  ) : (
-                    <TableRow>
-                      <TableCell colSpan={7}>
-                        <div className="w-100 d-flex justify-content-center">
-                          <div
-                            className="spinner-border d-flex justify-content-center"
-                            role="status"
-                          >
-                            <span className="visually-hidden">Loading...</span>
-                          </div>
-                        </div>
-                      </TableCell>
-                    </TableRow>
-                  )}
-                </TableBody>
-              </Table>
-              <TablePagination
-                sx={{ fontSize: "1.1rem" }}
-                component="div"
-                count={response.data.length > 0 ? response.meta.total_count : 0}
-                rowsPerPage={
-                  response.data.length > 0 ? response.meta.page_size : 5
-                }
-                page={response.data.length > 0 ? response.meta.page_no - 1 : 0}
-                onPageChange={handleChangePage}
-                onRowsPerPageChange={handleChangeRowsPerPage}
-                rowsPerPageOptions={[5, 10, 25]}
-              />
-            </TableContainer>
+                    )}
+                  </TableBody>
+                </Table>
+                <TablePagination
+                  sx={{ fontSize: "1.1rem" }}
+                  component="div"
+                  count={
+                    response.data.length > 0 ? response.meta.total_count : 0
+                  }
+                  rowsPerPage={
+                    response.data.length > 0 ? response.meta.page_size : 5
+                  }
+                  page={
+                    response.data.length > 0 ? response.meta.page_no - 1 : 0
+                  }
+                  onPageChange={handleChangePage}
+                  onRowsPerPageChange={handleChangeRowsPerPage}
+                  rowsPerPageOptions={[5, 10, 25]}
+                />
+              </TableContainer>
+            </div>
           </div>
         </div>
-      </div>
+      </PageLayout>
     </>
   );
 }

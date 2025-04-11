@@ -23,6 +23,7 @@ import {
   EnhancedTableProps,
   HeadCell,
 } from "../../../components/table-component";
+import PageLayout from "../../../components/page-location";
 export interface ITransactionInData {
   id: number;
   product: {
@@ -157,83 +158,91 @@ export function ReportInPage() {
 
   return (
     <>
-      <div className="container-fluid m-0 p-0">
-        <div className="row">
-          <div className="col-md-6 position-relative mb-2">
-            <StartDatePicker
-              idDatePicker="tanggal-awal-masuk-barang"
-              titleText="Start Date"
-              value={startDate}
-              onDateClick={(date: Date) => {
-                setStartDate(date);
-              }}
-              datetime={false}
-            />
-          </div>
-          <div className="col-md-6 position-relative mb-2">
-            <EndDatePicker
-              idDatePicker="tanggal-akhir-masuk-barang"
-              titleText="End Date"
-              value={endDate}
-              onDateClick={(date: Date) => {
-                setEndDate(date);
-              }}
-              datetime={false}
-            />
-          </div>
-        </div>
-        <div className="product-in-list w-100 d-flex flex-column">
-          <div className="mui-table-container">
-            <TableContainer component={Paper} sx={{ padding: 2 }}>
-              <Table>
-                <EnhancedTableHead
-                  onRequestSort={handleRequestSort}
-                  order={order}
-                  orderBy={orderBy}
-                />
-                <TableBody>
-                  {isLoading ? (
-                    <TableRow>
-                      <TableCell colSpan={5}>
-                        <div className="w-100 d-flex justify-content-center">
-                          <div
-                            className="spinner-border d-flex justify-content-center"
-                            role="status"
-                          >
-                            <span className="visually-hidden">Loading...</span>
-                          </div>
-                        </div>
-                      </TableCell>
-                    </TableRow>
-                  ) : (
-                    response.data.map((value) => (
-                      <TableRow key={value.id}>
-                        <TableCell>{value.product.name}</TableCell>
-                        <TableCell>{value.customer.name}</TableCell>
-                        <TableCell>{value.qty}</TableCell>
-                        <TableCell>{value.converted_qty}</TableCell>
-                        <TableCell>{value.unit}</TableCell>
-                      </TableRow>
-                    ))
-                  )}
-                </TableBody>
-              </Table>
-              <TablePagination
-                sx={{ fontSize: "1.1rem" }}
-                component="div"
-                count={response.data.length > 0 ? response.meta.total_count : 0}
-                rowsPerPage={
-                  response.data.length > 0 ? response.meta.page_size : 5
-                }
-                page={response.data.length > 0 ? response.meta.page_no - 1 : 0}
-                onPageChange={handleChangePage}
-                onRowsPerPageChange={handleChangeRowsPerPage}
-                rowsPerPageOptions={[5, 10, 25]}
+      <PageLayout title="Report" items={["Transaction In"]}>
+        <div className="container-fluid m-0 p-0">
+          <div className="row">
+            <div className="col-md-6 position-relative mb-2">
+              <StartDatePicker
+                idDatePicker="tanggal-awal-masuk-barang"
+                titleText="Start Date"
+                value={startDate}
+                onDateClick={(date: Date) => {
+                  setStartDate(date);
+                }}
+                datetime={false}
               />
-            </TableContainer>
+            </div>
+            <div className="col-md-6 position-relative mb-2">
+              <EndDatePicker
+                idDatePicker="tanggal-akhir-masuk-barang"
+                titleText="End Date"
+                value={endDate}
+                onDateClick={(date: Date) => {
+                  setEndDate(date);
+                }}
+                datetime={false}
+              />
+            </div>
+          </div>
+          <div className="product-in-list w-100 d-flex flex-column">
+            <div className="mui-table-container">
+              <TableContainer component={Paper} sx={{ padding: 2 }}>
+                <Table>
+                  <EnhancedTableHead
+                    onRequestSort={handleRequestSort}
+                    order={order}
+                    orderBy={orderBy}
+                  />
+                  <TableBody>
+                    {isLoading ? (
+                      <TableRow>
+                        <TableCell colSpan={5}>
+                          <div className="w-100 d-flex justify-content-center">
+                            <div
+                              className="spinner-border d-flex justify-content-center"
+                              role="status"
+                            >
+                              <span className="visually-hidden">
+                                Loading...
+                              </span>
+                            </div>
+                          </div>
+                        </TableCell>
+                      </TableRow>
+                    ) : (
+                      response.data.map((value) => (
+                        <TableRow key={value.id}>
+                          <TableCell>{value.product.name}</TableCell>
+                          <TableCell>{value.customer.name}</TableCell>
+                          <TableCell>{value.qty}</TableCell>
+                          <TableCell>{value.converted_qty}</TableCell>
+                          <TableCell>{value.unit}</TableCell>
+                        </TableRow>
+                      ))
+                    )}
+                  </TableBody>
+                </Table>
+                <TablePagination
+                  sx={{ fontSize: "1.1rem" }}
+                  component="div"
+                  count={
+                    response.data.length > 0 ? response.meta.total_count : 0
+                  }
+                  rowsPerPage={
+                    response.data.length > 0 ? response.meta.page_size : 5
+                  }
+                  page={
+                    response.data.length > 0 ? response.meta.page_no - 1 : 0
+                  }
+                  onPageChange={handleChangePage}
+                  onRowsPerPageChange={handleChangeRowsPerPage}
+                  rowsPerPageOptions={[5, 10, 25]}
+                />
+              </TableContainer>
+            </div>
           </div>
         </div>
-      </div>
+      </PageLayout>
     </>
   );
 }
