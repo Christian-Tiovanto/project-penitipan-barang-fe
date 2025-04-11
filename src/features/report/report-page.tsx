@@ -36,6 +36,11 @@ const menuItems = [
     icon: <IoDocumentText className="me-2" />,
   },
   {
+    label: "Stock Invoice Report",
+    path: "/report/stock-invoice-report",
+    icon: <IoDocumentText className="me-2" />,
+  },
+  {
     label: "Stock Report",
     path: "/report/stock-report",
     icon: <IoDocumentText className="me-2" />,
