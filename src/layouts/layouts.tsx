@@ -9,7 +9,9 @@ export default function MainLayout() {
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
+      const isLargeScreen = window.matchMedia("(min-width: 992px)").matches;
       if (
+        !isLargeScreen &&
         wrapperRef.current &&
         sidebarRef.current &&
         toggleButtonRef.current &&
