@@ -5,6 +5,7 @@ import { CashflowService } from "./services/cashflow.service";
 import { useToast } from "../../contexts/toastContexts";
 import { useCashflowHistory } from "./hooks/cashflow.hooks";
 import { startOfToday, startOfTomorrow, format } from "date-fns";
+import { useNavigate } from "react-router";
 
 export interface ICashflowHistory {
   created_at: Date;
@@ -19,6 +20,8 @@ export interface CreateCashflowDto {
   descriptions?: string;
 }
 export default function CreateCashFlow() {
+  const navigate = useNavigate();
+
   const [cashflowType, setCashflowType] = useState(null);
   const [amount, setAmount] = useState("0");
   const [descriptions, setDescriptions] = useState("");
@@ -91,7 +94,10 @@ export default function CreateCashFlow() {
         }}
       >
         <div className="container-fluid d-flex justify-content-start gap-3 px-2">
-          <button className="fs-1 border-0 text-white bg-transparent d-flex justify-content-center align-items-center">
+          <button
+            className="fs-1 border-0 text-white bg-transparent d-flex justify-content-center align-items-center"
+            onClick={() => navigate(-1)}
+          >
             <IoCloseSharp />
           </button>
           <a

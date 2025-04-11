@@ -90,7 +90,7 @@ export const useArList = (query: {
     return () => {
       abortControllerRef.current?.abort();
     };
-  }, [customerId, startDate, endDate, pageNo, pageSize, order, sortBy]);
+  }, [customerId, startDate, endDate, pageNo, pageSize, order, sortBy, status]);
 
   return {
     response,

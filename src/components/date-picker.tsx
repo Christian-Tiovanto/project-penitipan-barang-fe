@@ -18,6 +18,7 @@ const StartDatePicker = ({
   const [showPicker, setShowPicker] = useState(false);
   const [currentMonth, setCurrentMonth] = useState(new Date().getMonth());
   const [currentYear, setCurrentYear] = useState(new Date().getFullYear());
+  const [tempDate, setTempDate] = useState(value);
   const [originalDate, setOriginalDate] = useState(new Date());
   const [originalMonth, setOriginalMonth] = useState(new Date().getMonth());
   const [originalYear, setOriginalYear] = useState(new Date().getFullYear());
@@ -58,7 +59,7 @@ const StartDatePicker = ({
         date,
         isCurrentMonth: false,
         isToday: date.toDateString() === today.toDateString(),
-        isSelected: date.toDateString() === value.toDateString(),
+        isSelected: date.toDateString() === tempDate.toDateString(),
       });
     }
 
@@ -73,7 +74,7 @@ const StartDatePicker = ({
         date,
         isCurrentMonth: true,
         isToday: date.toDateString() === today.toDateString(),
-        isSelected: date.toDateString() === value.toDateString(),
+        isSelected: date.toDateString() === tempDate.toDateString(),
       });
     }
 
@@ -144,7 +145,7 @@ const StartDatePicker = ({
             type="text"
             className="form-control third-bg border-0"
             placeholder="Select date"
-            value={value.toLocaleDateString("en-GB", {
+            value={tempDate.toLocaleDateString("en-GB", {
               year: "numeric",
               month: "2-digit",
               day: "2-digit",
@@ -202,7 +203,7 @@ const StartDatePicker = ({
               `}
               disabled={!date.isCurrentMonth}
               onClick={() => {
-                onDateClick(date.date);
+                setTempDate(date.date);
               }}
             >
               {date.day}
@@ -236,7 +237,13 @@ const StartDatePicker = ({
           <button className="cancel" onClick={handleCancel}>
             Cancel
           </button>
-          <button className="apply" onClick={() => setShowPicker(false)}>
+          <button
+            className="apply"
+            onClick={() => {
+              onDateClick(tempDate);
+              setShowPicker(false);
+            }}
+          >
             Apply
           </button>
         </div>
@@ -262,6 +269,7 @@ const EndDatePicker = ({
   const [showPicker, setShowPicker] = useState(false);
   const [currentMonth, setCurrentMonth] = useState(new Date().getMonth());
   const [currentYear, setCurrentYear] = useState(new Date().getFullYear());
+  const [tempDate, setTempDate] = useState(value);
   const [originalDate, setOriginalDate] = useState(new Date());
   const [originalMonth, setOriginalMonth] = useState(new Date().getMonth());
   const [originalYear, setOriginalYear] = useState(new Date().getFullYear());
@@ -322,7 +330,7 @@ const EndDatePicker = ({
             date.getMonth(),
             date.getDate() - 1
           ).toDateString() === today.toDateString(),
-        isSelected: date.toDateString() === value.toDateString(),
+        isSelected: date.toDateString() === tempDate.toDateString(),
       });
     }
 
@@ -394,9 +402,9 @@ const EndDatePicker = ({
             className="form-control third-bg border-0"
             placeholder="Select date"
             value={new Date(
-              value.getFullYear(),
-              value.getMonth(),
-              value.getDate() - 1
+              tempDate.getFullYear(),
+              tempDate.getMonth(),
+              tempDate.getDate() - 1
             ).toLocaleDateString("en-GB", {
               year: "numeric",
               month: "2-digit",
@@ -455,7 +463,7 @@ const EndDatePicker = ({
               `}
               disabled={!date.isCurrentMonth}
               onClick={() => {
-                onDateClick(date.date);
+                setTempDate(date.date);
               }}
             >
               {date.day}
@@ -489,7 +497,13 @@ const EndDatePicker = ({
           <button className="cancel" onClick={handleCancel}>
             Cancel
           </button>
-          <button className="apply" onClick={() => setShowPicker(false)}>
+          <button
+            className="apply"
+            onClick={() => {
+              onDateClick(tempDate);
+              setShowPicker(false);
+            }}
+          >
             Apply
           </button>
         </div>
