@@ -34,7 +34,7 @@ const LoginPage: React.FC = () => {
 
       //   alert("Login Successful!");
       // if (response.ok) {
-      navigate("/"); // Redirect setelah login
+      navigate("/master"); // Redirect setelah login
       showToast("Login successfully!", "success");
     } catch (error: any) {
       const finalMessage = `Failed to login.\n${
