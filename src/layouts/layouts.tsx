@@ -68,11 +68,7 @@ export default function MainLayout() {
             <NavLink
               key={item.path}
               to={item.path}
-              className={({ isActive }) =>
-                `list-group-item list-group-item-action bg-transparent primary-text fw-bold ${
-                  isActive ? "active" : ""
-                }`
-              }
+              className={`list-group-item list-group-item-action bg-transparent primary-text`}
             >
               <i className={`fas ${item.icon} me-2`}></i>
               {item.label}

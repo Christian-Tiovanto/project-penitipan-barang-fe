@@ -114,12 +114,19 @@ body {
 }
 
 .list-group-item.active {
-  background-color: transparent;
+  background-color: rgb(42, 48, 61) !important;
   color: var(--main-text-color);
   font-weight: bold;
   border: none;
 }
 
+.list-group-item {
+  transition: background-color 0.3s ease;
+}
+.list-group-item:hover {
+  background-color: rgb(42, 48, 61) !important;
+  color: white;
+}
 .navbar {
   height: 64px;
 }
