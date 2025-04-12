@@ -3,7 +3,7 @@ import Breadcrumb from "../../../components/breadcrumb";
 import { FaSave, FaArrowLeft, FaSearch, FaCalendarAlt } from "react-icons/fa";
 import { useNavigate } from "react-router";
 import { useToast } from "../../../contexts/toastContexts";
-import { FaBox } from "react-icons/fa6";
+import { FaBox, FaClipboardUser, FaTruck } from "react-icons/fa6";
 import Dropdown from "../../../components/dropdown";
 import { getAllCustomers } from "../../customer/services/customer.service";
 import { getAllProducts } from "../../product/services/product.service";
@@ -236,7 +236,7 @@ const CreateTransOutForm: React.FC = () => {
         onChange={handleDropdownCustomerChange}
         error={!!errors.customerId}
         errorMessage={errors.customerId}
-        icon={<FaBox />}
+        icon={<FaClipboardUser />}
       />
       <div className="row g-3">
         <div className="col-md-6">
@@ -249,12 +249,12 @@ const CreateTransOutForm: React.FC = () => {
             onBlur={handleBlur}
             error={!!errors.no_plat}
             errorMessage={errors.no_plat}
-            icon={<FaBox />}
+            icon={<FaTruck />}
           />
         </div>
         <div className="col-md-6">
           <DatePickerField
-            label="Clock Out"
+            label="Clock Out *"
             name="startDate"
             value={selectedDate}
             onChange={handleDateChange}
@@ -269,7 +269,7 @@ const CreateTransOutForm: React.FC = () => {
         {/* Search Field */}
         <div className="mb-3">
           <InputField
-            label="Product List *"
+            label="Product List * Kg"
             type="text"
             name="search"
             value={searchTerm}
@@ -322,7 +322,7 @@ const CreateTransOutForm: React.FC = () => {
               <div className="modal-content">
                 <div className="modal-header">
                   <h5 className="modal-title" id="paidoffFormLabel">
-                    Rincian Invoice
+                    Estimated invoice Details
                   </h5>
                   <button
                     type="button"
