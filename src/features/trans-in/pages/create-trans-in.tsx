@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from "react";
 import Breadcrumb from "../../../components/breadcrumb";
-import { FaSave, FaArrowLeft } from "react-icons/fa";
+import { FaSave, FaArrowLeft, FaBalanceScale } from "react-icons/fa";
 import { useNavigate, useParams } from "react-router";
 import { useToast } from "../../../contexts/toastContexts";
 import InputFieldNumber from "../../../components/inputfieldnumber";
-import { FaBox, FaClipboardList } from "react-icons/fa6";
+import { FaBox, FaClipboardList, FaClipboardUser } from "react-icons/fa6";
 import { createTransIn } from "../services/trans-in.service";
 import Dropdown from "../../../components/dropdown";
 import { getProductUnitsByProductId } from "../../product-unit/services/product-unit.service";
@@ -196,7 +196,7 @@ const CreateTransInForm: React.FC = () => {
             onChange={handleDropdownProductUnitChange}
             error={!!errors.productUnitId}
             errorMessage={errors.productUnitId}
-            icon={<FaBox />}
+            icon={<FaBalanceScale />}
           />
         </div>
       </div>
@@ -213,7 +213,7 @@ const CreateTransInForm: React.FC = () => {
             onChange={handleDropdownCustomerChange}
             error={!!errors.customerId}
             errorMessage={errors.customerId}
-            icon={<FaBox />}
+            icon={<FaClipboardUser />}
           />
         </div>
         <div className="col-md-6">
