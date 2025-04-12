@@ -161,7 +161,7 @@ function InputPayment({
 }) {
   const modalRef = React.useRef<HTMLDivElement>(null);
   const [startDate, setStartDate] = React.useState(startOfToday());
-  const [nominal, setNominal] = React.useState("0");
+  const [nominal, setNominal] = React.useState(0);
   const [isLoading, setIsLoading] = React.useState(false);
   const [paymentMethodId, setPaymentMethodId] = React.useState<string>("");
   const [paymentMethods, setpaymentMethods] = React.useState<PaymentMethod[]>(
@@ -186,7 +186,7 @@ function InputPayment({
       setError(null);
       const selectedAr = data.filter((value) => selected.includes(value.id));
       if (selected.length == 1) {
-        selectedAr[0].to_paid = parseFloat(nominal);
+        selectedAr[0].to_paid = nominal;
       }
       const response = await new ArToPaidService().createBulkArPayment(
         selectedAr,
@@ -204,30 +204,10 @@ function InputPayment({
       }
 
       // Reset form state
-      setNominal("0");
+      setNominal(0);
       setPaymentMethodId("");
 
       // Reset selection in parent component
-    }
-  };
-  const handleNominalChange = (event: any) => {
-    const value = event.target.value;
-
-    // Allow only digits (including empty string)
-    if (/^\d*$/.test(value)) {
-      let processedValue = value;
-
-      // Remove leading zeros if the value has multiple digits
-      if (processedValue.length > 1) {
-        processedValue = processedValue.replace(/^0+/, "");
-      }
-
-      // Ensure the value isn't empty (default to "0")
-      if (processedValue === "") {
-        processedValue = "0";
-      }
-
-      setNominal(processedValue);
     }
   };
   React.useEffect(() => {
@@ -257,7 +237,7 @@ function InputPayment({
               {"Total Piutang : " + totalAr}
             </span>
           </div>
-          <div className="modal-body d-flex flex-column gap-3">
+          <div className="modal-body d-flex flex-column">
             <div className="container-fluid p-0">
               <StartDatePicker
                 idDatePicker="tanggal-input-pelunasan"
@@ -269,12 +249,14 @@ function InputPayment({
                 }}
               />
             </div>
-            <InputNominal
-              title="Total Paid"
-              nominal={parseFloat(nominal)}
-              handleNominalChange={handleNominalChange}
-            />
-            <div className="container-fluid p-0">
+            <div className="container-fluid p-0 mb-2 mt-2">
+              <InputNominal
+                title="Total Paid"
+                nominal={nominal}
+                onNominalChange={setNominal}
+              />
+            </div>
+            <div className="container-fluid p-0 mt-2">
               <DropdownSecondStyle
                 id="payment-method"
                 label="Payment Method *"
@@ -298,8 +280,8 @@ function InputPayment({
             <button
               type="button"
               className={`btn ${
-                nominal != "0" && paymentMethodId
-                  ? selected.length > 1 && parseFloat(nominal) != totalAr
+                nominal != 0 && paymentMethodId
+                  ? selected.length > 1 && nominal != totalAr
                     ? "btn-secondary disabled"
                     : "btn-success"
                   : "btn-secondary disabled"
@@ -489,7 +471,9 @@ export default function ArListPage() {
                             return (
                               <TableRow
                                 hover
-                                onClick={(event) => handleClick(event, row.id)}
+                                onClick={(event: any) =>
+                                  handleClick(event, row.id)
+                                }
                                 role="checkbox"
                                 aria-checked={isItemSelected}
                                 tabIndex={-1}

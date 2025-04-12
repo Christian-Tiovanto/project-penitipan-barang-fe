@@ -23,7 +23,7 @@ export default function CreateCashFlow() {
   const navigate = useNavigate();
 
   const [cashflowType, setCashflowType] = useState(null);
-  const [amount, setAmount] = useState("0");
+  const [amount, setAmount] = useState(0);
   const [descriptions, setDescriptions] = useState("");
   const [startDate] = useState(startOfToday());
   const [endDate] = useState(startOfTomorrow());
@@ -36,26 +36,7 @@ export default function CreateCashFlow() {
   const handleCashflowTypeChange = (event: any) => {
     setCashflowType(event.target.value);
   };
-  const handleNominalChange = (event: any) => {
-    const value = event.target.value;
 
-    // Allow only digits (including empty string)
-    if (/^\d*$/.test(value)) {
-      let processedValue = value;
-
-      // Remove leading zeros if the value has multiple digits
-      if (processedValue.length > 1) {
-        processedValue = processedValue.replace(/^0+/, "");
-      }
-
-      // Ensure the value isn't empty (default to "0")
-      if (processedValue === "") {
-        processedValue = "0";
-      }
-
-      setAmount(processedValue);
-    }
-  };
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
     if (!cashflowType || !amount) {
@@ -64,7 +45,7 @@ export default function CreateCashFlow() {
       try {
         const createCashflowDto: CreateCashflowDto = {
           type: cashflowType,
-          amount: parseFloat(amount),
+          amount: amount,
         };
         if (descriptions) createCashflowDto.descriptions = descriptions;
         const response = await new CashflowService().createCashflow(
@@ -80,7 +61,7 @@ export default function CreateCashFlow() {
         showToast(finalMessage, "danger");
       } finally {
         setCashflowType(null);
-        setAmount("0");
+        setAmount(0);
         setDescriptions("");
       }
     }
@@ -169,13 +150,13 @@ export default function CreateCashFlow() {
             </div>
             <InputNominal
               title="Nominal *"
-              nominal={parseFloat(amount)}
-              handleNominalChange={handleNominalChange}
+              nominal={amount}
+              onNominalChange={setAmount}
             />
             <button
               type="button"
               className={`btn w-100 h-50 mt-3 ${
-                amount != "0" && cashflowType
+                amount != 0 && cashflowType
                   ? "btn-success"
                   : "btn-secondary disabled"
               }`}
@@ -187,22 +168,25 @@ export default function CreateCashFlow() {
           <div className="col-12 col-md-6 d-flex justify-content-center align-items-center flex-column">
             <h2>Kas Masuk / Kas Keluar</h2>
             <div className="container mt-4">
-              {data.map((value: ICashflowHistory, index) => (
-                <div className="row" key={index}>
-                  <div className="col-4">
-                    {format(
-                      new Date(value.created_at).toISOString(),
-                      "HH:mm:ss"
-                    )}
+              {!isLoading &&
+                data.map((value: ICashflowHistory, index) => (
+                  <div className="row" key={index}>
+                    <div className="col-4">
+                      {format(
+                        new Date(value.created_at).toISOString(),
+                        "HH:mm:ss"
+                      )}
+                    </div>
+                    <div className="col-4">{value.descriptions}</div>
+                    <div
+                      className={`col-4 text-end ${
+                        value.type === "in" ? "text-success" : "text-danger"
+                      }`}
+                    >{`${value.type === "in" ? "+" : "-"} ${Number(
+                      value.amount
+                    ).toLocaleString("id-Id")}`}</div>
                   </div>
-                  <div className="col-4">{value.descriptions}</div>
-                  <div
-                    className={`col-4 text-end ${
-                      value.type === "in" ? "text-success" : "text-danger"
-                    }`}
-                  >{`${value.type === "in" ? "+" : "-"} ${value.amount}`}</div>
-                </div>
-              ))}
+                ))}
             </div>
           </div>
         </div>
