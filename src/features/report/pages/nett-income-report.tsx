@@ -18,7 +18,10 @@ import { startOfToday, startOfTomorrow } from "date-fns";
 import { useNettIncome } from "../hooks/nett-income.hooks";
 import PageLayout from "../../../components/page-location";
 export interface INettIncomeReport {
-  earning: number;
+  earning: {
+    input: number;
+    payment: number;
+  };
   spending: {
     description: string;
     amount: number;
@@ -115,7 +118,19 @@ export function NettIncomeReportPage() {
                             Total Invoice
                           </TableCell>
                           <TableCell className="nett-income-table-border p-0 text-end pe-2">
-                            {Number(data?.earning).toLocaleString("id-ID")}
+                            {Number(data?.earning.payment).toLocaleString(
+                              "id-ID"
+                            )}
+                          </TableCell>
+                        </TableRow>
+                        <TableRow>
+                          <TableCell className="nett-income-table-border p-0 ps-4">
+                            Total Input Cashflow
+                          </TableCell>
+                          <TableCell className="nett-income-table-border p-0 text-end pe-2">
+                            {Number(data?.earning.input).toLocaleString(
+                              "id-ID"
+                            )}
                           </TableCell>
                         </TableRow>
                         <TableRow className="gray">
@@ -123,7 +138,9 @@ export function NettIncomeReportPage() {
                             Total Earning
                           </TableCell>
                           <TableCell className="border border-top-0 border-black fw-bold p-0 pe-2 text-end">
-                            {Number(data?.earning).toLocaleString("id-ID")}
+                            {Number(
+                              data?.earning.input + data?.earning.payment
+                            ).toLocaleString("id-ID")}
                           </TableCell>
                         </TableRow>
                         <TableRow>

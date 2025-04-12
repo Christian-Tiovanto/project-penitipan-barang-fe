@@ -51,6 +51,11 @@ const menuItems = [
     icon: <IoDocumentText className="me-2" />,
   },
   {
+    label: "Nett Income Report",
+    path: "/report/nett-income",
+    icon: <IoDocumentText className="me-2" />,
+  },
+  {
     label: "Daftar Piutang",
     path: "/report/ar-list",
     icon: <FaListAlt className="me-2" />,
