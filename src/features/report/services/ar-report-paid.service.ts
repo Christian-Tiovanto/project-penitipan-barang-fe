@@ -3,7 +3,7 @@ import Cookies from "js-cookie";
 import { Order } from "../../../enum/SortOrder";
 import { IArReportPaidData } from "../pages/ar-report-paid";
 import { PaginationMetaData } from "../../../interfaces/pagination-meta";
-const URL = "http://127.0.0.1:3000";
+const URL = import.meta.env.VITE_API_URL;
 export class ArPaidReportService {
   async getArPaidReport(
     query?: {

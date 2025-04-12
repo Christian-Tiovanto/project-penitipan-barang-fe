@@ -2,7 +2,7 @@ import axios, { AxiosRequestConfig } from "axios";
 import Cookies from "js-cookie";
 import { IStockReportData } from "../pages/stock-report";
 import { IStockInvoiceReportData } from "../pages/stock-invoice-report";
-const URL = "http://127.0.0.1:3000";
+const URL = import.meta.env.VITE_API_URL;
 export class StockInvoiceReportService {
   async getStockInvoiceReport(
     query?: {

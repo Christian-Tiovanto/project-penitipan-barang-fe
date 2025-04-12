@@ -1,7 +1,7 @@
 import axios, { AxiosRequestConfig } from "axios";
 import Cookies from "js-cookie";
 import { INettIncomeReport } from "../pages/nett-income-report";
-const URL = "http://127.0.0.1:3000";
+const URL = import.meta.env.VITE_API_URL;
 export class NettIncomeService {
   async getNettIncome(
     query?: {

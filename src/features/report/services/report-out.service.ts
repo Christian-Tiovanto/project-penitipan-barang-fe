@@ -3,7 +3,7 @@ import Cookies from "js-cookie";
 import { Order } from "../../../enum/SortOrder";
 import { PaginationMetaData } from "../../../interfaces/pagination-meta";
 import { ITransactionOutData } from "../pages/report-out";
-const URL = "http://127.0.0.1:3000";
+const URL = import.meta.env.VITE_API_URL;
 export class TransactionOutReportService {
   async getTransactionOuts(
     query?: {

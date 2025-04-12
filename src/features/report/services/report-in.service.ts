@@ -3,7 +3,7 @@ import { ITransactionInData } from "../pages/report-in";
 import Cookies from "js-cookie";
 import { Order } from "../../../enum/SortOrder";
 import { PaginationMetaData } from "../../../interfaces/pagination-meta";
-const URL = "http://127.0.0.1:3000";
+const URL = import.meta.env.VITE_API_URL;
 export class TransactionInReportService {
   async getTransactionIns(
     query?: {

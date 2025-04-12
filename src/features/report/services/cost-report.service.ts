@@ -1,7 +1,7 @@
 import axios, { AxiosRequestConfig } from "axios";
 import Cookies from "js-cookie";
 import { ICostReportData } from "../pages/cost-report";
-const URL = "http://127.0.0.1:3000";
+const URL = import.meta.env.VITE_API_URL;
 export class CostReportService {
   async getCostReport(
     query?: {

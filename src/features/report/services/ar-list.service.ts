@@ -4,7 +4,7 @@ import { Order } from "../../../enum/SortOrder";
 import { ArStatus } from "../../../enum/ArStatus";
 import { AR } from "../pages/ar-list";
 import { PaginationMetaData } from "../../../interfaces/pagination-meta";
-const URL = "http://127.0.0.1:3000";
+const URL = import.meta.env.VITE_API_URL;
 export class ArListService {
   async getArList(
     query?: {

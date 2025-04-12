@@ -223,7 +223,6 @@ const router = createBrowserRouter([
     element: <LoginPage />,
   },
 ]);
-
 function App() {
   return (
     <ToastProvider>
