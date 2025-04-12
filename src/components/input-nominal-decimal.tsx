@@ -6,17 +6,17 @@ interface InputNominalProps {
   onNominalChange: (value: number) => void;
 }
 
-export default function InputNominal({
+export default function InputNominalDecimal({
   title,
   nominal,
   onNominalChange,
 }: InputNominalProps) {
   const [inputValue, setInputValue] = useState("");
 
-  // Format as an integer with thousand separators (de-DE locale)
   useEffect(() => {
     const formatted = new Intl.NumberFormat("de-DE", {
-      maximumFractionDigits: 0,
+      minimumFractionDigits: 0,
+      maximumFractionDigits: 20,
     }).format(nominal);
     setInputValue(formatted);
   }, [nominal]);
@@ -24,20 +24,39 @@ export default function InputNominal({
   const handleChange: ChangeEventHandler<HTMLInputElement> = (event) => {
     const rawValue = event.target.value;
 
-    // Remove thousand separators and allow only digits
-    const processed = rawValue.replace(/\./g, "").replace(/[^0-9]/g, "");
+    // Allow numbers and commas only
+    const processed = rawValue
+      .replace(/\./g, "") // Remove existing thousand separators
+      .replace(/[^0-9,]/g, ""); // Remove non-numeric characters except comma
 
-    // Default to "0" if empty
-    const sanitized = processed === "" ? "0" : processed;
-    const numericValue = parseInt(sanitized, 10);
+    // Split into integer and fractional parts
+    const parts = processed.split(",");
+    let integerPart = parts[0].replace(/^0+/, "") || "0";
+    const fractionalPart = parts[1] || "";
 
-    // Format with thousand separators using de-DE style
-    const formattedValue = new Intl.NumberFormat("de-DE", {
-      maximumFractionDigits: 0,
-    }).format(numericValue);
+    // Add thousand separators to integer part
+    integerPart = integerPart.replace(/\B(?=(\d{3})+(?!\d))/g, ".");
 
-    setInputValue(formattedValue);
-    onNominalChange(numericValue);
+    // Rebuild the formatted value with comma as decimal separator
+    let newValue = integerPart;
+    if (parts.length > 1) {
+      newValue += `,${fractionalPart}`;
+    }
+
+    // Handle edge cases
+    if (newValue === "") newValue = "0";
+    if (newValue.startsWith(",")) newValue = `0${newValue}`;
+
+    setInputValue(newValue);
+
+    // Convert to numeric value (replace commas with dots for parsing)
+    const numericValue = parseFloat(
+      newValue.replace(/\./g, "").replace(/,/g, ".")
+    );
+
+    if (!isNaN(numericValue)) {
+      onNominalChange(numericValue);
+    }
   };
 
   return (
@@ -49,7 +68,6 @@ export default function InputNominal({
         value={inputValue}
         onChange={handleChange}
         onKeyDown={(e) => {
-          // Allow control keys for navigation and editing
           const controlKeys = [
             "Backspace",
             "Delete",
@@ -64,14 +82,14 @@ export default function InputNominal({
 
           if (
             controlKeys.includes(e.key) ||
-            /[0-9]/.test(e.key) ||
+            /[0-9,]/.test(e.key) ||
             e.ctrlKey ||
             e.metaKey
           ) {
-            // Allow key events as long as they're digit or control keys.
-            return;
+            if (e.key === "," && inputValue.includes(",")) {
+              e.preventDefault();
+            }
           } else {
-            // Prevent any other key (e.g., comma, dot, letters)
             e.preventDefault();
           }
         }}
