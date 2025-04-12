@@ -218,7 +218,7 @@ export function StockReportPage() {
             <div className="col-md-6 position-relative">
               <EndDatePicker
                 idDatePicker="tanggal-akhir"
-                titleText="Tanggal"
+                titleText="Date"
                 datetime={false}
                 value={endDate}
                 onDateClick={(date: Date) => {

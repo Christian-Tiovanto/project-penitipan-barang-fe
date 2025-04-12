@@ -3,7 +3,7 @@ import Cookies from "js-cookie";
 import { jwtDecode } from "jwt-decode";
 import { useNavigate } from "react-router";
 
-const API_URL = "http://127.0.0.1:3000"; // Ganti dengan URL backend-mu
+const API_URL = import.meta.env.VITE_API_URL; // Ganti dengan URL backend-mu
 
 export const login = async (email: string, password: string) => {
   try {

@@ -130,7 +130,7 @@ const headCells: readonly HeadCell[] = [
     id: "cetak",
     numeric: false,
     disablePadding: false,
-    label: "Cetak",
+    label: "Print",
   },
 ];
 
@@ -434,7 +434,7 @@ export default function InvoiceListPage() {
             <div className="col-md-6 col-lg-4 position-relative mb-2">
               <StartDatePicker
                 idDatePicker="tanggal-awal-masuk-barang"
-                titleText="Tanggal Awal"
+                titleText="Start Date"
                 datetime={false}
                 value={startDate}
                 onDateClick={(date: Date) => {
@@ -445,7 +445,7 @@ export default function InvoiceListPage() {
             <div className="col-md-6 col-lg-4 position-relative mb-2">
               <EndDatePicker
                 idDatePicker="tanggal-akhir-masuk-barang"
-                titleText="Tanggal Akhir"
+                titleText="End Date"
                 datetime={false}
                 value={endDate}
                 onDateClick={(date: Date) => {
@@ -461,9 +461,9 @@ export default function InvoiceListPage() {
                 options={[
                   {
                     id: ArStatus.PENDING,
-                    name: "Belum Lunas",
+                    name: "Unpaid",
                   },
-                  { id: ArStatus.COMPLETED, name: "Lunas" },
+                  { id: ArStatus.COMPLETED, name: "Paid" },
                 ].map((customer) => ({
                   value: customer.id.toString(),
                   label: customer.name,
@@ -570,7 +570,7 @@ export default function InvoiceListPage() {
                                       aria-expanded="false"
                                     >
                                       <MdLocalPrintshop />
-                                      Cetak
+                                      Print
                                     </button>
                                     <ul className="dropdown-menu">
                                       <li>
@@ -578,7 +578,7 @@ export default function InvoiceListPage() {
                                           className="dropdown-item"
                                           onClick={() => handlePrintSpb(row.id)}
                                         >
-                                          Print SPB
+                                          SPB
                                         </button>
                                       </li>
                                       <li>
@@ -588,7 +588,7 @@ export default function InvoiceListPage() {
                                             handlePrintInvoice(row.id)
                                           }
                                         >
-                                          Print Invoice
+                                          Invoice
                                         </button>
                                       </li>
                                     </ul>

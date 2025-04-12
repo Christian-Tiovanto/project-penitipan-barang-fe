@@ -100,7 +100,7 @@ export default function CreateCashFlow() {
                   className="form-check-label gray-text"
                   htmlFor="inlineRadio1"
                 >
-                  Kas Masuk
+                  Cash In
                 </label>
               </div>
               <div className="form-check form-check-inline mt-5">
@@ -118,7 +118,7 @@ export default function CreateCashFlow() {
                   className="form-check-label gray-text"
                   htmlFor="inlineRadio2"
                 >
-                  Kas Keluar
+                  Cash Out
                 </label>
               </div>
             </div>
@@ -136,11 +136,11 @@ export default function CreateCashFlow() {
               }`}
               onClick={handleSubmit}
             >
-              Simpan
+              Save
             </button>
           </div>
           <div className="col-12 col-md-6 d-flex justify-content-center align-items-center flex-column">
-            <h2>Kas Masuk / Kas Keluar</h2>
+            <h2>Cash In / Cash Out</h2>
             <div className="container mt-4">
               {!isLoading &&
                 data.map((value: ICashflowHistory, index) => (

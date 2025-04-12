@@ -233,7 +233,7 @@ export function CostReportPage() {
             <div className="col-md-6 position-relative mb-2">
               <StartDatePicker
                 idDatePicker="tanggal-awal"
-                titleText="Tanggal Awal"
+                titleText="Start Date"
                 datetime={false}
                 value={startDate}
                 onDateClick={(date: Date) => {
@@ -244,7 +244,7 @@ export function CostReportPage() {
             <div className="col-md-6 position-relative mb-2">
               <EndDatePicker
                 idDatePicker="tanggal-akhir"
-                titleText="Tanggal Akhir"
+                titleText="End Date"
                 datetime={false}
                 value={endDate}
                 onDateClick={(date: Date) => {

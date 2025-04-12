@@ -25,15 +25,9 @@ const LoginPage: React.FC = () => {
     setError("");
 
     try {
-      console.log(email, password);
       const userData = await login(email, password);
-      console.log("Login success:", userData);
-
       const token = getToken();
-      console.log("Saved Token:", token); // Cek apakah token tersimpan di cookies
 
-      //   alert("Login Successful!");
-      // if (response.ok) {
       navigate("/master"); // Redirect setelah login
       showToast("Login successfully!", "success");
     } catch (error: any) {

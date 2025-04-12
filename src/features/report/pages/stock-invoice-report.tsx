@@ -30,6 +30,7 @@ import React from "react";
 import { useStockInvoiceReport } from "../hooks/stock-invoice-report";
 import { Invoice } from "./invoice-list";
 import { StockInvoiceReportService } from "../services/stock-invoice-report.service";
+import PageLayout from "../../../components/page-location";
 export interface IStockInvoiceReportData {
   invoiceId: string;
   product_name: string;
@@ -240,9 +241,10 @@ export function StockInvoiceReportPage() {
   }, [data, order, orderBy]);
   return (
     <>
-      <div className="container-fluid m-0 p-0">
-        <div className="row">
-          {/* <div className="col-md-6 position-relative">
+      <PageLayout title="Report" items={["Stock Invoice Report"]}>
+        <div className="container-fluid m-0 p-0">
+          <div className="row">
+            {/* <div className="col-md-6 position-relative">
             <EndDatePicker
               idDatePicker="tanggal-akhir"
               titleText="Tanggal"
@@ -253,58 +255,59 @@ export function StockInvoiceReportPage() {
               }}
             />
           </div> */}
-          <div className="col-md-6 position-relative">
-            <DropdownSecondStyle
-              id="invoice"
-              label="Invoice *"
-              value={invoiceId}
-              options={invoices.map((invoice) => ({
-                value: invoice.id.toString(),
-                label: invoice.invoice_no,
-              }))}
-              onChange={handleInvoiceDropdownChange}
-              icon={<FaBox />}
-            />
+            <div className="col-md-6 position-relative">
+              <DropdownSecondStyle
+                id="invoice"
+                label="Invoice *"
+                value={invoiceId}
+                options={invoices.map((invoice) => ({
+                  value: invoice.id.toString(),
+                  label: invoice.invoice_no,
+                }))}
+                onChange={handleInvoiceDropdownChange}
+                icon={<FaBox />}
+              />
+            </div>
+          </div>
+          <div className="product-in-list w-100 d-flex flex-column">
+            <div className="mui-table-container">
+              <TableContainer component={Paper} sx={{ padding: 2 }}>
+                <Table>
+                  <EnhancedTableHead
+                    onRequestSort={handleRequestSort}
+                    order={order}
+                    orderBy={orderBy}
+                  />
+                  <TableBody>
+                    {sortedStockReport.map((value, index) => (
+                      <TableRow key={index}>
+                        <TableCell>{index + 1}</TableCell>
+                        <TableCell>{value.invoice_no}</TableCell>
+                        <TableCell>{value.product_name}</TableCell>
+                        <TableCell>{value.customer_name}</TableCell>
+                        <TableCell>
+                          {Number(value.product_in).toLocaleString("id-ID")}
+                        </TableCell>
+                        <TableCell>
+                          {Number(value.product_out).toLocaleString("id-ID")}
+                        </TableCell>
+                        <TableCell>
+                          {Number(value.product_remaining).toLocaleString(
+                            "id-ID"
+                          )}
+                        </TableCell>
+                        <TableCell>
+                          {new Date(value.created_at).toDateString()}
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </TableContainer>
+            </div>
           </div>
         </div>
-        <div className="product-in-list w-100 d-flex flex-column">
-          <div className="mui-table-container">
-            <TableContainer component={Paper} sx={{ padding: 2 }}>
-              <Table>
-                <EnhancedTableHead
-                  onRequestSort={handleRequestSort}
-                  order={order}
-                  orderBy={orderBy}
-                />
-                <TableBody>
-                  {sortedStockReport.map((value, index) => (
-                    <TableRow key={index}>
-                      <TableCell>{index + 1}</TableCell>
-                      <TableCell>{value.invoice_no}</TableCell>
-                      <TableCell>{value.product_name}</TableCell>
-                      <TableCell>{value.customer_name}</TableCell>
-                      <TableCell>
-                        {Number(value.product_in).toLocaleString("id-ID")}
-                      </TableCell>
-                      <TableCell>
-                        {Number(value.product_out).toLocaleString("id-ID")}
-                      </TableCell>
-                      <TableCell>
-                        {Number(value.product_remaining).toLocaleString(
-                          "id-ID"
-                        )}
-                      </TableCell>
-                      <TableCell>
-                        {new Date(value.created_at).toDateString()}
-                      </TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            </TableContainer>
-          </div>
-        </div>
-      </div>
+      </PageLayout>
     </>
   );
 }

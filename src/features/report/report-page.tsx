@@ -56,12 +56,12 @@ const menuItems = [
     icon: <IoDocumentText className="me-2" />,
   },
   {
-    label: "Daftar Piutang",
+    label: "Ar List",
     path: "/report/ar-list",
     icon: <FaListAlt className="me-2" />,
   },
   {
-    label: "Daftar Invoice",
+    label: "Invoice List",
     path: "/report/invoice-list",
     icon: <FaListAlt className="me-2" />,
   },

@@ -252,7 +252,7 @@ function InputPayment({
             <div className="container-fluid p-0">
               <StartDatePicker
                 idDatePicker="tanggal-input-pelunasan"
-                titleText="Tanggal Lunas"
+                titleText="Paid Date"
                 datetime={false}
                 value={startDate}
                 onDateClick={(date: Date) => {
@@ -405,13 +405,13 @@ export default function ArListPage() {
 
   return (
     <>
-      <PageLayout title="Report" items={["Daftar Piutang"]}>
+      <PageLayout title="Report" items={["Ar List"]}>
         <div className="container-fluid m-0 p-0">
           <div className="row mb-4">
             <div className="col-md-6 col-lg-4 position-relative mb-2">
               <StartDatePicker
                 idDatePicker="tanggal-awal-masuk-barang"
-                titleText="Tanggal Awal"
+                titleText="Start Date"
                 datetime={false}
                 value={startDate}
                 onDateClick={(date: Date) => {
@@ -422,7 +422,7 @@ export default function ArListPage() {
             <div className="col-md-6 col-lg-4 position-relative mb-2">
               <EndDatePicker
                 idDatePicker="tanggal-akhir-masuk-barang"
-                titleText="Tanggal Akhir"
+                titleText="End Date"
                 datetime={false}
                 value={endDate}
                 onDateClick={(date: Date) => {
@@ -438,9 +438,9 @@ export default function ArListPage() {
                 options={[
                   {
                     id: ArStatus.PENDING,
-                    name: "Belum Lunas",
+                    name: "Unpaid",
                   },
-                  { id: ArStatus.COMPLETED, name: "Lunas" },
+                  { id: ArStatus.COMPLETED, name: "Paid" },
                 ].map((customer) => ({
                   value: customer.id.toString(),
                   label: customer.name,
@@ -610,7 +610,7 @@ export default function ArListPage() {
             padding: "0 32px",
           }}
         >
-          {` PELUNASAN ( ${selected.length} )`}
+          {` PAID ( ${selected.length} )`}
           <FaArrowRight className="ms-3" />
         </button>
         <InputPayment

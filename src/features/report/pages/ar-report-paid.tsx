@@ -214,7 +214,7 @@ export function ArReportPaidPage() {
             <div className="col-md-6 col-lg-4 position-relative mb-2">
               <StartDatePicker
                 idDatePicker="tanggal-awal-masuk-barang"
-                titleText="Tanggal Awal"
+                titleText="Start Date"
                 datetime={false}
                 value={startDate}
                 onDateClick={(date: Date) => {
@@ -225,7 +225,7 @@ export function ArReportPaidPage() {
             <div className="col-md-6 col-lg-4 position-relative mb-2">
               <EndDatePicker
                 idDatePicker="tanggal-akhir-masuk-barang"
-                titleText="Tanggal Akhir"
+                titleText="End Date"
                 datetime={false}
                 value={endDate}
                 onDateClick={(date: Date) => {
