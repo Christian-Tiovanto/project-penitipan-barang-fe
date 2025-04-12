@@ -1,5 +1,6 @@
 import axios from "axios";
 import Cookies from "js-cookie";
+import { PaginationMetaData } from "../../../interfaces/pagination-meta";
 
 const API_URL = "http://127.0.0.1:3000";
 
@@ -61,7 +62,7 @@ export const createTransIn = async (
 export const getAllTransInsPaginationByProductId = async (
   productId: number,
   params: GetAllTransInsPaginationByProductIdParams = {}
-) => {
+): Promise<PaginationMetaData<any>> => {
   try {
     const token = Cookies.get("auth_token");
 

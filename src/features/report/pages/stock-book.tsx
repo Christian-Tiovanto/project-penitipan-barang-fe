@@ -407,7 +407,11 @@ export function StockBookPage() {
                         <TableRow className="blue-lighten">
                           <TableCell>1</TableCell>
                           <TableCell>
-                            {new Date().toLocaleString("en-GB")}
+                            {new Date(
+                              data.transactions[0]
+                                ? data.transactions[0].date
+                                : startDate
+                            ).toLocaleString("en-GB")}
                           </TableCell>
                           <TableCell>INITIAL STOCK</TableCell>
                           <TableCell>{data.product.name}</TableCell>
@@ -456,7 +460,13 @@ export function StockBookPage() {
                         <TableRow className="blue-lighten">
                           <TableCell>{sortedTransactions.length + 2}</TableCell>
                           <TableCell>
-                            {new Date().toLocaleString("en-GB")}
+                            {new Date(
+                              data.transactions[0]
+                                ? data.transactions[
+                                    data.transactions.length - 1
+                                  ].date
+                                : endDate
+                            ).toLocaleString("en-GB")}
                           </TableCell>
                           <TableCell>FINAL STOCK</TableCell>
                           <TableCell>{data.product.name}</TableCell>

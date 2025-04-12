@@ -85,7 +85,11 @@ const TransInHistoryPage: React.FC = () => {
         sort: filters?.sort,
         order: filters?.order,
       });
-
+      for (let i = 0; i < response.data.length; i++) {
+        response.data[i].created_at = new Date(
+          response.data[i].created_at
+        ).toLocaleString("en-GB");
+      }
       return {
         data: response.data,
         total: response.meta.total_count,
