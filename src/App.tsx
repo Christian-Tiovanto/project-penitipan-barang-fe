@@ -105,6 +105,10 @@ const router = createBrowserRouter([
         element: <MasterPage />,
       },
       {
+        path: "cashflow",
+        element: <CreateCashFlow />,
+      },
+      {
         path: "transaction",
         element: <TransactionPage />,
       },

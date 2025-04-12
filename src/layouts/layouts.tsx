@@ -53,6 +53,11 @@ export default function MainLayout() {
     { path: "/master", label: "Master", icon: "fa-project-diagram" },
     { path: "/transaction", label: "Transaction", icon: "fa-warehouse" },
     { path: "/report", label: "Reports", icon: "fa-paperclip" },
+    {
+      path: "/cashflow",
+      label: "Cashflow",
+      icon: "fa-money-bill",
+    },
   ];
 
   const handleLogout = () => {

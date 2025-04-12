@@ -68,32 +68,6 @@ export default function CreateCashFlow() {
   };
   return (
     <>
-      <nav
-        className="navbar-cashflow fixed-top m-0 p-0 d-flex justify-content-center align-items-center cyan"
-        style={{
-          maxHeight: "48px",
-        }}
-      >
-        <div className="container-fluid d-flex justify-content-start gap-3 px-2">
-          <button
-            className="fs-1 border-0 text-white bg-transparent d-flex justify-content-center align-items-center"
-            onClick={() => navigate(-1)}
-          >
-            <IoCloseSharp />
-          </button>
-          <a
-            className="navbar-brand text-white d-flex justify-content-center align-items-center"
-            style={{
-              fontSize: "20px",
-              fontWeight: "500",
-              letterSpacing: ".02em",
-            }}
-            href="#"
-          >
-            Kas
-          </a>
-        </div>
-      </nav>
       <div className="container" style={{ marginTop: "68px" }}>
         <div className="row align-items-start">
           <div className="col-12 col-md-6 mb-5">
