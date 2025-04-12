@@ -127,6 +127,7 @@ const StartDatePicker = ({
   const handleCancel = () => {
     // Reset to original values
     onDateClick(originalDate);
+    setTempDate(originalDate);
     setCurrentMonth(originalMonth);
     setCurrentYear(originalYear);
     setShowPicker(false);
@@ -383,6 +384,7 @@ const EndDatePicker = ({
   const handleCancel = () => {
     // Reset to original values
     onDateClick(originalDate);
+    setTempDate(originalDate);
     setCurrentMonth(originalMonth);
     setCurrentYear(originalYear);
     setShowPicker(false);
