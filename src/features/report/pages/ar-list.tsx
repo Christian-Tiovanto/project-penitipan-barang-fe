@@ -27,6 +27,8 @@ import { ArToPaidService } from "../services/ar-to-paid.service";
 import { getAllPaymentMethods } from "../../payment-method/services/payment-method.service";
 import { PaymentMethod } from "../../customer-payment/pages/create-customer-payment";
 import PageLayout from "../../../components/page-location";
+import { useToast } from "../../../contexts/toastContexts";
+import { getErrorMessage } from "../../../utils/get-error-message";
 
 export interface AR {
   id: number;
@@ -155,9 +157,11 @@ function EnhancedTableHead(props: EnhancedTableProps) {
 function InputPayment({
   selected,
   data,
+  onPaymentSuccess,
 }: {
   selected: readonly number[];
   data: AR[];
+  onPaymentSuccess: () => void;
 }) {
   const modalRef = React.useRef<HTMLDivElement>(null);
   const [startDate, setStartDate] = React.useState(startOfToday());
@@ -167,6 +171,7 @@ function InputPayment({
   const [paymentMethods, setpaymentMethods] = React.useState<PaymentMethod[]>(
     []
   );
+  const { showToast } = useToast();
   const [error, setError] = React.useState(null);
   const handleDropdownPaymentMethodChange = (value: string) => {
     setPaymentMethodId(value);
@@ -193,7 +198,13 @@ function InputPayment({
         paymentMethodId,
         "123"
       );
+      if (response.status === 201) {
+        showToast("Data added successfully!", "success");
+        onPaymentSuccess();
+      }
     } catch (err: any) {
+      showToast(getErrorMessage(err), "danger");
+
       setError(err.message || "Failed to save changes");
     } finally {
       setIsLoading(false);
@@ -234,7 +245,7 @@ function InputPayment({
               Total Item : {selected.length}
             </span>
             <span className="badge rounded-pill gray px-3 py-2 text-black">
-              {"Total Piutang : " + totalAr}
+              {"Total Piutang : " + Number(totalAr).toLocaleString("id-Id")}
             </span>
           </div>
           <div className="modal-body d-flex flex-column">
@@ -298,6 +309,7 @@ function InputPayment({
   );
 }
 export default function ArListPage() {
+  const [refreshKey, setRefreshKey] = React.useState(0);
   const [customerId, setCustomerId] = React.useState<string>("");
   const [customers, setCustomers] = React.useState<Customer[]>([]);
   const [status, setStatus] = React.useState<ArStatus>(ArStatus.PENDING);
@@ -318,7 +330,12 @@ export default function ArListPage() {
     pageNo: page,
     pageSize: rowsPerPage,
     status,
+    refreshKey,
   });
+
+  const refreshData = () => {
+    setRefreshKey((prev) => prev + 1);
+  };
 
   const handleRequestSort = (
     event: React.MouseEvent<unknown>,
@@ -529,10 +546,12 @@ export default function ArListPage() {
                                   ))}
                                 </TableCell>
                                 <TableCell align="left">
-                                  {row.total_bill}
+                                  {Number(row.total_bill).toLocaleString(
+                                    "id-Id"
+                                  )}
                                 </TableCell>
                                 <TableCell align="left">
-                                  {row.to_paid}
+                                  {Number(row.to_paid).toLocaleString("id-Id")}
                                 </TableCell>
                               </TableRow>
                             );
@@ -594,7 +613,11 @@ export default function ArListPage() {
           {` PELUNASAN ( ${selected.length} )`}
           <FaArrowRight className="ms-3" />
         </button>
-        <InputPayment selected={selected} data={response!.data} />
+        <InputPayment
+          selected={selected}
+          data={response!.data}
+          onPaymentSuccess={refreshData}
+        />
       </PageLayout>
     </>
   );

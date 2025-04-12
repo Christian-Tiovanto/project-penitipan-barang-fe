@@ -13,6 +13,7 @@ export const useArList = (query: {
   pageSize: number;
   sortBy: string;
   order: Order;
+  refreshKey: number;
 }) => {
   const {
     startDate,
@@ -23,6 +24,7 @@ export const useArList = (query: {
     sortBy,
     order,
     status,
+    refreshKey,
   } = query;
   const [response, setData] = useState<{
     meta: {
@@ -90,7 +92,17 @@ export const useArList = (query: {
     return () => {
       abortControllerRef.current?.abort();
     };
-  }, [customerId, startDate, endDate, pageNo, pageSize, order, sortBy, status]);
+  }, [
+    customerId,
+    startDate,
+    endDate,
+    pageNo,
+    pageSize,
+    order,
+    sortBy,
+    status,
+    refreshKey,
+  ]);
 
   return {
     response,
