@@ -52,12 +52,12 @@ export default function MainLayout() {
   const menuItems = [
     { path: "/master", label: "Master", icon: "fa-project-diagram" },
     { path: "/transaction", label: "Transaction", icon: "fa-warehouse" },
-    { path: "/report", label: "Reports", icon: "fa-paperclip" },
     {
       path: "/cashflow",
       label: "Cashflow",
       icon: "fa-money-bill",
     },
+    { path: "/report", label: "Reports", icon: "fa-paperclip" },
   ];
 
   const handleLogout = () => {
