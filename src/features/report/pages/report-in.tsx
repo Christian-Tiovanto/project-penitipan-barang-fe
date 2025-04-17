@@ -34,6 +34,9 @@ export interface ITransactionInData {
     id: number;
     name: string;
   };
+  transaction_in_header: {
+    code: string;
+  };
   qty: number;
   converted_qty: number;
   unit: string;
@@ -41,11 +44,18 @@ export interface ITransactionInData {
 
 const columns: HeadCell<ITransactionInData>[] = [
   {
+    field: "transaction_in_header",
+    headerName: "Code",
+    headerStyle: {
+      width: "20%",
+    },
+  },
+  {
     field: "product",
     headerName: "Product",
     headerStyle: {
       minWidth: "200px",
-      width: "40%",
+      width: "20%",
     },
   },
   {
@@ -212,6 +222,9 @@ export function ReportInPage() {
                     ) : (
                       response.data.map((value) => (
                         <TableRow key={value.id}>
+                          <TableCell>
+                            {value.transaction_in_header.code}
+                          </TableCell>
                           <TableCell>{value.product.name}</TableCell>
                           <TableCell>{value.customer.name}</TableCell>
                           <TableCell>{value.qty}</TableCell>
