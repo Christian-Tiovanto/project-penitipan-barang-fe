@@ -1,6 +1,12 @@
 import React, { useEffect, useState } from "react";
 import Breadcrumb from "../../../components/breadcrumb";
-import { FaSave, FaArrowLeft, FaSearch, FaCalendarAlt } from "react-icons/fa";
+import {
+  FaSave,
+  FaArrowLeft,
+  FaSearch,
+  FaCalendarAlt,
+  FaArrowCircleDown,
+} from "react-icons/fa";
 import { useNavigate } from "react-router";
 import { useToast } from "../../../contexts/toastContexts";
 import { FaBox, FaClipboardUser, FaTruck } from "react-icons/fa6";
@@ -292,7 +298,6 @@ const CreateTransOutForm: React.FC = () => {
           products: productModal,
           invoice: invoice,
         }));
-
         openModal();
       }
     } catch (error: any) {
@@ -327,8 +332,9 @@ const CreateTransOutForm: React.FC = () => {
         onChange={handleDropdownTransInHeaderChange}
         error={!!errors.transInHeaderId}
         errorMessage={errors.transInHeaderId}
-        icon={<FaClipboardUser />}
+        icon={<FaArrowCircleDown />}
       />
+
       <div className="row g-3">
         <div className="col-md-6">
           <InputField
@@ -371,26 +377,31 @@ const CreateTransOutForm: React.FC = () => {
 
         {/* Product List Container */}
         <div
-          className="overflow-y-auto space-y-3 bg-gray-50 border border-gray-300 rounded-lg p-3 scrollbar-thin scrollbar-thumb-gray-400 scrollbar-track-gray-200"
+          className="container flex flex-wrap overflow-y-auto space-y-3 bg-gray-50 border border-gray-300 rounded-lg p-3 scrollbar-thin scrollbar-thumb-gray-400 scrollbar-track-gray-200"
           style={{ maxHeight: "250px" }}
         >
-          {filteredProducts.length > 0 ? (
-            filteredProducts.map((product) => (
-              <ProductCard
-                key={product.id}
-                id={product.id}
-                name={product.name}
-                price={product.price}
-                qty={product.qty}
-                onQtyChange={(qty) => updateQty(product.id, qty)}
-              />
-            ))
-          ) : (
-            <div className="flex items-center justify-center h-full">
-              <p className="text-gray-500 text-center">Product not found.</p>
-            </div>
-          )}
+          <div className="row">
+            {filteredProducts.length > 0 ? (
+              filteredProducts.map((product) => (
+                <div className="col-12 col-md-6">
+                  <ProductCard
+                    key={product.id}
+                    id={product.id}
+                    name={product.name}
+                    price={product.price}
+                    qty={product.qty}
+                    onQtyChange={(qty) => updateQty(product.id, qty)}
+                  />
+                </div>
+              ))
+            ) : (
+              <div className="flex items-center justify-center h-full">
+                <p className="text-gray-500 text-center">Product not found.</p>
+              </div>
+            )}
+          </div>
         </div>
+
         {/* Modal */}
         {isModalOpen && modalData && (
           <div
