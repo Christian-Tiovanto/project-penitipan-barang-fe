@@ -36,16 +36,27 @@ export interface ITransactionOutData {
     id: number;
     name: string;
   };
+  invoice: {
+    id: number;
+    invoice_no: string;
+  };
   converted_qty: number;
   total_days: number;
 }
 const columns: HeadCell<ITransactionOutData>[] = [
   {
+    field: "invoice",
+    headerName: "Invoice No",
+    headerStyle: {
+      width: "20%",
+    },
+  },
+  {
     field: "product",
     headerName: "Product",
     headerStyle: {
       minWidth: "200px",
-      width: "40%",
+      width: "20%",
     },
   },
   {
@@ -222,6 +233,7 @@ export function ReportOutPage() {
                     ) : (
                       response.data.map((value) => (
                         <TableRow key={value.id}>
+                          <TableCell>{value.invoice.invoice_no}</TableCell>
                           <TableCell>{value.product.name}</TableCell>
                           <TableCell>{value.customer.name}</TableCell>
                           <TableCell sx={{ textAlign: "center" }}>
