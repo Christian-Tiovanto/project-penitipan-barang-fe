@@ -1,15 +1,25 @@
 import React, { useEffect, useState } from "react";
 import Breadcrumb from "../../../components/breadcrumb";
-import { FaSave, FaArrowLeft, FaBalanceScale } from "react-icons/fa";
-import { useNavigate, useParams } from "react-router";
+import { FaSave, FaArrowLeft, FaSearch, FaCalendarAlt } from "react-icons/fa";
+import { useNavigate } from "react-router";
 import { useToast } from "../../../contexts/toastContexts";
-import InputFieldNumber from "../../../components/inputfieldnumber";
-import { FaBox, FaClipboardList, FaClipboardUser } from "react-icons/fa6";
-import { createTransIn } from "../services/trans-in.service";
+import { FaBox, FaClipboardUser, FaTruck } from "react-icons/fa6";
 import Dropdown from "../../../components/dropdown";
-import { getProductUnitsByProductId } from "../../product-unit/services/product-unit.service";
 import { getAllCustomers } from "../../customer/services/customer.service";
-import { getProductById } from "../../product/services/product.service";
+import { getAllProducts } from "../../product/services/product.service";
+import InputField from "../../../components/inputfield";
+import ProductCard from "../../../components/product-card";
+import ProductCardDropDown from "../../../components/product-card-dropdown";
+import { createTransIn } from "../services/trans-in.service";
+
+export interface ProductUnit {
+  id: number;
+  productId: number;
+  name: string;
+  conversion_to_kg: number;
+  created_at: string;
+  updated_at: string;
+}
 
 interface Product {
   id: number;
@@ -20,16 +30,7 @@ interface Product {
   is_deleted: boolean;
   created_at: string;
   updated_at: string;
-}
-
-interface ProductUnit {
-  id: number;
-  product: number;
-  productId: number;
-  name: string;
-  conversion_to_kg: number;
-  created_at: Date;
-  updated_at: Date;
+  product_unit: ProductUnit[];
 }
 
 interface Customer {
@@ -42,56 +43,64 @@ interface Customer {
   updated_at: Date;
 }
 
-const CreateTransInForm: React.FC = () => {
+const CreateTransForm: React.FC = () => {
   const navigate = useNavigate();
   const { showToast } = useToast();
   const [products, setProducts] = useState<Product[]>([]);
-  const [productUnits, setProductUnits] = useState<ProductUnit[]>([]);
   const [customers, setCustomers] = useState<Customer[]>([]);
-  const { id } = useParams<{ id: string }>();
+
+  const [isModalOpen, setIsModalOpen] = useState(false); // State untuk mengontrol modal
+  const [modalData, setModalData] = useState<{
+    products: Product[];
+  } | null>(null);
+
+  const openModal = () => {
+    setIsModalOpen(true);
+  };
+
+  const closeModal = () => {
+    setIsModalOpen(false);
+    setModalData(null);
+  };
+
+  const [selectedDate, setSelectedDate] = useState<Date | null>(new Date());
 
   const [form, setForm] = useState({
-    qty: 0,
-    productId: "",
-    productUnitId: "",
     customerId: "",
   });
 
   const [errors, setErrors] = useState({
-    qty: "",
-    productId: "",
-    productUnitId: "",
     customerId: "",
   });
 
+  const [searchTerm, setSearchTerm] = useState("");
+
+  const filteredProducts = products.filter((p) =>
+    p.name.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
   useEffect(() => {
-    if (id) {
-      const ProductId = parseInt(id, 10);
-      fetchProducts(ProductId);
-      fetchProductUnits(ProductId);
-      fetchCustomers();
-      setForm((prev) => ({
-        ...prev,
-        productId: ProductId.toString(),
-      }));
-    }
+    fetchProducts();
+    fetchCustomers();
   }, []);
 
-  const fetchProducts = async (id: number) => {
+  useEffect(() => {
+    const defaultUnits: Record<string, number> = {};
+    products.forEach((product) => {
+      if (product.product_unit?.length) {
+        defaultUnits[product.id] = product.product_unit[0].id;
+      }
+    });
+    setSelectedUnits(defaultUnits);
+  }, [products]);
+
+  const fetchProducts = async () => {
     try {
-      const product = await getProductById(id);
-      setProducts([product]);
+      const products = await getAllProducts();
+      const updated = products.map((p: any) => ({ ...p, qty: 0 }));
+      setProducts(updated);
     } catch (error) {
       console.error("Error fetching product:", error);
-    }
-  };
-
-  const fetchProductUnits = async (id: number) => {
-    try {
-      const productUnits = await getProductUnitsByProductId(id);
-      setProductUnits(productUnits);
-    } catch (error) {
-      console.error("Error fetching product units:", error);
     }
   };
 
@@ -107,43 +116,45 @@ const CreateTransInForm: React.FC = () => {
   const validateForm = () => {
     const newErrors: any = {};
 
-    if (!form.productId) {
-      newErrors.productId = "Please Select a Product";
-    }
-
     if (!form.customerId) {
       newErrors.customerId = "Please Select a Customer";
-    }
-
-    if (!form.productUnitId) {
-      newErrors.productUnitId = "Please Select a Product Unit";
     }
 
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
 
-  const handleDropdownProductUnitChange = (value: string) => {
-    setForm({ ...form, productUnitId: value });
-  };
-
   const handleDropdownCustomerChange = (value: string) => {
     setForm({ ...form, customerId: value });
   };
 
-  const handleQtyChange = (newValue: number) => {
-    setForm({
-      ...form,
-      qty: newValue,
-    });
+  const updateQty = (id: number, qty: number) => {
+    setProducts((prev) => prev.map((p) => (p.id === id ? { ...p, qty } : p)));
   };
 
-  const handleBlur = (e: React.FocusEvent<HTMLInputElement>) => {
-    const { name, value } = e.target;
-    setErrors((prevErrors) => ({
-      ...prevErrors,
-      [name]: !value.trim() ? "This field is required" : "",
-    }));
+  const handleCreateTransInPage = async () => {
+    try {
+      const payload = {
+        customerId: form.customerId, // ganti sesuai dengan variabel customer ID yang kamu pakai
+        data: products
+          .filter((p) => p.qty > 0 && selectedUnits[p.id] !== undefined)
+          .map((p) => ({
+            productId: p.id,
+            qty: p.qty, // ubah dari converted_qty ke qty
+            unitId: selectedUnits[p.id],
+          })),
+      };
+
+      await createTransIn(payload);
+
+      navigate("/transaction/in");
+      showToast("Data added successfully!", "success");
+    } catch (error: any) {
+      const finalMessage = `Failed to add data.\n${
+        error?.response?.data?.message || error?.message || "Unknown error"
+      }`;
+      showToast(finalMessage, "danger");
+    }
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -151,14 +162,15 @@ const CreateTransInForm: React.FC = () => {
       e.preventDefault();
 
       if (validateForm()) {
-        await createTransIn(
-          parseInt(form.customerId, 10),
-          parseInt(form.productId, 10),
-          form.qty,
-          parseInt(form.productUnitId, 10)
+        const productModal = products.filter(
+          (p) => p.qty > 0 && selectedUnits[p.id] !== undefined
         );
-        navigate("/transaction/in");
-        showToast("Data added successfully!", "success");
+
+        setModalData(() => ({
+          products: productModal,
+        }));
+
+        openModal();
       }
     } catch (error: any) {
       const finalMessage = `Failed to add data.\n${
@@ -168,67 +180,148 @@ const CreateTransInForm: React.FC = () => {
     }
   };
 
+  const [selectedUnits, setSelectedUnits] = useState<{
+    [productId: number]: number;
+  }>({});
+
+  const handleUnitChange = (productId: number, unitId: number) => {
+    setSelectedUnits((prev) => ({
+      ...prev,
+      [productId]: unitId,
+    }));
+  };
+
   return (
     <form onSubmit={handleSubmit}>
-      <div className="row g-3">
-        <div className="col-md-6">
-          <Dropdown
-            label="Product *"
-            value={String(form.productId)}
-            options={products.map((product) => ({
-              value: product.id.toString(),
-              label: product.name,
-            }))}
-            error={!!errors.productId}
-            errorMessage={errors.productId}
-            icon={<FaBox />}
-            readOnly
+      <Dropdown
+        label="Customer *"
+        value={String(form.customerId)}
+        options={customers.map((customer) => ({
+          value: customer.id.toString(),
+          label: customer.name,
+        }))}
+        onChange={handleDropdownCustomerChange}
+        error={!!errors.customerId}
+        errorMessage={errors.customerId}
+        icon={<FaClipboardUser />}
+      />
+
+      <div className="max-w-md mx-auto p-4 bg-white rounded-xl shadow-md border border-gray-200">
+        {/* Search Field */}
+        <div className="mb-3">
+          <InputField
+            label="Product List "
+            type="text"
+            name="search"
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            icon={<FaSearch />}
           />
         </div>
-        <div className="col-md-6">
-          <Dropdown
-            label="Product Unit *"
-            value={String(form.productUnitId)}
-            options={productUnits.map((productUnit) => ({
-              value: productUnit.id.toString(),
-              label: productUnit.name,
-            }))}
-            onChange={handleDropdownProductUnitChange}
-            error={!!errors.productUnitId}
-            errorMessage={errors.productUnitId}
-            icon={<FaBalanceScale />}
-          />
+
+        {/* Product List Container */}
+        <div
+          className="overflow-y-auto space-y-3 bg-gray-50 border border-gray-300 rounded-lg p-3 scrollbar-thin scrollbar-thumb-gray-400 scrollbar-track-gray-200"
+          style={{ maxHeight: "250px" }}
+        >
+          {filteredProducts.length > 0 ? (
+            filteredProducts.map((product) => (
+              <ProductCardDropDown
+                key={product.id}
+                id={product.id}
+                name={product.name}
+                price={product.price}
+                qty={product.qty}
+                product_unit={product.product_unit} // Menyertakan unit produk
+                onQtyChange={(qty) => updateQty(product.id, qty)}
+                onUnitChange={(productId, unitId) =>
+                  handleUnitChange(productId, unitId)
+                } // Menangani perubahan unit
+              />
+            ))
+          ) : (
+            <div className="flex items-center justify-center h-full">
+              <p className="text-gray-500 text-center">Product not found.</p>
+            </div>
+          )}
         </div>
+        {/* Modal */}
+        {isModalOpen && modalData && (
+          <div
+            className="modal fade show d-flex align-items-center justify-content-center"
+            id="paidoff-form"
+            tabIndex={-1}
+            aria-labelledby="paidoffFormLabel"
+            aria-hidden="false"
+            style={{
+              display: "block",
+              position: "fixed",
+              top: 0,
+              left: 0,
+              right: 0,
+              bottom: 0,
+              zIndex: 1050,
+            }}
+          >
+            <div className="modal-dialog">
+              <div className="modal-content">
+                <div className="modal-header">
+                  <h5 className="modal-title" id="paidoffFormLabel">
+                    Transaction In Detail
+                  </h5>
+                  <button
+                    type="button"
+                    className="btn-close"
+                    onClick={closeModal}
+                    aria-label="Close"
+                  ></button>
+                </div>
+                <div className="modal-body">
+                  <table className="table table-striped">
+                    <thead>
+                      <tr>
+                        <th>Product</th>
+                        <th>Qty</th>
+                        <th>Unit</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {modalData.products.map((product, index) => (
+                        <tr key={index}>
+                          <td>{product.name}</td>
+                          <td>{product.qty}</td>
+                          <td>
+                            {product.product_unit?.find(
+                              (unit) => unit.id === selectedUnits[product.id]
+                            )?.name || "No Unit Available"}
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+                <div className="modal-footer">
+                  <button
+                    type="button"
+                    className="btn btn-secondary"
+                    onClick={closeModal}
+                  >
+                    Close
+                  </button>
+                  <button
+                    type="button"
+                    className="btn btn-primary"
+                    onClick={handleCreateTransInPage}
+                  >
+                    Create Trans In
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
 
-      <div className="row g-3">
-        <div className="col-md-6">
-          <Dropdown
-            label="Customer *"
-            value={String(form.customerId)}
-            options={customers.map((customer) => ({
-              value: customer.id.toString(),
-              label: customer.name,
-            }))}
-            onChange={handleDropdownCustomerChange}
-            error={!!errors.customerId}
-            errorMessage={errors.customerId}
-            icon={<FaClipboardUser />}
-          />
-        </div>
-        <div className="col-md-6">
-          <InputFieldNumber
-            label="Qty *"
-            name="qty"
-            value={form.qty}
-            onChange={handleQtyChange}
-            onBlur={handleBlur}
-            error={!!errors.qty}
-            errorMessage={errors.qty}
-            icon={<FaClipboardList />}
-          />
-        </div>
-      </div>
       <div className="text-end mt-3">
         <button type="submit" className="btn btn-primary px-4">
           Save <FaSave className="ms-2" />
@@ -259,7 +352,7 @@ const CreateTransInPage: React.FC = () => {
       </div>
 
       <div className="card shadow-lg border-0 rounded-4 p-4">
-        <CreateTransInForm />
+        <CreateTransForm />
       </div>
     </div>
   );

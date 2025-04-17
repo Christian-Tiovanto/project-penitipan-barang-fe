@@ -17,13 +17,11 @@ import {
   TableSortLabel,
 } from "@mui/material";
 import {
-  Edit as EditIcon,
+  History as HistoryIcon,
   Delete as DeleteIcon,
   Add as AddIcon,
   Search as SearchIcon,
-  History as HistoryIcon,
 } from "@mui/icons-material";
-import { FaDolly } from "react-icons/fa6";
 
 interface Column {
   field: string;
@@ -42,18 +40,18 @@ interface Props {
     searchQuery: string,
     filters?: FetchFilters
   ) => Promise<{ data: any[]; total: number }>;
-  onAdd?: (row: any) => void;
   onHistory?: (row: any) => void;
-  //   onAdd?: () => void;
+  // onDelete?: (row: any) => void;
+  onAdd?: () => void;
   filters?: FetchFilters;
 }
 
 const MuiTable: React.FC<Props> = ({
   columns,
   fetchData,
-  onAdd,
   onHistory,
-  //   onAdd,
+  // onDelete,
+  onAdd,
   filters = {},
 }) => {
   const [page, setPage] = useState(0);
@@ -96,16 +94,16 @@ const MuiTable: React.FC<Props> = ({
     setPage(0);
   };
 
-  //   const handleHistory = async (row: any) => {
-  //     try {
-  //       if (onHistory) {
-  //         await onHistory(row);
-  //       }
-  //       loadData();
-  //     } catch (error) {
-  //       console.error("Failed to get history data:", error);
+  // const handleDelete = async (row: any) => {
+  //   try {
+  //     if (onDelete) {
+  //       await onDelete(row);
   //     }
-  //   };
+  //     loadData();
+  //   } catch (error) {
+  //     console.error("Failed to delete data:", error);
+  //   }
+  // };
 
   const handleSort = (field: string) => {
     const fieldMapping: Record<string, string> = {
@@ -134,7 +132,20 @@ const MuiTable: React.FC<Props> = ({
           alignItems="center"
           mb={2}
         >
-          <h4 className="p-3 mb-3 mb-0">Product List</h4>
+          <Button
+            variant="contained"
+            color="primary"
+            startIcon={<AddIcon />}
+            onClick={onAdd}
+            sx={{
+              textTransform: "none",
+              fontSize: "0.9rem",
+              padding: "8px 16px",
+              mb: { xs: 2, sm: 0 },
+            }}
+          >
+            Add New
+          </Button>
           <TextField
             label="Search..."
             variant="standard"
@@ -197,17 +208,17 @@ const MuiTable: React.FC<Props> = ({
                   })}
                   <TableCell>
                     <IconButton
-                      sx={{ color: "green" }}
-                      onClick={() => onAdd && onAdd(row)}
-                    >
-                      <FaDolly />
-                    </IconButton>
-                    <IconButton
-                      sx={{ color: "blue" }}
+                      color="primary"
                       onClick={() => onHistory && onHistory(row)}
                     >
                       <HistoryIcon />
-                    </IconButton>{" "}
+                    </IconButton>
+                    {/* <IconButton
+                      sx={{ color: "red" }}
+                      onClick={() => handleDelete(row)}
+                    >
+                      <DeleteIcon />
+                    </IconButton> */}
                   </TableCell>
                 </TableRow>
               ))}

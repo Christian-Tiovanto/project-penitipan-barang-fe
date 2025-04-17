@@ -22,7 +22,6 @@ export class StockBookReportService {
     if (query?.endDate) {
       queryParams.end_date = query.endDate.toISOString();
     }
-    console.log(query);
     // Build URL with filtered parameters
     const response = await axios.get<IStockBookData>(
       `${URL}/api/v1/report/stock-book/product/${productId}/customer/${customerId}`,

@@ -135,7 +135,6 @@ export const deleteProductUnitById = async (id: number) => {
 export const getProductUnitsByProductId = async (productId: number) => {
   try {
     const token = Cookies.get("auth_token");
-    console.log(`${API_URL}/api/v1/product-unit/by-product/${productId}`);
     const response = await axios.get(
       `${API_URL}/api/v1/product-unit/by-product/${productId}`,
       {

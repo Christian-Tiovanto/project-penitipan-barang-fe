@@ -193,7 +193,7 @@ function EnhancedTableHead(props: EnhancedTableProps) {
             </TableSortLabel>
           </TableCell>
         ))}
-        <TableCell className="fw-bold text-nowrap">Cetak</TableCell>
+        <TableCell className="fw-bold text-nowrap">Print</TableCell>
       </TableRow>
     </TableHead>
   );
@@ -428,7 +428,7 @@ export default function InvoiceListPage() {
 
   return (
     <>
-      <PageLayout title="Report" items={["Daftar Invoice"]}>
+      <PageLayout title="Report" items={["Invoice List"]}>
         <div className="container-fluid m-0 p-0">
           <div className="row mb-4">
             <div className="col-md-6 col-lg-4 position-relative mb-2">

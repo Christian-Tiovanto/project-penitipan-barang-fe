@@ -117,8 +117,6 @@ export function CustomerProductStockPage() {
     endDate,
   });
   const sortedCustomerProductReport = useMemo(() => {
-    console.log("data");
-    console.log(data);
     if (!data) return [];
 
     const processedData = data.map((item) => ({

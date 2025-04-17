@@ -38,7 +38,6 @@ const InputFieldNumber: React.FC<InputFieldNumberProps> = ({
 
     // Menghindari input seperti "01", "007", dsb., kecuali 0 itu sendiri
     const cleanedValue = rawValue === "" ? "" : String(Number(rawValue));
-    console.log(cleanedValue);
     if (onChange && cleanedValue !== "") {
       onChange(Number(cleanedValue));
     } else if (cleanedValue === "") {

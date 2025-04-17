@@ -12,6 +12,11 @@ import ProductCard from "../../../components/product-card";
 import { createTransOut, previewTransOut } from "../services/trans-out.service";
 import { StartDatePicker } from "../../../components/date-picker";
 import DatePickerField from "../../../components/date-picker-field";
+import {
+  getAllTransInHeaderByCustomerId,
+  getTransInById,
+  getTransInHeaderById,
+} from "../../trans-in/services/trans-in.service";
 
 interface Product {
   id: number;
@@ -24,6 +29,14 @@ interface Product {
   updated_at: string;
 }
 
+export interface TransactionInHeader {
+  id: number;
+  code: string;
+  customer: Customer;
+  customerId: number;
+  created_at: Date;
+  updated_at: Date;
+}
 interface Customer {
   id: number;
   name: string;
@@ -57,6 +70,9 @@ const CreateTransOutForm: React.FC = () => {
   const { showToast } = useToast();
   const [products, setProducts] = useState<Product[]>([]);
   const [customers, setCustomers] = useState<Customer[]>([]);
+  const [transInHeaders, setTransInHeaders] = useState<TransactionInHeader[]>(
+    []
+  );
 
   const [isModalOpen, setIsModalOpen] = useState(false); // State untuk mengontrol modal
   const [modalData, setModalData] = useState<{
@@ -78,11 +94,13 @@ const CreateTransOutForm: React.FC = () => {
   const [form, setForm] = useState({
     customerId: "",
     no_plat: "",
+    transInHeaderId: "",
   });
 
   const [errors, setErrors] = useState({
     customerId: "",
     no_plat: "",
+    transInHeaderId: "",
   });
 
   const [searchTerm, setSearchTerm] = useState("");
@@ -92,13 +110,51 @@ const CreateTransOutForm: React.FC = () => {
   );
 
   useEffect(() => {
-    fetchProducts();
+    // fetchProducts();
     fetchCustomers();
   }, []);
 
-  const fetchProducts = async () => {
+  const fetchProducts = async (transInHeaderId: number) => {
     try {
-      const products = await getAllProducts();
+      const transInHeader = await getTransInHeaderById(transInHeaderId);
+
+      if (!transInHeader || !Array.isArray(transInHeader.transaction_in)) {
+        console.warn("Data transaction_in tidak tersedia atau bukan array.");
+        return;
+      }
+
+      const uniqueProductsMap = new Map<number, any>();
+
+      transInHeader.transaction_in.forEach((item: any) => {
+        const product = item.product;
+        if (product && !uniqueProductsMap.has(product.id)) {
+          const {
+            id,
+            name,
+            price,
+            qty,
+            desc,
+            initial_qty,
+            is_deleted,
+            created_at,
+            updated_at,
+          } = product;
+          uniqueProductsMap.set(product.id, {
+            id,
+            name,
+            price,
+            qty,
+            desc,
+            initial_qty,
+            is_deleted,
+            created_at,
+            updated_at,
+          });
+        }
+      });
+
+      const products = Array.from(uniqueProductsMap.values());
+      // const products = await getAllProducts();
       const updated = products.map((p: any) => ({ ...p, qty: 0 }));
       setProducts(updated);
     } catch (error) {
@@ -115,6 +171,15 @@ const CreateTransOutForm: React.FC = () => {
     }
   };
 
+  const fetchTransInHeaders = async (customerId: number) => {
+    try {
+      const transInHeaders = await getAllTransInHeaderByCustomerId(customerId);
+      setTransInHeaders(transInHeaders);
+    } catch (error) {
+      console.error("Error fetching customers:", error);
+    }
+  };
+
   const validateForm = () => {
     const newErrors: any = {};
 
@@ -124,6 +189,10 @@ const CreateTransOutForm: React.FC = () => {
 
     if (!form.customerId) {
       newErrors.customerId = "Please Select a Customer";
+    }
+
+    if (!form.transInHeaderId) {
+      newErrors.transInHeaderId = "Please Select a Transaction In";
     }
 
     if (!form.no_plat.trim()) {
@@ -136,6 +205,14 @@ const CreateTransOutForm: React.FC = () => {
 
   const handleDropdownCustomerChange = (value: string) => {
     setForm({ ...form, customerId: value });
+
+    fetchTransInHeaders(parseInt(value));
+  };
+
+  const handleDropdownTransInHeaderChange = (value: string) => {
+    setForm({ ...form, transInHeaderId: value });
+
+    fetchProducts(parseInt(value));
   };
 
   const handleBlur = (e: React.FocusEvent<HTMLInputElement>) => {
@@ -173,7 +250,8 @@ const CreateTransOutForm: React.FC = () => {
         parseInt(form.customerId, 10),
         form.no_plat,
         clockOut,
-        payload
+        payload,
+        parseInt(form.transInHeaderId, 10)
       );
 
       navigate("/transaction");
@@ -204,7 +282,8 @@ const CreateTransOutForm: React.FC = () => {
           parseInt(form.customerId, 10),
           form.no_plat,
           clockOut,
-          payload
+          payload,
+          parseInt(form.transInHeaderId, 10)
         );
 
         const productModal = products.filter((p) => p.qty > 0);
@@ -236,6 +315,18 @@ const CreateTransOutForm: React.FC = () => {
         onChange={handleDropdownCustomerChange}
         error={!!errors.customerId}
         errorMessage={errors.customerId}
+        icon={<FaClipboardUser />}
+      />
+      <Dropdown
+        label="No Trans In *"
+        value={String(form.transInHeaderId)}
+        options={transInHeaders.map((transInHeader) => ({
+          value: transInHeader.id.toString(),
+          label: transInHeader.code,
+        }))}
+        onChange={handleDropdownTransInHeaderChange}
+        error={!!errors.transInHeaderId}
+        errorMessage={errors.transInHeaderId}
         icon={<FaClipboardUser />}
       />
       <div className="row g-3">
@@ -345,31 +436,55 @@ const CreateTransOutForm: React.FC = () => {
                       {modalData.products.map((product, index) => (
                         <tr key={index}>
                           <td>{product.name}</td>
-                          <td>{product.price}</td>
+                          <td>
+                            {new Intl.NumberFormat("id-ID").format(
+                              product.price
+                            )}
+                          </td>
                           <td>{product.qty}</td>
-                          <td>{product.price * product.qty}</td>
+                          <td>
+                            {new Intl.NumberFormat("id-ID").format(
+                              product.price * product.qty
+                            )}
+                          </td>
                         </tr>
                       ))}
                     </tbody>
                   </table>
                   <div className="d-flex justify-content-between">
                     <strong>Subtotal:</strong>
-                    <span>{modalData.invoice.total_amount}</span>
+                    <span>
+                      {new Intl.NumberFormat("id-ID").format(
+                        modalData.invoice.total_amount
+                      )}
+                    </span>
                   </div>
                   <div className="d-flex justify-content-between">
                     <strong>Fine:</strong>
-                    <span>{modalData.invoice.fine}</span>
+                    <span>
+                      {" "}
+                      {new Intl.NumberFormat("id-ID").format(
+                        modalData.invoice.fine
+                      )}
+                    </span>
                   </div>
                   <div className="d-flex justify-content-between">
                     <strong>Charge:</strong>
-                    <span>{modalData.invoice.charge}</span>
+                    <span>
+                      {" "}
+                      {new Intl.NumberFormat("id-ID").format(
+                        modalData.invoice.charge
+                      )}
+                    </span>
                   </div>
                   <div className="d-flex justify-content-between">
                     <strong>Total:</strong>
                     <span>
-                      {modalData.invoice.total_amount +
-                        modalData.invoice.fine +
-                        modalData.invoice.charge}
+                      {new Intl.NumberFormat("id-ID").format(
+                        modalData.invoice.total_amount +
+                          modalData.invoice.fine +
+                          modalData.invoice.charge
+                      )}
                     </span>
                   </div>
                 </div>

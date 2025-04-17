@@ -133,7 +133,8 @@ const MuiTable: React.FC<Props> = ({
           mb={2}
         >
           <h4 className="p-3 mb-3 mb-0">
-            {data[0]?.product?.name ?? "Tidak ada nama"}
+            {data[0]?.transaction_in_header?.code ??
+              "Not Found Trans In Detail"}
           </h4>
           <TextField
             label="Search..."

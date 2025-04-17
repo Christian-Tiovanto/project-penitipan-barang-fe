@@ -5,6 +5,7 @@ import { useNavigate } from "react-router";
 import { useToast } from "../../../contexts/toastContexts";
 import { getAllProductsPagination } from "../../product/services/product.service";
 import MuiTableTrans from "../../../components/table-mui-trans";
+import { getAllTransInHeaderPagination } from "../services/trans-in.service";
 
 interface FetchFilters {
   sort?: string;
@@ -18,10 +19,8 @@ const TransInPage: React.FC = () => {
 
   const columns = [
     { field: "id", headerName: "ID" },
-    { field: "name", headerName: "Name" },
-    { field: "price", headerName: "Price" },
-    { field: "qty", headerName: "Qty" },
-    { field: "desc", headerName: "Desc" },
+    { field: "code", headerName: "No Trans In" },
+    { field: "created_at", headerName: "Date" },
   ];
 
   const fetchTableData = async (
@@ -31,14 +30,18 @@ const TransInPage: React.FC = () => {
     filters?: FetchFilters
   ): Promise<{ data: any[]; total: number }> => {
     try {
-      const response = await getAllProductsPagination({
+      const response = await getAllTransInHeaderPagination({
         pageNo: pageNo + 1, // backend biasanya 1-based
         pageSize,
         search: searchQuery,
         sort: filters?.sort,
         order: filters?.order,
       });
-
+      for (let i = 0; i < response.data.length; i++) {
+        response.data[i].created_at = new Date(
+          response.data[i].created_at
+        ).toLocaleString("en-GB");
+      }
       return {
         data: response.data,
         total: response.meta.total_count,
@@ -53,8 +56,8 @@ const TransInPage: React.FC = () => {
     navigate(`/transaction/in/history-in/${row.id}`);
   };
 
-  const handleAdd = (row: any) => {
-    navigate(`/transaction/in/create-in/${row.id}`);
+  const handleAdd = () => {
+    navigate(`/transaction/in/create-in`);
   };
 
   return (
