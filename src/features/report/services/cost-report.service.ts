@@ -20,7 +20,6 @@ export class CostReportService {
     if (query?.endDate) {
       queryParams.end_date = query.endDate.toISOString();
     }
-    console.log(query);
     // Build URL with filtered parameters
     const response = await axios.get<ICostReportData>(
       `${URL}/api/v1/report/cashflow-report`,

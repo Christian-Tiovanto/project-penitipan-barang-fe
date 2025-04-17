@@ -5,7 +5,7 @@ import { useNavigate, useParams } from "react-router";
 import { useToast } from "../../../contexts/toastContexts";
 import { getAllProductsPagination } from "../../product/services/product.service";
 import MuiTableTrans from "../../../components/table-mui-trans";
-import { getAllTransInsPaginationByProductId } from "../services/trans-in.service";
+import { getAllTransInsPaginationByHeaderId } from "../services/trans-in.service";
 import MuiTableHistory from "../../../components/table-mui-history";
 import { getUserByIdToken } from "../../auth/services/auth.service";
 
@@ -78,7 +78,7 @@ const TransInHistoryPage: React.FC = () => {
         throw new Error("Product ID belum tersedia");
       }
 
-      const response = await getAllTransInsPaginationByProductId(productId, {
+      const response = await getAllTransInsPaginationByHeaderId(productId, {
         pageNo: pageNo + 1, // backend biasanya 1-based
         pageSize,
         search: searchQuery,
@@ -110,7 +110,7 @@ const TransInHistoryPage: React.FC = () => {
       <div className="d-flex justify-content-between align-items-center p-3 mb-3">
         <Breadcrumb
           title="Transaction"
-          items={["Transaction In", "History Transaction In"]}
+          items={["Transaction In", "Detail Transaction In"]}
         />
         <button
           type="button"

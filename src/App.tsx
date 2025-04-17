@@ -51,6 +51,7 @@ import InvoiceListPage from "./features/report/pages/invoice-list";
 import CreateTransOutPage from "./features/trans-out/pages/create-trans-out";
 import ReportPage from "./features/report/report-page";
 import { StockInvoiceReportPage } from "./features/report/pages/stock-invoice-report";
+// import CreateTrans from "./features/trans-in/pages/create-trans";
 
 const router = createBrowserRouter([
   { path: "create-cashflow", element: <CreateCashFlow /> },
@@ -201,7 +202,7 @@ const router = createBrowserRouter([
         element: <TransInPage />,
       },
       {
-        path: "transaction/in/create-in/:id",
+        path: "transaction/in/create-in",
         element: <CreateTransInPage />,
       },
       {
@@ -216,6 +217,10 @@ const router = createBrowserRouter([
         path: "transaction/out/create-out",
         element: <CreateTransOutPage />,
       },
+      // {
+      //   path: "test",
+      //   element: <CreateTrans />,
+      // },
     ],
   },
   {

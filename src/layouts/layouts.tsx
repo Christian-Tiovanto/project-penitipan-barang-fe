@@ -9,8 +9,6 @@ export default function MainLayout() {
   const toggleButtonRef = useRef<HTMLButtonElement>(null);
   const location = useLocation();
   const navigate = useNavigate();
-  console.log("VITE");
-  console.log(import.meta.env);
   useEffect(() => {
     if (!checkAuth()) {
       navigate("/login");

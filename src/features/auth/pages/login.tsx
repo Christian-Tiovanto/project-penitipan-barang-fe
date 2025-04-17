@@ -15,11 +15,6 @@ const LoginPage: React.FC = () => {
 
   const { showToast } = useToast();
 
-  // const handleSubmit = (e: React.FormEvent) => {
-  //     e.preventDefault();
-  //     console.log("Login success:", { email, password });
-  // };
-
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");

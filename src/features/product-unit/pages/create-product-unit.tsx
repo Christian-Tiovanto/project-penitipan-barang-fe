@@ -45,7 +45,6 @@ const CreateProductUnitForm: React.FC = () => {
   const fetchProducts = async () => {
     try {
       const products = await getAllProducts();
-      console.log(products);
       setProducts(products);
     } catch (error) {
       console.error("Error fetching products:", error);

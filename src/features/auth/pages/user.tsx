@@ -66,7 +66,6 @@ const UserPage: React.FC = () => {
   };
 
   const handleAdd = () => {
-    console.log("USER ADD");
     navigate("/master/user/create-user");
   };
 

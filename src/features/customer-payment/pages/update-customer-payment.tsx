@@ -87,7 +87,6 @@ const UpdateCustomerPaymentForm: React.FC = () => {
   const fetchCustomerPaymentById = async (id: number) => {
     try {
       const CustomerPaymentData = await getCustomerPaymentById(id);
-      console.log(CustomerPaymentData);
       setForm({
         customerId: CustomerPaymentData.customerId,
         paymentMethodId: CustomerPaymentData.payment_methodId,

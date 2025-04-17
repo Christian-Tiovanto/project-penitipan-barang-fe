@@ -74,8 +74,7 @@ const ChangePasswordForm: React.FC = () => {
     if (!form.newPassword.trim()) {
       newErrors.newPassword = "This field is required";
     }
-    console.log(form.confirmNewPassword);
-    console.log(form.newPassword);
+
     if (!form.confirmNewPassword.trim()) {
       newErrors.confirmNewPassword = "This field is required";
     } else if (form.confirmNewPassword != form.newPassword) {

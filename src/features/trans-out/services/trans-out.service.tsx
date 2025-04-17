@@ -10,7 +10,8 @@ export const createTransOut = async (
   transactionOuts: {
     productId: number;
     converted_qty: number;
-  }[]
+  }[],
+  transInHeaderId: number
 ) => {
   try {
     const token = Cookies.get("auth_token");
@@ -21,6 +22,7 @@ export const createTransOut = async (
         no_plat: noPlat,
         clock_out: clockOut,
         transaction_outs: transactionOuts,
+        transaction_in_headerId: transInHeaderId,
       },
       {
         headers: {
@@ -42,7 +44,8 @@ export const previewTransOut = async (
   transactionOuts: {
     productId: number;
     converted_qty: number;
-  }[]
+  }[],
+  transInHeaderId: number
 ) => {
   try {
     const token = Cookies.get("auth_token");
@@ -53,6 +56,7 @@ export const previewTransOut = async (
         no_plat: noPlat,
         clock_out: clockOut,
         transaction_outs: transactionOuts,
+        transaction_in_headerId: transInHeaderId,
       },
       {
         headers: {

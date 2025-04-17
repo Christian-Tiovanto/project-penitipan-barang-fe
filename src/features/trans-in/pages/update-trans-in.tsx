@@ -124,13 +124,10 @@ const UpdateTransInForm: React.FC = () => {
 
   const setDataForm = async (TransInData: any, productUnits: ProductUnit[]) => {
     try {
-      console.log(productUnits);
-      console.log(TransInData.unit.toLowerCase());
       const matchedUnit = productUnits.find(
         (unit) => unit.name.toLowerCase() === TransInData.unit.toLowerCase()
       );
 
-      console.log(matchedUnit);
       const id = matchedUnit?.id.toString();
       setForm({
         productId: TransInData.productId,
@@ -197,7 +194,6 @@ const UpdateTransInForm: React.FC = () => {
           qty: form.qty,
           unitId: form.productUnitId,
         };
-        console.log(newForm);
         await updateTransInById(transInId, newForm);
         navigate(`/transaction/in/history-in/${newForm.productId}`);
         showToast("Data updated successfully!", "success");
