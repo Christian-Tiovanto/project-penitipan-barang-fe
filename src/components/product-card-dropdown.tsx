@@ -41,27 +41,27 @@ export default function ProductCardDropDown({
       </div>
 
       {/* Middle: Quantity Control */}
-      <div className="flex items-center gap-3">
+      <div className="d-flex align-items-center gap-2">
         <button
           type="button"
           onClick={decrement}
-          className="w-10 h-10 flex items-center justify-center rounded-full bg-red-500 text-white shadow-md hover:bg-red-600 hover:scale-105 active:scale-95 transition-all"
+          className="btn btn-light p-0 rounded-circle btn-sm d-flex align-items-center justify-content-center shadow-md hover:bg-green-600 hover:scale-105 active:scale-95 transition-all border-2 border-black "
+          style={{ width: "30px", height: "30px" }}
         >
           <FaMinus color="black" size={18} />
         </button>
-
         <input
           type="text"
           value={qty}
           onChange={handleInputChange}
           className="w-10 h-10 text-center border border-gray-300 rounded-lg bg-white text-gray-800 font-medium text-base focus:outline-none focus:ring-2 focus:ring-blue-400 shadow-sm transition-all"
-          style={{ width: "100px", marginLeft: "5px", marginRight: "5px" }}
+          style={{ width: "100px" }}
         />
-
         <button
           type="button"
           onClick={increment}
-          className="w-10 h-10 flex items-center justify-center rounded-full bg-green-500 text-white shadow-md hover:bg-green-600 hover:scale-105 active:scale-95 transition-all"
+          className="btn btn-light p-0 rounded-circle btn-sm d-flex align-items-center justify-content-center shadow-md hover:bg-green-600 hover:scale-105 active:scale-95 transition-all border-2 border-black "
+          style={{ width: "30px", height: "30px" }}
         >
           <FaPlus color="black" size={18} />
         </button>

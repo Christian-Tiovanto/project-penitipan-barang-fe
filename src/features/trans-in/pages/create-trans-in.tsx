@@ -221,29 +221,33 @@ const CreateTransForm: React.FC = () => {
 
         {/* Product List Container */}
         <div
-          className="overflow-y-auto space-y-3 bg-gray-50 border border-gray-300 rounded-lg p-3 scrollbar-thin scrollbar-thumb-gray-400 scrollbar-track-gray-200"
+          className="container flex flex-wrap overflow-y-auto space-y-3 bg-gray-50 border border-gray-300 rounded-lg p-3 scrollbar-thin scrollbar-thumb-gray-400 scrollbar-track-gray-200"
           style={{ maxHeight: "250px" }}
         >
-          {filteredProducts.length > 0 ? (
-            filteredProducts.map((product) => (
-              <ProductCardDropDown
-                key={product.id}
-                id={product.id}
-                name={product.name}
-                price={product.price}
-                qty={product.qty}
-                product_unit={product.product_unit} // Menyertakan unit produk
-                onQtyChange={(qty) => updateQty(product.id, qty)}
-                onUnitChange={(productId, unitId) =>
-                  handleUnitChange(productId, unitId)
-                } // Menangani perubahan unit
-              />
-            ))
-          ) : (
-            <div className="flex items-center justify-center h-full">
-              <p className="text-gray-500 text-center">Product not found.</p>
-            </div>
-          )}
+          <div className="row">
+            {filteredProducts.length > 0 ? (
+              filteredProducts.map((product) => (
+                <div className="col-12 col-md-6">
+                  <ProductCardDropDown
+                    key={product.id}
+                    id={product.id}
+                    name={product.name}
+                    price={product.price}
+                    qty={product.qty}
+                    product_unit={product.product_unit} // Menyertakan unit produk
+                    onQtyChange={(qty) => updateQty(product.id, qty)}
+                    onUnitChange={(productId, unitId) =>
+                      handleUnitChange(productId, unitId)
+                    } // Menangani perubahan unit
+                  />
+                </div>
+              ))
+            ) : (
+              <div className="flex items-center justify-center h-full">
+                <p className="text-gray-500 text-center">Product not found.</p>
+              </div>
+            )}
+          </div>
         </div>
         {/* Modal */}
         {isModalOpen && modalData && (

@@ -25,41 +25,40 @@ export default function ProductCard({
   };
 
   return (
-    <div className="flex flex-col border-b border-gray-300 py-0">
-      <div className="flex flex-row items-center justify-between w-full">
-        <div className="flex-1">
-          <h6 className="text-base font-bold text-black">{name}</h6>
-          <h6 className="text-sm text-black mt-1">
-            Rp {price.toLocaleString("id-ID")}
-          </h6>
-        </div>
+    <div className="flex items-center justify-between gap-4 p-4 border rounded-lg shadow-sm bg-white">
+      {/* Left: Product Info */}
+      <div className="flex-1">
+        <h6 className="text-base font-bold text-black">{name}</h6>
+        <h6 className="text-sm text-black mt-1">
+          Rp {price.toLocaleString("id-ID")}
+        </h6>
+      </div>
 
-        <div className="flex items-center gap-3">
-          <button
-            type="button"
-            onClick={decrement}
-            className="w-10 h-10 flex items-center justify-center rounded-full bg-red-500 text-white shadow-md hover:bg-red-600 hover:scale-105 active:scale-95 transition-all"
-          >
-            <FaMinus color="black" size={18} />
-          </button>
-
-          <input
-            type="text"
-            value={qty}
-            onChange={handleInputChange}
-            className="w-10 h-10 text-center border border-gray-300 rounded-lg bg-white text-gray-800 font-medium text-base focus:outline-none focus:ring-2 focus:ring-blue-400 shadow-sm transition-all"
-            style={{ width: "100px", marginLeft: "5px", marginRight: "5px" }}
-          />
-
-          <button
-            type="button"
-            onClick={increment}
-            className="w-10 h-10 flex items-center justify-center rounded-full bg-green-500 text-white shadow-md hover:bg-green-600 hover:scale-105 active:scale-95 transition-all"
-          >
-            <FaPlus color="black" size={18} />
-          </button>
-          <hr className="mt-3" />
-        </div>
+      {/* Middle: Quantity Control */}
+      <div className="d-flex align-items-center gap-2">
+        <button
+          type="button"
+          onClick={decrement}
+          className="btn btn-light p-0 rounded-circle btn-sm d-flex align-items-center justify-content-center shadow-md hover:bg-green-600 hover:scale-105 active:scale-95 transition-all border-2 border-black "
+          style={{ width: "30px", height: "30px" }}
+        >
+          <FaMinus color="black" size={18} />
+        </button>
+        <input
+          type="text"
+          value={qty}
+          onChange={handleInputChange}
+          className="w-10 h-10 text-center border border-gray-300 rounded-lg bg-white text-gray-800 font-medium text-base focus:outline-none focus:ring-2 focus:ring-blue-400 shadow-sm transition-all"
+          style={{ width: "100px" }}
+        />
+        <button
+          type="button"
+          onClick={increment}
+          className="btn btn-light p-0 rounded-circle btn-sm d-flex align-items-center justify-content-center shadow-md hover:bg-green-600 hover:scale-105 active:scale-95 transition-all border-2 border-black "
+          style={{ width: "30px", height: "30px" }}
+        >
+          <FaPlus color="black" size={18} />
+        </button>
       </div>
     </div>
   );
