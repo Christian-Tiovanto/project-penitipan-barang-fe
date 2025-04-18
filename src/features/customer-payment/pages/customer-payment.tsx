@@ -24,9 +24,9 @@ const CustomerPaymentPage: React.FC = () => {
     { field: "id", headerName: "ID" },
     { field: "customer.name", headerName: "Customer" },
     { field: "payment_method.name", headerName: "Payment Method" },
-    { field: "charge", headerName: "Charge" },
+    // { field: "charge", headerName: "Charge" },
     { field: "status", headerName: "Status" },
-    { field: "min_pay", headerName: "Min Pay" },
+    // { field: "min_pay", headerName: "Min Pay" },
   ];
 
   const fetchTableData = async (

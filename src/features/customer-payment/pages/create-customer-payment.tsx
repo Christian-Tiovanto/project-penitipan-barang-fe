@@ -38,9 +38,9 @@ const CreateCustomerPaymentForm: React.FC = () => {
   const [form, setForm] = useState({
     customerId: "",
     paymentMethodId: "",
-    charge: 0,
+    charge: 1,
     status: true,
-    min_pay: 0,
+    min_pay: 1,
   });
 
   const [errors, setErrors] = useState({
@@ -178,8 +178,8 @@ const CreateCustomerPaymentForm: React.FC = () => {
         </div>
       </div>
 
-      <div className="row g-3">
-        <div className="col-md-6">
+      {/* <div className="row g-3"> */}
+      {/* <div className="col-md-6">
           <InputFieldNumber
             label="Charge *"
             name="charge"
@@ -190,8 +190,8 @@ const CreateCustomerPaymentForm: React.FC = () => {
             errorMessage={errors.charge}
             icon={<FaWeightHanging />}
           />
-        </div>
-        <div className="col-md-6">
+        </div> */}
+      {/* <div className="col-md-6">
           <InputFieldNumber
             label="Min Pay *"
             name="minPay"
@@ -202,8 +202,8 @@ const CreateCustomerPaymentForm: React.FC = () => {
             errorMessage={errors.min_pay}
             icon={<FaWeightHanging />}
           />
-        </div>
-      </div>
+        </div> */}
+      {/* </div> */}
 
       <RadioToggle
         label="Status *"
