@@ -194,8 +194,10 @@ const UpdateTransInForm: React.FC = () => {
           qty: form.qty,
           unitId: form.productUnitId,
         };
-        await updateTransInById(transInId, newForm);
-        navigate(`/transaction/in/history-in/${newForm.productId}`);
+        const transIn = await updateTransInById(transInId, newForm);
+        navigate(
+          `/transaction/in/history-in/${transIn.transaction_in_headerId}`
+        );
         showToast("Data updated successfully!", "success");
       }
     } catch (error: any) {
