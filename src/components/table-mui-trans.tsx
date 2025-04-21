@@ -18,10 +18,13 @@ import {
 } from "@mui/material";
 import {
   History as HistoryIcon,
-  Delete as DeleteIcon,
+  Print as PrintIcon,
   Add as AddIcon,
   Search as SearchIcon,
 } from "@mui/icons-material";
+import { TransactionInHeader } from "../features/trans-out/pages/create-trans-out";
+import { getTransInHeaderById } from "../features/trans-in/services/trans-in.service";
+import { generateTransInHtml } from "../features/template/trans-in.template";
 
 interface Column {
   field: string;
@@ -41,7 +44,7 @@ interface Props {
     filters?: FetchFilters
   ) => Promise<{ data: any[]; total: number }>;
   onHistory?: (row: any) => void;
-  // onDelete?: (row: any) => void;
+  // onPrint?: (row: any) => void;
   onAdd?: () => void;
   filters?: FetchFilters;
 }
@@ -50,7 +53,7 @@ const MuiTable: React.FC<Props> = ({
   columns,
   fetchData,
   onHistory,
-  // onDelete,
+  // onPrint,
   onAdd,
   filters = {},
 }) => {
@@ -94,16 +97,70 @@ const MuiTable: React.FC<Props> = ({
     setPage(0);
   };
 
-  // const handleDelete = async (row: any) => {
-  //   try {
-  //     if (onDelete) {
-  //       await onDelete(row);
-  //     }
-  //     loadData();
-  //   } catch (error) {
-  //     console.error("Failed to delete data:", error);
-  //   }
-  // };
+  const handlePrint = async (row: any) => {
+    try {
+      const transInHeader = await getTransInHeaderById(row.id);
+
+      const items = transInHeader.transaction_in;
+
+      const date = new Date(transInHeader.created_at);
+
+      // Format jam
+      const hours = date.getHours().toString().padStart(2, "0");
+      const minutes = date.getMinutes().toString().padStart(2, "0");
+      const time = `${hours}:${minutes}`;
+
+      // Format tanggal (D/M/Y)
+      const day = date.getDate().toString().padStart(2, "0");
+      const month = (date.getMonth() + 1).toString().padStart(2, "0"); // 0-based index
+      const year = date.getFullYear();
+      const formattedDate = `${day}/${month}/${year}`;
+
+      // Build rows
+      let totalQty = 0;
+      let totalKg = 0;
+
+      const tableRows = items
+        .map((item, i) => {
+          const name = item.product.name || "-";
+          const volume = item.converted_qty;
+          totalQty += item.qty;
+          totalKg += volume;
+
+          return `
+            <tr>
+              <td class="number">${i + 1}</td>
+              <td class="text">${name.toUpperCase()}</td>
+              <td class="number">${item.qty}</td>
+              <td class="text">${item.unit}</td>
+              <td class="number">${volume.toLocaleString()}</td>
+            </tr>`;
+        })
+        .join("\n");
+
+      const printWindow = window.open("", "_blank", "width=800,height=600");
+
+      if (!printWindow) {
+        alert("Popup blocked!");
+        return;
+      }
+
+      const htmlContent = generateTransInHtml(
+        transInHeader,
+        formattedDate,
+        time,
+        tableRows,
+        totalQty,
+        totalKg
+      );
+
+      printWindow.document.open();
+      printWindow.document.write(htmlContent);
+      printWindow.document.close();
+    } catch (error) {
+      console.error("Failed to Print data:", error);
+    }
+  };
 
   const handleSort = (field: string) => {
     const fieldMapping: Record<string, string> = {
@@ -213,12 +270,12 @@ const MuiTable: React.FC<Props> = ({
                     >
                       <HistoryIcon />
                     </IconButton>
-                    {/* <IconButton
-                      sx={{ color: "red" }}
-                      onClick={() => handleDelete(row)}
+                    <IconButton
+                      sx={{ color: "green" }}
+                      onClick={() => handlePrint(row)}
                     >
-                      <DeleteIcon />
-                    </IconButton> */}
+                      <PrintIcon />
+                    </IconButton>
                   </TableCell>
                 </TableRow>
               ))}
