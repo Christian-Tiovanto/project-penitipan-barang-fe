@@ -6,6 +6,8 @@ import {
   FaSearch,
   FaCalendarAlt,
   FaArrowCircleDown,
+  FaExchangeAlt,
+  FaStream,
 } from "react-icons/fa";
 import { useNavigate } from "react-router";
 import { useToast } from "../../../contexts/toastContexts";
@@ -15,7 +17,12 @@ import { getAllCustomers } from "../../customer/services/customer.service";
 import { getAllProducts } from "../../product/services/product.service";
 import InputField from "../../../components/inputfield";
 import ProductCard from "../../../components/product-card";
-import { createTransOut, previewTransOut } from "../services/trans-out.service";
+import {
+  createTransOut,
+  createTransOutFifo,
+  previewTransOut,
+  previewTransOutFifo,
+} from "../services/trans-out.service";
 import { StartDatePicker } from "../../../components/date-picker";
 import DatePickerField from "../../../components/date-picker-field";
 import {
@@ -101,12 +108,14 @@ const CreateTransOutForm: React.FC = () => {
     customerId: "",
     no_plat: "",
     transInHeaderId: "",
+    type: "fifo",
   });
 
   const [errors, setErrors] = useState({
     customerId: "",
     no_plat: "",
     transInHeaderId: "",
+    type: "",
   });
 
   const [searchTerm, setSearchTerm] = useState("");
@@ -164,7 +173,18 @@ const CreateTransOutForm: React.FC = () => {
       const updated = products.map((p: any) => ({ ...p, qty: 0 }));
       setProducts(updated);
     } catch (error) {
-      console.error("Error fetching product:", error);
+      console.error("Error fetching products:", error);
+    }
+  };
+
+  const fetchAllProducts = async () => {
+    try {
+      const products = await getAllProducts();
+
+      const updated = products.map((p: any) => ({ ...p, qty: 0 }));
+      setProducts(updated);
+    } catch (error) {
+      console.error("Error fetching products:", error);
     }
   };
 
@@ -197,7 +217,11 @@ const CreateTransOutForm: React.FC = () => {
       newErrors.customerId = "Please Select a Customer";
     }
 
-    if (!form.transInHeaderId) {
+    if (!form.type) {
+      newErrors.type = "Please Select a Type";
+    }
+
+    if (!form.transInHeaderId && form.type != "fifo") {
       newErrors.transInHeaderId = "Please Select a Transaction In";
     }
 
@@ -219,6 +243,16 @@ const CreateTransOutForm: React.FC = () => {
     setForm({ ...form, transInHeaderId: value });
 
     fetchProducts(parseInt(value));
+  };
+
+  const handleDropdownTypeChange = (value: string) => {
+    if (value == "fifo") {
+      fetchAllProducts();
+      setForm({ ...form, type: value });
+    } else {
+      setProducts([]);
+      setForm({ ...form, type: value, transInHeaderId: "" });
+    }
   };
 
   const handleBlur = (e: React.FocusEvent<HTMLInputElement>) => {
@@ -252,13 +286,23 @@ const CreateTransOutForm: React.FC = () => {
 
       const clockOut = selectedDate ? selectedDate.toISOString() : "";
 
-      await createTransOut(
-        parseInt(form.customerId, 10),
-        form.no_plat,
-        clockOut,
-        payload,
-        parseInt(form.transInHeaderId, 10)
-      );
+      if (form.type == "fifo") {
+        console.log("fifo");
+        await createTransOutFifo(
+          parseInt(form.customerId, 10),
+          form.no_plat,
+          clockOut,
+          payload
+        );
+      } else {
+        await createTransOut(
+          parseInt(form.customerId, 10),
+          form.no_plat,
+          clockOut,
+          payload,
+          parseInt(form.transInHeaderId, 10)
+        );
+      }
 
       navigate("/transaction");
       showToast("Data added successfully!", "success");
@@ -275,6 +319,7 @@ const CreateTransOutForm: React.FC = () => {
       e.preventDefault();
 
       if (validateForm()) {
+        console.log("helllo");
         const payload = products
           .filter((p) => p.qty > 0)
           .map((p) => ({
@@ -283,22 +328,38 @@ const CreateTransOutForm: React.FC = () => {
           }));
 
         const clockOut = selectedDate ? selectedDate.toISOString() : "";
+        if (form.type == "fifo") {
+          const invoice = await previewTransOutFifo(
+            parseInt(form.customerId, 10),
+            form.no_plat,
+            clockOut,
+            payload
+          );
 
-        const invoice = await previewTransOut(
-          parseInt(form.customerId, 10),
-          form.no_plat,
-          clockOut,
-          payload,
-          parseInt(form.transInHeaderId, 10)
-        );
+          const productModal = products.filter((p) => p.qty > 0);
 
-        const productModal = products.filter((p) => p.qty > 0);
+          setModalData(() => ({
+            products: productModal,
+            invoice: invoice,
+          }));
+          openModal();
+        } else {
+          const invoice = await previewTransOut(
+            parseInt(form.customerId, 10),
+            form.no_plat,
+            clockOut,
+            payload,
+            parseInt(form.transInHeaderId, 10)
+          );
 
-        setModalData(() => ({
-          products: productModal,
-          invoice: invoice,
-        }));
-        openModal();
+          const productModal = products.filter((p) => p.qty > 0);
+
+          setModalData(() => ({
+            products: productModal,
+            invoice: invoice,
+          }));
+          openModal();
+        }
       }
     } catch (error: any) {
       const finalMessage = `Failed to add data.\n${
@@ -323,17 +384,31 @@ const CreateTransOutForm: React.FC = () => {
         icon={<FaClipboardUser />}
       />
       <Dropdown
-        label="No Trans In *"
-        value={String(form.transInHeaderId)}
-        options={transInHeaders.map((transInHeader) => ({
-          value: transInHeader.id.toString(),
-          label: transInHeader.code,
-        }))}
-        onChange={handleDropdownTransInHeaderChange}
-        error={!!errors.transInHeaderId}
-        errorMessage={errors.transInHeaderId}
-        icon={<FaArrowCircleDown />}
+        label="Type *"
+        value={String(form.type)}
+        options={[
+          { value: "fifo", label: "Fifo" },
+          { value: "noTransIn", label: "No Transaction In" },
+        ]}
+        onChange={handleDropdownTypeChange}
+        error={!!errors.type}
+        errorMessage={errors.type}
+        icon={<FaStream />}
       />
+      {form.type !== "fifo" && (
+        <Dropdown
+          label="No Trans In *"
+          value={String(form.transInHeaderId)}
+          options={transInHeaders.map((transInHeader) => ({
+            value: transInHeader.id.toString(),
+            label: transInHeader.code,
+          }))}
+          onChange={handleDropdownTransInHeaderChange}
+          error={!!errors.transInHeaderId}
+          errorMessage={errors.transInHeaderId}
+          icon={<FaArrowCircleDown />}
+        />
+      )}
 
       <div className="row g-3">
         <div className="col-md-6">
@@ -383,9 +458,8 @@ const CreateTransOutForm: React.FC = () => {
           <div className="row">
             {filteredProducts.length > 0 ? (
               filteredProducts.map((product) => (
-                <div className="col-12 col-md-6">
+                <div key={product.id} className="col-12 col-md-6">
                   <ProductCard
-                    key={product.id}
                     id={product.id}
                     name={product.name}
                     price={product.price}

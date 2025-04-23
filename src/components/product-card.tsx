@@ -1,4 +1,5 @@
 import { FaMinus, FaPlus } from "react-icons/fa6";
+import { ProductUnit } from "../features/trans-in/pages/create-trans-in";
 
 interface ProductCardProps {
   id: number;
@@ -9,6 +10,7 @@ interface ProductCardProps {
 }
 
 export default function ProductCard({
+  id,
   name,
   price,
   qty,

@@ -227,9 +227,8 @@ const CreateTransForm: React.FC = () => {
           <div className="row">
             {filteredProducts.length > 0 ? (
               filteredProducts.map((product) => (
-                <div className="col-12 col-md-6">
+                <div key={product.id} className="col-12 col-md-6">
                   <ProductCardDropDown
-                    key={product.id}
                     id={product.id}
                     name={product.name}
                     price={product.price}
