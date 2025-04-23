@@ -37,6 +37,38 @@ export const createTransOut = async (
   }
 };
 
+export const createTransOutFifo = async (
+  customerId: number,
+  noPlat: string,
+  clockOut: string, // ISO date string
+  transactionOuts: {
+    productId: number;
+    converted_qty: number;
+  }[]
+) => {
+  try {
+    const token = Cookies.get("auth_token");
+    const response = await axios.post(
+      `${API_URL}/api/v1/transaction-out/fifo`,
+      {
+        customerId,
+        no_plat: noPlat,
+        clock_out: clockOut,
+        transaction_outs: transactionOuts,
+      },
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+
+    return response.data;
+  } catch (error: any) {
+    throw error.response?.data || "Transaction Out Fifo failed";
+  }
+};
+
 export const previewTransOut = async (
   customerId: number,
   noPlat: string,
@@ -68,5 +100,37 @@ export const previewTransOut = async (
     return response.data;
   } catch (error: any) {
     throw error.response?.data || "Preview Transaction Out failed";
+  }
+};
+
+export const previewTransOutFifo = async (
+  customerId: number,
+  noPlat: string,
+  clockOut: string, // ISO date string
+  transactionOuts: {
+    productId: number;
+    converted_qty: number;
+  }[]
+) => {
+  try {
+    const token = Cookies.get("auth_token");
+    const response = await axios.post(
+      `${API_URL}/api/v1/transaction-out/preview/fifo`,
+      {
+        customerId,
+        no_plat: noPlat,
+        clock_out: clockOut,
+        transaction_outs: transactionOuts,
+      },
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+
+    return response.data;
+  } catch (error: any) {
+    throw error.response?.data || "Preview Transaction Out Fifo failed";
   }
 };
