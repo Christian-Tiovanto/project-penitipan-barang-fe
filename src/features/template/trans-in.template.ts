@@ -9,7 +9,7 @@ export function generateTransInHtml(
   return `
         <html>
           <head>
-            <title>SURAT PENGANTAR BARANG</title>
+            <title>SURAT TANDA TERIMA BARANG</title>
             <style>
               @page { size: A4 landscape; margin: 2cm; }
               body { font-family: "Courier New", monospace; font-size: 12px; margin: 0; padding: 0; }
