@@ -30,6 +30,7 @@ import {
   getTransInById,
   getTransInHeaderById,
 } from "../../trans-in/services/trans-in.service";
+import RadioToggle from "../../../components/radio-toggle";
 
 interface Product {
   id: number;
@@ -109,6 +110,7 @@ const CreateTransOutForm: React.FC = () => {
     no_plat: "",
     transInHeaderId: "",
     type: "fifo",
+    isCharge: false,
   });
 
   const [errors, setErrors] = useState({
@@ -116,6 +118,7 @@ const CreateTransOutForm: React.FC = () => {
     no_plat: "",
     transInHeaderId: "",
     type: "",
+    isCharge: "",
   });
 
   const [searchTerm, setSearchTerm] = useState("");
@@ -127,6 +130,7 @@ const CreateTransOutForm: React.FC = () => {
   useEffect(() => {
     // fetchProducts();
     fetchCustomers();
+    fetchAllProducts();
   }, []);
 
   const fetchProducts = async (transInHeaderId: number) => {
@@ -275,6 +279,10 @@ const CreateTransOutForm: React.FC = () => {
     setProducts((prev) => prev.map((p) => (p.id === id ? { ...p, qty } : p)));
   };
 
+  const handleIsChargeChange = (value: boolean) => {
+    setForm({ ...form, isCharge: value });
+  };
+
   const handleCreateInvoice = async () => {
     try {
       const payload = products
@@ -282,12 +290,12 @@ const CreateTransOutForm: React.FC = () => {
         .map((p) => ({
           productId: p.id,
           converted_qty: p.qty,
+          is_charge: form.isCharge,
         }));
 
       const clockOut = selectedDate ? selectedDate.toISOString() : "";
 
       if (form.type == "fifo") {
-        console.log("fifo");
         await createTransOutFifo(
           parseInt(form.customerId, 10),
           form.no_plat,
@@ -319,12 +327,12 @@ const CreateTransOutForm: React.FC = () => {
       e.preventDefault();
 
       if (validateForm()) {
-        console.log("helllo");
         const payload = products
           .filter((p) => p.qty > 0)
           .map((p) => ({
             productId: p.id,
             converted_qty: p.qty,
+            is_charge: form.isCharge,
           }));
 
         const clockOut = selectedDate ? selectedDate.toISOString() : "";
@@ -383,18 +391,31 @@ const CreateTransOutForm: React.FC = () => {
         errorMessage={errors.customerId}
         icon={<FaClipboardUser />}
       />
-      <Dropdown
-        label="Type *"
-        value={String(form.type)}
-        options={[
-          { value: "fifo", label: "Fifo" },
-          { value: "noTransIn", label: "No Transaction In" },
-        ]}
-        onChange={handleDropdownTypeChange}
-        error={!!errors.type}
-        errorMessage={errors.type}
-        icon={<FaStream />}
-      />
+      <div className="row g-3">
+        <div className="col-md-6">
+          <Dropdown
+            label="Type *"
+            value={String(form.type)}
+            options={[
+              { value: "fifo", label: "Fifo" },
+              { value: "noTransIn", label: "No Transaction In" },
+            ]}
+            onChange={handleDropdownTypeChange}
+            error={!!errors.type}
+            errorMessage={errors.type}
+            icon={<FaStream />}
+          />
+        </div>
+        <div className="col-md-6">
+          <RadioToggle
+            label="Charge *"
+            name="is_charge"
+            isActive={form.isCharge}
+            onChange={handleIsChargeChange}
+            error={false}
+          />
+        </div>
+      </div>
       {form.type !== "fifo" && (
         <Dropdown
           label="No Trans In *"
