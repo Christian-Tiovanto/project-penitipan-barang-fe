@@ -11,6 +11,7 @@ import InputField from "../../../components/inputfield";
 import ProductCard from "../../../components/product-card";
 import ProductCardDropDown from "../../../components/product-card-dropdown";
 import { createTransIn } from "../services/trans-in.service";
+import RadioToggle from "../../../components/radio-toggle";
 
 export interface ProductUnit {
   id: number;
@@ -67,10 +68,12 @@ const CreateTransForm: React.FC = () => {
 
   const [form, setForm] = useState({
     customerId: "",
+    isCharge: false,
   });
 
   const [errors, setErrors] = useState({
     customerId: "",
+    isCharge: "",
   });
 
   const [searchTerm, setSearchTerm] = useState("");
@@ -142,6 +145,7 @@ const CreateTransForm: React.FC = () => {
             productId: p.id,
             qty: p.qty, // ubah dari converted_qty ke qty
             unitId: selectedUnits[p.id],
+            is_charge: form.isCharge,
           })),
       };
 
@@ -191,6 +195,10 @@ const CreateTransForm: React.FC = () => {
     }));
   };
 
+  const handleIsChargeChange = (value: boolean) => {
+    setForm({ ...form, isCharge: value });
+  };
+
   return (
     <form onSubmit={handleSubmit}>
       <Dropdown
@@ -204,6 +212,14 @@ const CreateTransForm: React.FC = () => {
         error={!!errors.customerId}
         errorMessage={errors.customerId}
         icon={<FaClipboardUser />}
+      />
+
+      <RadioToggle
+        label="Charge *"
+        name="is_charge"
+        isActive={form.isCharge}
+        onChange={handleIsChargeChange}
+        error={false}
       />
 
       <div className="max-w-md mx-auto p-4 bg-white rounded-xl shadow-md border border-gray-200">
