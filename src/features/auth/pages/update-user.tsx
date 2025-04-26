@@ -24,14 +24,14 @@ const UpdateUserForm: React.FC = () => {
     email: "",
     fullname: "",
     pin: "",
-    role: "",
+    // role: "",
   });
 
   const [errors, setErrors] = useState({
     pin: "",
     email: "",
     fullname: "",
-    role: "",
+    // role: "",
   });
 
   useEffect(() => {
@@ -48,7 +48,7 @@ const UpdateUserForm: React.FC = () => {
         email: userData.email || "",
         fullname: userData.fullname || "",
         pin: userData.pin || "",
-        role: userData.role || "",
+        // role: userData.role || "",
       });
     } catch (error) {
       console.error("Error fetching user:", error);
@@ -72,9 +72,9 @@ const UpdateUserForm: React.FC = () => {
       newErrors.pin = "This field is required";
     }
 
-    if (!form.role) {
-      newErrors.role = "Please Select a Role";
-    }
+    // if (!form.role) {
+    //   newErrors.role = "Please Select a Role";
+    // }
 
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
@@ -110,9 +110,9 @@ const UpdateUserForm: React.FC = () => {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
 
-  const handleDropdownChange = (value: string) => {
-    setForm({ ...form, role: value });
-  };
+  // const handleDropdownChange = (value: string) => {
+  //   setForm({ ...form, role: value });
+  // };
 
   const handleSubmit = async (e: React.FormEvent) => {
     try {
@@ -163,35 +163,17 @@ const UpdateUserForm: React.FC = () => {
         </div>
       </div>
 
-      <div className="row g-3">
-        <div className="col-md-6">
-          <Dropdown
-            label="Role *"
-            value={String(form.role)}
-            options={[
-              { value: "admin", label: "Admin" },
-              { value: "default", label: "Default" },
-            ]}
-            onChange={handleDropdownChange}
-            error={!!errors.role}
-            errorMessage={errors.role}
-            icon={<FaUser />}
-          />
-        </div>
-        <div className="col-md-6">
-          <InputField
-            label="Pin *"
-            type="text" // gunakan "text" atau "password", bukan "pin"
-            name="pin"
-            value={form.pin}
-            onChange={handleChange}
-            onBlur={handleBlur}
-            error={!!errors.pin}
-            errorMessage={errors.pin}
-            icon={<MdPin />}
-          />
-        </div>
-      </div>
+      <InputField
+        label="Pin *"
+        type="text" // gunakan "text" atau "password", bukan "pin"
+        name="pin"
+        value={form.pin}
+        onChange={handleChange}
+        onBlur={handleBlur}
+        error={!!errors.pin}
+        errorMessage={errors.pin}
+        icon={<MdPin />}
+      />
 
       <div className="text-end mt-3">
         <button type="submit" className="btn btn-primary px-4">

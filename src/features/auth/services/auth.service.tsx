@@ -36,14 +36,14 @@ export const register = async (
   email: string,
   fullname: string,
   pin: string,
-  password: string,
-  role: string
+  password: string
+  // role: string
 ) => {
   try {
     const token = Cookies.get("auth_token");
     const response = await axios.post(
       `${API_URL}/api/v1/auth/register`,
-      { email, fullname, pin, password, role },
+      { email, fullname, pin, password },
       {
         headers: {
           Authorization: `Bearer ${token}`,
