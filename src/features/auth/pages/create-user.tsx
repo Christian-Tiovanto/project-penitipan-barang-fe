@@ -23,7 +23,7 @@ const CreateUserForm: React.FC = () => {
     fullname: "",
     password: "",
     confirmPassword: "",
-    role: "",
+    // role: "",
     pin: "",
   });
 
@@ -32,7 +32,7 @@ const CreateUserForm: React.FC = () => {
     confirmPassword: "",
     email: "",
     fullname: "",
-    role: "",
+    // role: "",
     pin: "",
   });
 
@@ -63,9 +63,9 @@ const CreateUserForm: React.FC = () => {
       newErrors.confirmPassword = "Passwords do not match";
     }
 
-    if (!form.role) {
-      newErrors.role = "Please Select a Role";
-    }
+    // if (!form.role) {
+    //   newErrors.role = "Please Select a Role";
+    // }
 
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
@@ -101,9 +101,9 @@ const CreateUserForm: React.FC = () => {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
 
-  const handleDropdownChange = (value: string) => {
-    setForm({ ...form, role: value });
-  };
+  // const handleDropdownChange = (value: string) => {
+  //   setForm({ ...form, role: value });
+  // };
 
   const handleSubmit = async (e: React.FormEvent) => {
     try {
@@ -114,8 +114,8 @@ const CreateUserForm: React.FC = () => {
           form.email,
           form.fullname,
           form.pin,
-          form.password,
-          form.role
+          form.password
+          // form.role
         );
         navigate("/master/user");
         showToast("Data added successfully!", "success");
@@ -159,7 +159,7 @@ const CreateUserForm: React.FC = () => {
         </div>
       </div>
 
-      <Dropdown
+      {/* <Dropdown
         label="Role *"
         value={String(form.role)}
         options={[
@@ -170,7 +170,7 @@ const CreateUserForm: React.FC = () => {
         error={!!errors.role}
         errorMessage={errors.role}
         icon={<FaUser />}
-      />
+      /> */}
 
       <InputField
         label="Pin *"

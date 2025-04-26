@@ -5,6 +5,7 @@ import { useNavigate } from "react-router";
 import MuiTable from "../../../components/table-mui";
 import { deleteUserById, getAllUsers } from "../services/auth.service";
 import { useToast } from "../../../contexts/toastContexts";
+import MuiTableUser from "../../../components/table-mui-user";
 
 interface FetchFilters {
   sort?: string;
@@ -21,7 +22,6 @@ const UserPage: React.FC = () => {
     { field: "email", headerName: "Email" },
     { field: "fullname", headerName: "Full Name" },
     { field: "pin", headerName: "Pin" },
-    { field: "role", headerName: "Role" },
   ];
 
   const fetchTableData = async (
@@ -47,6 +47,10 @@ const UserPage: React.FC = () => {
       console.error("Error fetching table data:", error);
       return { data: [], total: 0 };
     }
+  };
+
+  const handleRoles = (row: any) => {
+    navigate(`/master/user/create-user-role/${row.id}`);
   };
 
   const handleEdit = (row: any) => {
@@ -84,9 +88,10 @@ const UserPage: React.FC = () => {
       </div>
 
       <div className="card shadow-lg border-0 rounded-4 p-4">
-        <MuiTable
+        <MuiTableUser
           columns={columns}
           fetchData={fetchTableData}
+          onRoles={handleRoles}
           onEdit={handleEdit}
           onDelete={handleDelete}
           onAdd={handleAdd}
