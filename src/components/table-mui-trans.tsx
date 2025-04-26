@@ -251,8 +251,13 @@ const MuiTable: React.FC<Props> = ({
                 <TableRow key={row.id}>
                   {columns.map((col) => {
                     const value = col.field
+                      .replace(/\[(\d+)\]/g, ".$1")
                       .split(".")
-                      .reduce((acc, part) => acc && acc[part], row);
+                      .reduce(
+                        (acc, key) =>
+                          acc && acc[key] !== undefined ? acc[key] : undefined,
+                        row
+                      );
                     return (
                       <TableCell key={col.field}>
                         {typeof value === "boolean"
