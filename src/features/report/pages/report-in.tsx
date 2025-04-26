@@ -37,6 +37,7 @@ export interface ITransactionInData {
   transaction_in_header: {
     code: string;
   };
+  is_charge: boolean;
   qty: number;
   converted_qty: number;
   unit: string;
@@ -84,6 +85,13 @@ const columns: HeadCell<ITransactionInData>[] = [
     headerName: "Unit",
     headerStyle: {
       width: "10%",
+    },
+  },
+  {
+    field: "is_charge",
+    headerName: "Charge",
+    headerStyle: {
+      width: "20%",
     },
   },
 ];
@@ -230,6 +238,9 @@ export function ReportInPage() {
                           <TableCell>{value.qty}</TableCell>
                           <TableCell>{value.converted_qty}</TableCell>
                           <TableCell>{value.unit}</TableCell>
+                          <TableCell>
+                            {value.is_charge ? "Active" : "Inactive"}
+                          </TableCell>
                         </TableRow>
                       ))
                     )}

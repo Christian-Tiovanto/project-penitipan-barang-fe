@@ -40,6 +40,7 @@ export interface ITransactionOutData {
     id: number;
     invoice_no: string;
   };
+  is_charge: boolean;
   converted_qty: number;
   total_days: number;
 }
@@ -80,6 +81,13 @@ const columns: HeadCell<ITransactionOutData>[] = [
     headerStyle: {
       textAlign: "center",
       width: "10%",
+    },
+  },
+  {
+    field: "is_charge",
+    headerName: "Charge",
+    headerStyle: {
+      width: "30%",
     },
   },
 ];
@@ -241,6 +249,9 @@ export function ReportOutPage() {
                           </TableCell>
                           <TableCell sx={{ textAlign: "center" }}>
                             {value.total_days}
+                          </TableCell>
+                          <TableCell>
+                            {value.is_charge ? "Active" : "Inactive"}
                           </TableCell>
                         </TableRow>
                       ))
