@@ -102,6 +102,12 @@ const CreateUserRole: React.FC = () => {
       name: UserRoleEnum.TRANSACTION_OUT,
       status: false,
     },
+    {
+      id: 14,
+      label: "Admin *",
+      name: UserRoleEnum.ADMIN,
+      status: false,
+    },
   ]);
 
   const { id } = useParams<{ id: string }>();

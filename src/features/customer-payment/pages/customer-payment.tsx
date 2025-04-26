@@ -49,6 +49,11 @@ const CustomerPaymentPage: React.FC = () => {
         total: response.meta.total_count,
       };
     } catch (error) {
+      const finalMessage = `Failed to get data.\n${
+        error?.response?.data?.message || error?.message || "Unknown error"
+      }`;
+      showToast(finalMessage, "danger");
+
       console.error("Error fetching table data:", error);
       return { data: [], total: 0 };
     }

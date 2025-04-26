@@ -47,8 +47,13 @@ const TransInPage: React.FC = () => {
         data: response.data,
         total: response.meta.total_count,
       };
-    } catch (error) {
-      console.error("Error fetching table data:", error);
+    } catch (err) {
+      const finalMessage = `Failed to get data.\n${
+        err?.response?.data?.message || err?.message || "Unknown error"
+      }`;
+      showToast(finalMessage, "danger");
+
+      console.error("Error fetching table data:", err);
       return { data: [], total: 0 };
     }
   };

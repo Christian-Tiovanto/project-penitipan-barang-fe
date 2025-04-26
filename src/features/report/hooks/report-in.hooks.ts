@@ -52,10 +52,8 @@ export const useTransactionInReport = (query: {
       } catch (err) {
         if (!controller.signal.aborted) {
           setError(err as Error);
-        }
-        if (error) {
           const finalMessage = `Failed to get data.\n${
-            error?.response?.data?.message || error?.message || "Unknown error"
+            err?.response?.data?.message || err?.message || "Unknown error"
           }`;
           showToast(finalMessage, "danger");
         }

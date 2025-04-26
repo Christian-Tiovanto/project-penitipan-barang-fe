@@ -102,8 +102,12 @@ const CreateTransForm: React.FC = () => {
       const products = await getAllProducts();
       const updated = products.map((p: any) => ({ ...p, qty: 0 }));
       setProducts(updated);
-    } catch (error) {
-      console.error("Error fetching product:", error);
+    } catch (err) {
+      const finalMessage = `Failed to get data.\n${
+        err?.response?.data?.message || err?.message || "Unknown error"
+      }`;
+      showToast(finalMessage, "danger");
+      console.error("Error fetching product:", err);
     }
   };
 
@@ -111,8 +115,12 @@ const CreateTransForm: React.FC = () => {
     try {
       const customers = await getAllCustomers();
       setCustomers(customers);
-    } catch (error) {
-      console.error("Error fetching customers:", error);
+    } catch (err) {
+      const finalMessage = `Failed to get data.\n${
+        err?.response?.data?.message || err?.message || "Unknown error"
+      }`;
+      showToast(finalMessage, "danger");
+      console.error("Error fetching customers:", err);
     }
   };
 

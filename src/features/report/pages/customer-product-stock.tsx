@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import {
   EndDatePicker,
   StartDatePicker,
@@ -25,8 +25,14 @@ import { Order } from "../../../enum/SortOrder";
 import { IStockReportData } from "./stock-report";
 import { useCustomerProductReport } from "../hooks/customer-product.hooks";
 import PageLayout from "../../../components/page-location";
+import { getAllProducts } from "../../product/services/product.service";
+import { Product } from "../../product-unit/pages/create-product-unit";
+import { ProductUnit } from "../../trans-in/pages/create-trans-in";
 
-type TableData = IStockReportData & { final_qty: number };
+type TableData = IStockReportData & {
+  final_qty: number;
+  product_unit: ProductUnit;
+};
 const columns: HeadCell<TableData>[] = [
   {
     field: "product_name",
@@ -44,7 +50,15 @@ const columns: HeadCell<TableData>[] = [
   },
   {
     field: "final_qty",
-    headerName: "Stock",
+    headerName: "Stock (Kg)",
+    headerStyle: {
+      width: "10%",
+      textWrap: "nowrap",
+    },
+  },
+  {
+    field: "product_unit",
+    headerName: "Stock (Unit)",
     headerStyle: {
       width: "10%",
       textWrap: "nowrap",
@@ -104,6 +118,28 @@ export function CustomerProductStockPage() {
   const [endDate, setEndDate] = useState(startOfTomorrow());
   const [order, setOrder] = useState<Order>("asc");
   const [orderBy, setOrderBy] = useState<keyof TableData>("product_name");
+  const [products, setProducts] = useState<Map<number, ProductUnit[]>>(
+    new Map()
+  );
+
+  const fetchProducts = async () => {
+    try {
+      const productsGet: Product[] = await getAllProducts();
+      setProducts(
+        new Map(
+          productsGet.map((product) => [product.id, product.product_unit])
+        )
+      );
+      const tes = new Map(
+        productsGet.map((product) => [product.id, product.product_unit])
+      );
+    } catch (error) {
+      console.error("Error fetching products:", error);
+    }
+  };
+  useEffect(() => {
+    fetchProducts();
+  }, []);
 
   const handleRequestSort = (
     event: React.MouseEvent<unknown>,
@@ -187,6 +223,14 @@ export function CustomerProductStockPage() {
                                 value.product_in - value.product_out
                               ).toLocaleString("id-ID")}
                             </TableCell>
+                            <TableCell>
+                              {Number(
+                                (value.product_in - value.product_out) /
+                                  (products.get(value.productId)[0]
+                                    ?.conversion_to_kg ?? 1)
+                              ).toLocaleString("id-ID")}{" "}
+                              {products.get(value.productId)[0].name ?? "Unit"}
+                            </TableCell>
                           </TableRow>
                         ))}
                         <TableRow>
@@ -197,7 +241,8 @@ export function CustomerProductStockPage() {
                           <TableCell sx={{ fontWeight: "bold" }}>
                             {Number(
                               sortedCustomerProductReport.reduce(
-                                (sum, t) => sum + t.product_in - t.product_out,
+                                (sum, t) =>
+                                  sum + (t.product_in - t.product_out),
                                 0
                               )
                             ).toLocaleString("id-ID")}

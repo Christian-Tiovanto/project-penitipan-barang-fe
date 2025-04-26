@@ -93,6 +93,10 @@ const UpdateTransInForm: React.FC = () => {
       const product = await getProductById(id);
       await setProducts([product]);
     } catch (error) {
+      const finalMessage = `Failed to get data.\n${
+        error?.response?.data?.message || error?.message || "Unknown error"
+      }`;
+      showToast(finalMessage, "danger");
       console.error("Error fetching product:", error);
     }
   };
@@ -103,6 +107,10 @@ const UpdateTransInForm: React.FC = () => {
       await setProductUnits(productUnits);
       return productUnits;
     } catch (error) {
+      const finalMessage = `Failed to get data.\n${
+        error?.response?.data?.message || error?.message || "Unknown error"
+      }`;
+      showToast(finalMessage, "danger");
       console.error("Error fetching product units:", error);
     }
   };
@@ -112,6 +120,10 @@ const UpdateTransInForm: React.FC = () => {
       const customers = await getAllCustomers();
       await setCustomers(customers);
     } catch (error) {
+      const finalMessage = `Failed to get data.\n${
+        error?.response?.data?.message || error?.message || "Unknown error"
+      }`;
+      showToast(finalMessage, "danger");
       console.error("Error fetching customers:", error);
     }
   };
@@ -119,9 +131,12 @@ const UpdateTransInForm: React.FC = () => {
   const fetchTransInById = async (id: number) => {
     try {
       const TransInData = await getTransInById(id);
-
       return TransInData;
     } catch (error) {
+      const finalMessage = `Failed to get data.\n${
+        error?.response?.data?.message || error?.message || "Unknown error"
+      }`;
+      showToast(finalMessage, "danger");
       console.error("Error fetching Trans in:", error);
     }
   };
