@@ -28,6 +28,9 @@ import { useStockReport } from "../hooks/stock-report.hooks";
 import { FaBox } from "react-icons/fa6";
 import React from "react";
 import PageLayout from "../../../components/page-location";
+import { getAllProducts } from "../../product/services/product.service";
+import { Product } from "../../product-unit/pages/create-product-unit";
+import { ProductUnit } from "../../trans-in/pages/create-trans-in";
 export interface IStockReportData {
   product_name: string;
   customer_name: string;
@@ -35,6 +38,7 @@ export interface IStockReportData {
   productId: number;
   product_in: number;
   product_out: number;
+  product_unit: ProductUnit;
 }
 type TableData = IStockReportData & { row_no: number; final_qty: number };
 
@@ -62,7 +66,15 @@ const columns: HeadCell<TableData>[] = [
   },
   {
     field: "product_in",
-    headerName: "Product In",
+    headerName: "Product In (Kg)",
+    headerStyle: {
+      width: "10%",
+      textWrap: "nowrap",
+    },
+  },
+  {
+    field: "product_unit",
+    headerName: "Product In (Unit)",
     headerStyle: {
       width: "10%",
       textWrap: "nowrap",
@@ -70,7 +82,15 @@ const columns: HeadCell<TableData>[] = [
   },
   {
     field: "product_out",
-    headerName: "Product Out",
+    headerName: "Product Out (Kg)",
+    headerStyle: {
+      width: "10%",
+      textWrap: "nowrap",
+    },
+  },
+  {
+    field: "product_unit",
+    headerName: "Product Out (Unit)",
     headerStyle: {
       width: "10%",
       textWrap: "nowrap",
@@ -78,7 +98,15 @@ const columns: HeadCell<TableData>[] = [
   },
   {
     field: "final_qty",
-    headerName: "Final Qty",
+    headerName: "Final Qty (Kg)",
+    headerStyle: {
+      width: "10%",
+      textWrap: "nowrap",
+    },
+  },
+  {
+    field: "product_unit",
+    headerName: "Final Qty (Unit)",
     headerStyle: {
       width: "10%",
       textWrap: "nowrap",
@@ -142,6 +170,29 @@ export function StockReportPage() {
   const [endDate, setEndDate] = useState(startOfTomorrow());
   const [order, setOrder] = useState<Order>("asc");
   const [orderBy, setOrderBy] = useState<keyof TableData>("product_name");
+  const [products, setProducts] = useState<Map<number, ProductUnit[]>>(
+    new Map()
+  );
+
+  const fetchProducts = async () => {
+    try {
+      const productsGet: Product[] = await getAllProducts();
+      setProducts(
+        new Map(
+          productsGet.map((product) => [product.id, product.product_unit])
+        )
+      );
+      const tes = new Map(
+        productsGet.map((product) => [product.id, product.product_unit])
+      );
+    } catch (error) {
+      console.error("Error fetching products:", error);
+    }
+  };
+
+  useEffect(() => {
+    fetchProducts();
+  }, []);
 
   const { data, isLoading } = useStockReport({ endDate, customer: customerId });
 
@@ -259,12 +310,36 @@ export function StockReportPage() {
                           {Number(value.product_in).toLocaleString("id-ID")}
                         </TableCell>
                         <TableCell>
+                          {Number(
+                            value.product_in /
+                              (products.get(value.productId)[0]
+                                ?.conversion_to_kg ?? 1)
+                          ).toLocaleString("id-ID")}{" "}
+                          {products.get(value.productId)[0].name ?? "Unit"}
+                        </TableCell>
+                        <TableCell>
                           {Number(value.product_out).toLocaleString("id-ID")}
+                        </TableCell>
+                        <TableCell>
+                          {Number(
+                            value.product_out /
+                              (products.get(value.productId)[0]
+                                ?.conversion_to_kg ?? 1)
+                          ).toLocaleString("id-ID")}{" "}
+                          {products.get(value.productId)[0].name ?? "Unit"}
                         </TableCell>
                         <TableCell>
                           {Number(
                             value.product_in - value.product_out
                           ).toLocaleString("id-ID")}
+                        </TableCell>
+                        <TableCell>
+                          {Number(
+                            (value.product_in - value.product_out) /
+                              (products.get(value.productId)[0]
+                                ?.conversion_to_kg ?? 1)
+                          ).toLocaleString("id-ID")}{" "}
+                          {products.get(value.productId)[0].name ?? "Unit"}
                         </TableCell>
                       </TableRow>
                     ))}

@@ -79,6 +79,7 @@ export interface Invoice {
   id: number;
   created_at: Date;
   invoice_no: string;
+  charge: number;
   customer: {
     id: number;
     name: string;
@@ -88,7 +89,12 @@ export interface Invoice {
 }
 
 type Order = "asc" | "desc";
-type TableData = Invoice & { invoice_date: string; cetak: string };
+
+type TableData = Invoice & {
+  invoice_date: string;
+  invoice_desc: string;
+  cetak: string;
+};
 interface HeadCell {
   disablePadding: boolean;
   id: keyof TableData;
@@ -126,6 +132,12 @@ const headCells: readonly HeadCell[] = [
     numeric: false,
     disablePadding: false,
     label: "Total Amount",
+  },
+  {
+    id: "invoice_desc",
+    numeric: false,
+    disablePadding: false,
+    label: "Invoice Desc",
   },
   {
     id: "cetak",
@@ -644,6 +656,12 @@ export default function InvoiceListPage() {
                                     "id-ID"
                                   )}
                                 </TableCell>
+                                <TableCell align="left">
+                                  {row.charge > 0
+                                    ? `Invoice Charge`
+                                    : `Invoice Sewa Gudang`}
+                                </TableCell>
+
                                 <TableCell align="left">
                                   <div className="btn-group" role="group">
                                     <button
