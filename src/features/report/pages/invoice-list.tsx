@@ -27,6 +27,7 @@ import { InvoiceListService } from "../services/invoice-list.service";
 import { generateJastipInvoiceTemplate } from "../../template/invoice.template";
 import { generateSpbHtml } from "../../template/spb.template";
 import PageLayout from "../../../components/page-location";
+import { generateJastipChargeTemplate } from "../../template/charge.template";
 
 interface Product {
   id: number;
@@ -300,6 +301,7 @@ export default function InvoiceListPage() {
     printWindow.document.write(htmlContent);
     printWindow.document.close();
   };
+
   const handlePrintInvoice = async (invoiceId: number) => {
     const spb: Spb = await new InvoiceListService().getSpb(invoiceId);
     const items: TransactionOut[] = await new InvoiceListService().getTransOut(
@@ -323,6 +325,7 @@ export default function InvoiceListPage() {
     let totalQty = 0;
     let totalKg = 0;
     let totalPrice = 0;
+    let totalFine = 0;
 
     const tableRows = items
       .map((item, i) => {
@@ -331,6 +334,7 @@ export default function InvoiceListPage() {
         totalQty += item.qty;
         totalKg += volume;
         totalPrice += item.total_price;
+        totalFine += item.total_fine;
 
         const date = new Date(item.created_at);
         date.setDate(date.getDate() - item.total_days);
@@ -349,9 +353,11 @@ export default function InvoiceListPage() {
             <td class="number">${item.total_days}</td>
             <td class="number">${volume.toLocaleString()}</td>
             <td class="number">${item.price.toLocaleString()}</td>
-            <td class="number">${item.total_charge.toLocaleString()}</td>
             <td class="number">${item.total_fine.toLocaleString()}</td>
-            <td class="text">${item.total_price.toLocaleString()}</td>
+            <td class="number">${item.total_price.toLocaleString()}</td>
+            <td class="number">${(
+              item.total_price + item.total_fine
+            ).toLocaleString()}</td
           </tr>`;
       })
       .join("\n");
@@ -369,6 +375,83 @@ export default function InvoiceListPage() {
       totalQty,
       totalKg,
       totalPrice,
+      totalFine,
+      formattedDate,
+      time,
+    });
+
+    printWindow.document.open();
+    printWindow.document.write(htmlContent);
+    printWindow.document.close();
+  };
+
+  const handlePrintCharge = async (invoiceId: number) => {
+    const spb: Spb = await new InvoiceListService().getSpb(invoiceId);
+    const items: TransactionOut[] = await new InvoiceListService().getTransOut(
+      invoiceId
+    );
+
+    const date = new Date(spb.clock_out);
+
+    // Format jam
+    const hours = date.getHours().toString().padStart(2, "0");
+    const minutes = date.getMinutes().toString().padStart(2, "0");
+    const time = `${hours}:${minutes}`;
+
+    // Format tanggal (D/M/Y)
+    const day = date.getDate().toString().padStart(2, "0");
+    const month = (date.getMonth() + 1).toString().padStart(2, "0"); // 0-based index
+    const year = date.getFullYear();
+    const formattedDate = `${day}/${month}/${year}`;
+
+    // Build rows
+    let totalQty = 0;
+    let totalKg = 0;
+    // let totalPrice = 0;
+    let totalCharge = 0;
+
+    const tableRows = items
+      .map((item, i) => {
+        const name = item.product.name || "-";
+        const volume = item.converted_qty;
+        totalQty += item.qty;
+        totalKg += volume;
+        // totalPrice += item.total_price;
+        totalCharge += item.total_charge;
+
+        const date = new Date(item.created_at);
+        date.setDate(date.getDate() - item.total_days);
+
+        const day = date.getDate().toString().padStart(2, "0");
+        const month = (date.getMonth() + 1).toString().padStart(2, "0"); // 0-based index
+        const year = date.getFullYear();
+        const formattedDate = `${day}/${month}/${year}`;
+
+        return `
+          <tr>
+            <td class="number">${i + 1}</td>
+            <td class="text">${name.toUpperCase()}</td>
+            <td class="text">${formattedDate}</td>
+            <td class="number">${item.qty}</td>
+            <td class="number">${volume.toLocaleString()}</td>
+            <td class="number">${item.total_charge.toLocaleString()}</td>
+          </tr>`;
+      })
+      .join("\n");
+
+    const printWindow = window.open("", "_blank", "width=800,height=600");
+
+    if (!printWindow) {
+      alert("Popup blocked!");
+      return;
+    }
+
+    const htmlContent = generateJastipChargeTemplate({
+      spb,
+      tableRows,
+      totalQty,
+      totalKg,
+      totalCharge,
       formattedDate,
       time,
     });
@@ -589,6 +672,16 @@ export default function InvoiceListPage() {
                                           }
                                         >
                                           Invoice
+                                        </button>
+                                      </li>
+                                      <li>
+                                        <button
+                                          className="dropdown-item"
+                                          onClick={() =>
+                                            handlePrintCharge(row.id)
+                                          }
+                                        >
+                                          Charge
                                         </button>
                                       </li>
                                     </ul>

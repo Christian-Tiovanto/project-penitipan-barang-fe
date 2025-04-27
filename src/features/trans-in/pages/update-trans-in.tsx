@@ -14,6 +14,8 @@ import Dropdown from "../../../components/dropdown";
 import { getProductUnitsByProductId } from "../../product-unit/services/product-unit.service";
 import { getAllCustomers } from "../../customer/services/customer.service";
 import { getProductById } from "../../product/services/product.service";
+import RadioToggle from "../../../components/radio-toggle";
+import { getUserByIdToken } from "../../auth/services/auth.service";
 
 interface Product {
   id: number;
@@ -59,6 +61,7 @@ const UpdateTransInForm: React.FC = () => {
     productId: "",
     productUnitId: "",
     customerId: "",
+    isCharge: false,
   });
 
   const [errors, setErrors] = useState({
@@ -66,6 +69,7 @@ const UpdateTransInForm: React.FC = () => {
     productId: "",
     productUnitId: "",
     customerId: "",
+    isCharge: "",
   });
 
   useEffect(() => {
@@ -89,6 +93,10 @@ const UpdateTransInForm: React.FC = () => {
       const product = await getProductById(id);
       await setProducts([product]);
     } catch (error) {
+      const finalMessage = `Failed to get data.\n${
+        error?.response?.data?.message || error?.message || "Unknown error"
+      }`;
+      showToast(finalMessage, "danger");
       console.error("Error fetching product:", error);
     }
   };
@@ -99,6 +107,10 @@ const UpdateTransInForm: React.FC = () => {
       await setProductUnits(productUnits);
       return productUnits;
     } catch (error) {
+      const finalMessage = `Failed to get data.\n${
+        error?.response?.data?.message || error?.message || "Unknown error"
+      }`;
+      showToast(finalMessage, "danger");
       console.error("Error fetching product units:", error);
     }
   };
@@ -108,6 +120,10 @@ const UpdateTransInForm: React.FC = () => {
       const customers = await getAllCustomers();
       await setCustomers(customers);
     } catch (error) {
+      const finalMessage = `Failed to get data.\n${
+        error?.response?.data?.message || error?.message || "Unknown error"
+      }`;
+      showToast(finalMessage, "danger");
       console.error("Error fetching customers:", error);
     }
   };
@@ -115,9 +131,12 @@ const UpdateTransInForm: React.FC = () => {
   const fetchTransInById = async (id: number) => {
     try {
       const TransInData = await getTransInById(id);
-
       return TransInData;
     } catch (error) {
+      const finalMessage = `Failed to get data.\n${
+        error?.response?.data?.message || error?.message || "Unknown error"
+      }`;
+      showToast(finalMessage, "danger");
       console.error("Error fetching Trans in:", error);
     }
   };
@@ -134,6 +153,7 @@ const UpdateTransInForm: React.FC = () => {
         qty: TransInData.qty || 0,
         productUnitId: id || "",
         customerId: TransInData.customerId,
+        isCharge: TransInData.is_charge,
       });
     } catch (error) {
       console.error("Error set from trans in:", error);
@@ -174,6 +194,10 @@ const UpdateTransInForm: React.FC = () => {
     });
   };
 
+  const handleIsChargeChange = (value: boolean) => {
+    setForm({ ...form, isCharge: value });
+  };
+
   const handleBlur = (e: React.FocusEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setErrors((prevErrors) => ({
@@ -193,9 +217,12 @@ const UpdateTransInForm: React.FC = () => {
           customerId: form.customerId,
           qty: form.qty,
           unitId: form.productUnitId,
+          is_charge: form.isCharge,
         };
-        await updateTransInById(transInId, newForm);
-        navigate(`/transaction/in/history-in/${newForm.productId}`);
+        const transIn = await updateTransInById(transInId, newForm);
+        navigate(
+          `/transaction/in/history-in/${transIn.transaction_in_headerId}`
+        );
         showToast("Data updated successfully!", "success");
       }
     } catch (error: any) {
@@ -267,6 +294,15 @@ const UpdateTransInForm: React.FC = () => {
           />
         </div>
       </div>
+
+      <RadioToggle
+        label="Charge *"
+        name="is_charge"
+        isActive={form.isCharge}
+        onChange={handleIsChargeChange}
+        error={false}
+      />
+
       <div className="text-end mt-3">
         <button type="submit" className="btn btn-primary px-4">
           Save <FaSave className="ms-2" />
@@ -278,6 +314,35 @@ const UpdateTransInForm: React.FC = () => {
 
 const UpdateTransInPage: React.FC = () => {
   const navigate = useNavigate();
+  const [isPinModalOpen, setIsPinModalOpen] = useState(false);
+  const [pin, setPin] = useState("");
+  const { showToast } = useToast();
+
+  useEffect(() => {
+    setIsPinModalOpen(true);
+  }, []);
+
+  const handleCheckPin = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault(); // 🔥 cegah reload form
+
+    try {
+      if (pin.trim()) {
+        const user = await getUserByIdToken();
+        if (user.pin === pin) {
+          showToast("Pin validated successfully!", "success");
+          setIsPinModalOpen(false);
+        } else {
+          setIsPinModalOpen(true);
+          showToast("Pin validated failed!", "danger");
+        }
+      }
+    } catch (error: any) {
+      const finalMessage = `Failed to validate pin.\n${
+        error?.response?.data?.message || error?.message || "Unknown error"
+      }`;
+      showToast(finalMessage, "danger");
+    }
+  };
 
   return (
     <div className="container mt-4">
@@ -299,6 +364,63 @@ const UpdateTransInPage: React.FC = () => {
       <div className="card shadow-lg border-0 rounded-4 p-4">
         <UpdateTransInForm />
       </div>
+
+      {/* Modal PIN */}
+      {isPinModalOpen && (
+        <div
+          className="modal fade show d-block"
+          tabIndex={-1}
+          role="dialog"
+          style={{
+            backgroundColor: "rgba(0, 0, 0, 0.3)",
+            backdropFilter: "blur(3px)",
+            WebkitBackdropFilter: "blur(3px)",
+          }}
+        >
+          <div
+            className="modal-dialog modal-dialog-centered"
+            style={{ width: "250px" }} // Atur lebar modal di sini
+          >
+            <div className="modal-content border-0 rounded-3 shadow-sm">
+              <div className="modal-header border-0 pb-2">
+                {/* <h6 className="modal-title">Masukkan PIN</h6> */}
+                {/* <button
+                    type="button"
+                    className="btn-close"
+                    onClick={() => setIsPinModalOpen(false)}
+                  ></button> */}
+              </div>
+
+              <form onSubmit={handleCheckPin}>
+                <div className="modal-body pt-0">
+                  <input
+                    type="password"
+                    className="form-control"
+                    placeholder="Enter PIN *"
+                    value={pin}
+                    onChange={(e) => setPin(e.target.value)}
+                    required
+                    autoComplete="new-password"
+                  />
+                </div>
+
+                <div className="modal-footer border-0 pt-1">
+                  <button
+                    type="button"
+                    className="btn btn-secondary btn-sm"
+                    onClick={() => navigate(-1)}
+                  >
+                    Tutup
+                  </button>
+                  <button type="submit" className="btn btn-primary btn-sm">
+                    Check
+                  </button>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

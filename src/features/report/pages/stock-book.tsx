@@ -30,6 +30,7 @@ import { getAllCustomers } from "../../customer/services/customer.service";
 import { Customer } from "../../customer-payment/pages/update-customer-payment";
 import React from "react";
 import PageLayout from "../../../components/page-location";
+import { useToast } from "../../../contexts/toastContexts";
 
 export interface IStockBookData {
   initial_qty: number;
@@ -193,10 +194,7 @@ export function StockBookPage() {
   const [endDate, setEndDate] = useState(startOfTomorrow());
   const [order, setOrder] = useState<Order>("asc");
   const [orderBy, setOrderBy] = useState<keyof TableData>("date");
-  const [errors, setErrors] = useState({
-    customerId: "",
-    productId: "",
-  });
+  const { showToast } = useToast();
 
   // In your component, remove the early return and use:
   const { data, isLoading } = useStockBookReport(productId, customerId, {
@@ -224,16 +222,26 @@ export function StockBookPage() {
     try {
       const products = await getAllProducts();
       setProducts(products);
-    } catch (error) {
-      console.error("Error fetching products:", error);
+    } catch (err) {
+      const finalMessage = `Failed to get data.\n${
+        err?.response?.data?.message || err?.message || "Unknown error"
+      }`;
+      showToast(finalMessage, "danger");
+
+      console.error("Error fetching products:", err);
     }
   };
   const fetchCustomers = async () => {
     try {
       const customers = await getAllCustomers();
       setCustomers(customers);
-    } catch (error) {
-      console.error("Error fetching customers:", error);
+    } catch (err) {
+      const finalMessage = `Failed to get data.\n${
+        err?.response?.data?.message || err?.message || "Unknown error"
+      }`;
+      showToast(finalMessage, "danger");
+
+      console.error("Error fetching customers:", err);
     }
   };
   useEffect(() => {
@@ -320,8 +328,6 @@ export function StockBookPage() {
                   label: product.name,
                 }))}
                 onChange={handleProductDropdownChange}
-                error={!!errors.productId}
-                errorMessage={errors.productId}
                 icon={<FaBox />}
               />
             </div>
@@ -335,8 +341,6 @@ export function StockBookPage() {
                   label: customer.name,
                 }))}
                 onChange={handleCustomerDropdownChange}
-                error={!!errors.customerId}
-                errorMessage={errors.customerId}
                 icon={<FaBox />}
               />
             </div>

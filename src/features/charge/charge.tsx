@@ -34,6 +34,11 @@ const ChargeForm: React.FC = () => {
       });
       setExist(true);
     } catch (error: any) {
+      const finalMessage = `Failed to get data.\n${
+        error?.response?.data?.message || error?.message || "Unknown error"
+      }`;
+      showToast(finalMessage, "danger");
+
       setExist(false);
       console.error("Error fetching Charge:", error);
     }

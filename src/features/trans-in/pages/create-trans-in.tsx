@@ -11,6 +11,7 @@ import InputField from "../../../components/inputfield";
 import ProductCard from "../../../components/product-card";
 import ProductCardDropDown from "../../../components/product-card-dropdown";
 import { createTransIn } from "../services/trans-in.service";
+import RadioToggle from "../../../components/radio-toggle";
 
 export interface ProductUnit {
   id: number;
@@ -67,10 +68,12 @@ const CreateTransForm: React.FC = () => {
 
   const [form, setForm] = useState({
     customerId: "",
+    isCharge: false,
   });
 
   const [errors, setErrors] = useState({
     customerId: "",
+    isCharge: "",
   });
 
   const [searchTerm, setSearchTerm] = useState("");
@@ -99,8 +102,12 @@ const CreateTransForm: React.FC = () => {
       const products = await getAllProducts();
       const updated = products.map((p: any) => ({ ...p, qty: 0 }));
       setProducts(updated);
-    } catch (error) {
-      console.error("Error fetching product:", error);
+    } catch (err) {
+      const finalMessage = `Failed to get data.\n${
+        err?.response?.data?.message || err?.message || "Unknown error"
+      }`;
+      showToast(finalMessage, "danger");
+      console.error("Error fetching product:", err);
     }
   };
 
@@ -108,8 +115,12 @@ const CreateTransForm: React.FC = () => {
     try {
       const customers = await getAllCustomers();
       setCustomers(customers);
-    } catch (error) {
-      console.error("Error fetching customers:", error);
+    } catch (err) {
+      const finalMessage = `Failed to get data.\n${
+        err?.response?.data?.message || err?.message || "Unknown error"
+      }`;
+      showToast(finalMessage, "danger");
+      console.error("Error fetching customers:", err);
     }
   };
 
@@ -142,6 +153,7 @@ const CreateTransForm: React.FC = () => {
             productId: p.id,
             qty: p.qty, // ubah dari converted_qty ke qty
             unitId: selectedUnits[p.id],
+            is_charge: form.isCharge,
           })),
       };
 
@@ -191,6 +203,10 @@ const CreateTransForm: React.FC = () => {
     }));
   };
 
+  const handleIsChargeChange = (value: boolean) => {
+    setForm({ ...form, isCharge: value });
+  };
+
   return (
     <form onSubmit={handleSubmit}>
       <Dropdown
@@ -204,6 +220,14 @@ const CreateTransForm: React.FC = () => {
         error={!!errors.customerId}
         errorMessage={errors.customerId}
         icon={<FaClipboardUser />}
+      />
+
+      <RadioToggle
+        label="Charge *"
+        name="is_charge"
+        isActive={form.isCharge}
+        onChange={handleIsChargeChange}
+        error={false}
       />
 
       <div className="max-w-md mx-auto p-4 bg-white rounded-xl shadow-md border border-gray-200">
@@ -227,9 +251,8 @@ const CreateTransForm: React.FC = () => {
           <div className="row">
             {filteredProducts.length > 0 ? (
               filteredProducts.map((product) => (
-                <div className="col-12 col-md-6">
+                <div key={product.id} className="col-12 col-md-6">
                   <ProductCardDropDown
-                    key={product.id}
                     id={product.id}
                     name={product.name}
                     price={product.price}

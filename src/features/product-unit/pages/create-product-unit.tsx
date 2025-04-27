@@ -9,6 +9,7 @@ import InputFieldNumber from "../../../components/inputfieldnumber";
 import { FaBox, FaWeightHanging } from "react-icons/fa6";
 import Dropdown from "../../../components/dropdown";
 import { getAllProducts } from "../../product/services/product.service";
+import { ProductUnit } from "../../trans-in/pages/create-trans-in";
 
 export interface Product {
   id: number;
@@ -16,6 +17,7 @@ export interface Product {
   price: number;
   qty: number;
   desc: string;
+  product_unit?: ProductUnit[];
   is_deleted: boolean;
   created_at: string;
   updated_at: string;

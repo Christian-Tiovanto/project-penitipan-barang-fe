@@ -31,6 +31,7 @@ import { useStockInvoiceReport } from "../hooks/stock-invoice-report";
 import { Invoice } from "./invoice-list";
 import { StockInvoiceReportService } from "../services/stock-invoice-report.service";
 import PageLayout from "../../../components/page-location";
+import { useToast } from "../../../contexts/toastContexts";
 export interface IStockInvoiceReportData {
   invoiceId: string;
   product_name: string;
@@ -166,6 +167,7 @@ export function StockInvoiceReportPage() {
   const [order, setOrder] = useState<Order>("asc");
   const [orderBy, setOrderBy] = useState<keyof TableData>("product_name");
   const stockInvoiceReportService = new StockInvoiceReportService();
+  const { showToast } = useToast();
 
   const { data, isLoading } = useStockInvoiceReport({ invoice: invoiceId });
 
@@ -181,8 +183,12 @@ export function StockInvoiceReportPage() {
     try {
       const invoices = await stockInvoiceReportService.getAllInvoices();
       setInvoices(invoices);
-    } catch (error) {
-      console.error("Error fetching customers:", error);
+    } catch (err) {
+      const finalMessage = `Failed to get data.\n${
+        err?.response?.data?.message || err?.message || "Unknown error"
+      }`;
+      showToast(finalMessage, "danger");
+      console.error("Error fetching customers:", err);
     }
   };
 

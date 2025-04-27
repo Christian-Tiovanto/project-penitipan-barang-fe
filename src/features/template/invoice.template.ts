@@ -4,6 +4,7 @@ export function generateJastipInvoiceTemplate({
   totalQty,
   totalKg,
   totalPrice,
+  totalFine,
   formattedDate,
   time,
 }: {
@@ -12,6 +13,7 @@ export function generateJastipInvoiceTemplate({
   totalQty: number;
   totalKg: number;
   totalPrice: number;
+  totalFine: number;
   formattedDate: string;
   time: string;
 }) {
@@ -26,7 +28,7 @@ export function generateJastipInvoiceTemplate({
           }
           body {
             font-family: "Courier New", monospace;
-            font-size: 12px;
+            font-size: 15px;
             margin: 0;
             padding: 0;
           }
@@ -64,10 +66,10 @@ export function generateJastipInvoiceTemplate({
             width: 33.33%;
             word-wrap: break-word;
             border: none;
-            font-size: 10px; 
+            font-size: 15px; 
           }
           .footer-note {
-            font-size: 10px;
+            font-size: 15px;
             font-weight: bold;
           }
           .underline {
@@ -106,9 +108,9 @@ export function generateJastipInvoiceTemplate({
             <th>JLH HARI</th>
             <th>VOL/KG</th>
             <th>JASTIP</th>
-            <th>TTL CH.</th>
             <th>TOTAL FINE</th>
             <th>TOTAL JASTIP</th>
+            <th>Total</th>
           </tr>
           ${tableRows}
           <tr>
@@ -117,9 +119,9 @@ export function generateJastipInvoiceTemplate({
             <th></th>
             <th class="number">${totalKg.toLocaleString()}</th>
             <th></th>
-            <th></th>
-            <th></th>
+            <th class="number">${totalFine.toLocaleString()}</th>
             <th class="number">${totalPrice.toLocaleString()}</th>
+            <th class"number">${(totalPrice + totalFine).toLocaleString()}</th>
           </tr>
         </table>
   
@@ -139,7 +141,7 @@ export function generateJastipInvoiceTemplate({
             NB: Barang diatas sudah diterima dengan cukup & baik.
           </div>
   
-          <table style="border: 1px solid black; font-family: 'Courier New', monospace; font-size: 12px; margin-top: -50px; width: fit-content; font-weight:bold">
+          <table style="border: 1px solid black; font-family: 'Courier New', monospace; font-size: 15px; margin-top: 0px; width: fit-content; font-weight:bold">
             <tr>
               <td colspan="1" style="border-bottom: 1px solid black;">Pembayaran ditransfer ke rekening</td>
             </tr>

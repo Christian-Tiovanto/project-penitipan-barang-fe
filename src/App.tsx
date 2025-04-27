@@ -9,6 +9,7 @@ import {
   UserPage,
   ProfilePage,
   UpdateUserPage,
+  CreateUserRolePage,
 } from "./features/auth";
 import { MasterPage } from "./features/master";
 import { ReportOutPage } from "./features/report/pages/report-out";
@@ -136,6 +137,10 @@ const router = createBrowserRouter([
       {
         path: "master/user/create-user",
         element: <CreateUserPage />,
+      },
+      {
+        path: "master/user/create-user-role/:id",
+        element: <CreateUserRolePage />,
       },
       {
         path: "master/user/edit-user/:id",

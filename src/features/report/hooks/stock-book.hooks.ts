@@ -43,11 +43,9 @@ export const useStockBookReport = (
         setData(stockBookReport);
       } catch (err) {
         if (!controller.signal.aborted) {
-          setError(err);
+          setError(err as Error);
           const finalMessage = `Failed to get data.\n${
-            (err as any)?.response?.data?.message ||
-            (err as Error)?.message ||
-            "Unknown error"
+            err?.response?.data?.message || err?.message || "Unknown error"
           }`;
           showToast(finalMessage, "danger");
         }
