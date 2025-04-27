@@ -28,6 +28,26 @@ interface Role {
 const CreateUserRole: React.FC = () => {
   const navigate = useNavigate();
   const { showToast } = useToast();
+
+  const enum UserRoleEnum {
+    SUPERADMIN = "superadmin",
+    ADMIN = "admin",
+    DEFAULT = "default",
+    AR_PAYMENT = "ar_payment",
+    CASHFLOW = "cashflow",
+    CHARGE = "charge",
+    CUSTOMER = "customer",
+    CUSTOMER_PAYMENT = "customer_payment",
+    INVOICE = "invoice",
+    PAYMENT_METHOD = "payment_method",
+    PRODUCT = "product",
+    PRODUCT_UNIT = "product_unit",
+    REPORT = "report",
+    SPB = "spb",
+    TRANSACTION_IN = "transaction_in",
+    TRANSACTION_OUT = "transaction_out",
+  }
+
   const [roles, setRoles] = useState<Role[]>([
     {
       id: 1,
@@ -112,25 +132,6 @@ const CreateUserRole: React.FC = () => {
 
   const { id } = useParams<{ id: string }>();
   const userId = id ? parseInt(id, 10) : 0;
-
-  const enum UserRoleEnum {
-    SUPERADMIN = "superadmin",
-    ADMIN = "admin",
-    DEFAULT = "default",
-    AR_PAYMENT = "ar_payment",
-    CASHFLOW = "cashflow",
-    CHARGE = "charge",
-    CUSTOMER = "customer",
-    CUSTOMER_PAYMENT = "customer_payment",
-    INVOICE = "invoice",
-    PAYMENT_METHOD = "payment_method",
-    PRODUCT = "product",
-    PRODUCT_UNIT = "product_unit",
-    REPORT = "report",
-    SPB = "spb",
-    TRANSACTION_IN = "transaction_in",
-    TRANSACTION_OUT = "transaction_out",
-  }
 
   useEffect(() => {
     const initialize = async () => {
