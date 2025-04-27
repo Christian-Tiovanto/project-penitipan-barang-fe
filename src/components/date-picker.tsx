@@ -41,7 +41,7 @@ const StartDatePicker = ({
   useEffect(() => {
     // Update selected date when month/year changes
     const newDate = new Date(currentYear, currentMonth, value.getDate());
-    newDate.setHours(0, 0, 0, 0);
+    newDate.setHours(7, 0, 0, 0);
     onDateClick(newDate);
   }, [currentMonth, currentYear]);
 
@@ -67,7 +67,7 @@ const StartDatePicker = ({
     const lastOfCurrentMonth = new Date(currentYear, currentMonth + 1, 0);
     for (let day = 1; day <= lastOfCurrentMonth.getDate(); day++) {
       const date = new Date(currentYear, currentMonth, day);
-      date.setHours(0, 0, 0, 0);
+      date.setHours(7, 0, 0, 0);
 
       dates.push({
         day,
@@ -293,7 +293,7 @@ const EndDatePicker = ({
   useEffect(() => {
     // Update selected date when month/year changes
     const newDate = new Date(currentYear, currentMonth, value.getDate());
-    newDate.setHours(0, 0, 0, 0);
+    newDate.setHours(7, 0, 0, 0);
     onDateClick(newDate);
   }, [currentMonth, currentYear]);
 
@@ -320,7 +320,7 @@ const EndDatePicker = ({
     for (let day = 1; day <= lastOfCurrentMonth.getDate(); day++) {
       const date = new Date(currentYear, currentMonth, day);
       date.setDate(date.getDate() + 1);
-      date.setHours(0, 0, 0, 0);
+      date.setHours(7, 0, 0, 0);
       dates.push({
         day,
         date,
