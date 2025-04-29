@@ -12,6 +12,8 @@ import ProductCard from "../../../components/product-card";
 import ProductCardDropDown from "../../../components/product-card-dropdown";
 import { createTransIn } from "../services/trans-in.service";
 import RadioToggle from "../../../components/radio-toggle";
+import DatePickerField from "../../../components/date-picker-field";
+import { formatLocalDate } from "../../../utils/date";
 
 export interface ProductUnit {
   id: number;
@@ -145,6 +147,10 @@ const CreateTransForm: React.FC = () => {
 
   const handleCreateTransInPage = async () => {
     try {
+      const transaction_date = selectedDate
+        ? formatLocalDate(selectedDate)
+        : "";
+
       const payload = {
         customerId: form.customerId, // ganti sesuai dengan variabel customer ID yang kamu pakai
         data: products
@@ -155,6 +161,7 @@ const CreateTransForm: React.FC = () => {
             unitId: selectedUnits[p.id],
             is_charge: form.isCharge,
           })),
+        transaction_date,
       };
 
       await createTransIn(payload);
@@ -207,21 +214,39 @@ const CreateTransForm: React.FC = () => {
     setForm({ ...form, isCharge: value });
   };
 
+  const handleDateChange = (date: Date | null) => {
+    setSelectedDate(date);
+  };
+
   return (
     <form onSubmit={handleSubmit}>
-      <Dropdown
-        label="Customer *"
-        value={String(form.customerId)}
-        options={customers.map((customer) => ({
-          value: customer.id.toString(),
-          label: customer.name,
-        }))}
-        onChange={handleDropdownCustomerChange}
-        error={!!errors.customerId}
-        errorMessage={errors.customerId}
-        icon={<FaClipboardUser />}
-      />
-
+      <div className="row g-3">
+        <div className="col-md-6">
+          <Dropdown
+            label="Customer *"
+            value={String(form.customerId)}
+            options={customers.map((customer) => ({
+              value: customer.id.toString(),
+              label: customer.name,
+            }))}
+            onChange={handleDropdownCustomerChange}
+            error={!!errors.customerId}
+            errorMessage={errors.customerId}
+            icon={<FaClipboardUser />}
+          />
+        </div>
+        <div className="col-md-6">
+          <DatePickerField
+            label="Trans In Date *"
+            name="startDate"
+            value={selectedDate}
+            onChange={handleDateChange}
+            icon={<FaCalendarAlt />}
+            error={!selectedDate} // contoh error: jika belum pilih tanggal
+            errorMessage="The date cannot be empty"
+          />
+        </div>
+      </div>
       <RadioToggle
         label="Charge *"
         name="is_charge"

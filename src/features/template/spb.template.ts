@@ -64,6 +64,11 @@ export function generateSpbHtml(
               <td>Petugas Telly,</td>
             </tr>
             <tr>
+              <td></td>
+              <td></td>
+              <td></td>
+            </tr>
+            <tr>
               <td>Supir</td>
               <td>((Admin Gudang)</td>
               <td>(Nama Jelas & T/T)</td>

@@ -62,6 +62,10 @@ export function generateTransInHtml(
                 <td>Petugas Telly,</td>
               </tr>
               <tr>
+                <td></td>
+                <td></td>
+              </tr>
+              <tr>
                 <td>((Admin Gudang)</td>
                 <td>(Nama Jelas & T/T)</td>
               </tr>

@@ -55,28 +55,29 @@ const columns: HeadCell<TableData>[] = [
     headerName: "Product",
     headerStyle: {
       width: "20%",
+      // textWrap: "nowrap",
     },
   },
-  {
-    field: "customer_name",
-    headerName: "Customer",
-    headerStyle: {
-      width: "20%",
-    },
-  },
+  // {
+  //   field: "customer_name",
+  //   headerName: "Customer",
+  //   headerStyle: {
+  //     width: "20%",
+  //   },
+  // },
   {
     field: "product_in",
     headerName: "Product In (Kg)",
     headerStyle: {
-      width: "10%",
-      textWrap: "nowrap",
+      width: "13%",
+      // textWrap: "nowrap",
     },
   },
   {
     field: "product_unit",
     headerName: "Product In (Unit)",
     headerStyle: {
-      width: "10%",
+      width: "13%",
       textWrap: "nowrap",
     },
   },
@@ -84,32 +85,32 @@ const columns: HeadCell<TableData>[] = [
     field: "product_out",
     headerName: "Product Out (Kg)",
     headerStyle: {
-      width: "10%",
-      textWrap: "nowrap",
+      width: "13%",
+      // textWrap: "nowrap",
     },
   },
   {
     field: "product_unit",
     headerName: "Product Out (Unit)",
     headerStyle: {
-      width: "10%",
-      textWrap: "nowrap",
+      width: "13%",
+      // textWrap: "nowrap",
     },
   },
   {
     field: "final_qty",
     headerName: "Final Qty (Kg)",
     headerStyle: {
-      width: "10%",
-      textWrap: "nowrap",
+      width: "13%",
+      // textWrap: "nowrap",
     },
   },
   {
     field: "product_unit",
     headerName: "Final Qty (Unit)",
     headerStyle: {
-      width: "10%",
-      textWrap: "nowrap",
+      width: "13%",
+      // textWrap: "nowrap",
     },
   },
 ];
@@ -124,7 +125,7 @@ function EnhancedTableHead(props: EnhancedTableProps<TableData>) {
     <TableHead>
       <TableRow>
         <TableCell
-          className="fw-bold text-nowrap"
+          className="fw-bold"
           sx={{
             width: "1%",
             fontWeight: "bold",
@@ -135,7 +136,7 @@ function EnhancedTableHead(props: EnhancedTableProps<TableData>) {
 
         {columns.slice(1).map((col) => (
           <TableCell
-            className="fw-bold text-nowrap"
+            className="fw-bold"
             key={col.field}
             sortDirection={orderBy === col.field ? order : false}
             sx={{
@@ -208,6 +209,9 @@ export function StockReportPage() {
     try {
       const customers = await getAllCustomers();
       setCustomers(customers);
+      if (customers.length > 0) {
+        setCustomerId(customers[0].id.toString());
+      }
     } catch (error) {
       console.error("Error fetching customers:", error);
     }
@@ -292,6 +296,12 @@ export function StockReportPage() {
             </div>
           </div>
           <div className="product-in-list w-100 d-flex flex-column">
+            <div className="p-2">
+              <h3>
+                {customers.find((c) => c.id === parseInt(customerId, 10))
+                  ?.name || "-"}
+              </h3>
+            </div>
             <div className="mui-table-container">
               <TableContainer component={Paper} sx={{ padding: 2 }}>
                 <Table>
@@ -305,7 +315,7 @@ export function StockReportPage() {
                       <TableRow key={index}>
                         <TableCell>{index + 1}</TableCell>
                         <TableCell>{value.product_name}</TableCell>
-                        <TableCell>{value.customer_name}</TableCell>
+                        {/* <TableCell>{value.customer_name}</TableCell> */}
                         <TableCell>
                           {Number(value.product_in).toLocaleString("id-ID")}
                         </TableCell>
