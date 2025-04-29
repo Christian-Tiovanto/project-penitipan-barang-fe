@@ -11,7 +11,8 @@ export const createTransOut = async (
     productId: number;
     converted_qty: number;
   }[],
-  transInHeaderId: number
+  transInHeaderId: number,
+  transaction_date: string
 ) => {
   try {
     const token = Cookies.get("auth_token");
@@ -23,6 +24,7 @@ export const createTransOut = async (
         clock_out: clockOut,
         transaction_outs: transactionOuts,
         transaction_in_headerId: transInHeaderId,
+        transaction_date,
       },
       {
         headers: {
@@ -44,7 +46,8 @@ export const createTransOutFifo = async (
   transactionOuts: {
     productId: number;
     converted_qty: number;
-  }[]
+  }[],
+  transaction_date: string
 ) => {
   try {
     const token = Cookies.get("auth_token");
@@ -55,6 +58,7 @@ export const createTransOutFifo = async (
         no_plat: noPlat,
         clock_out: clockOut,
         transaction_outs: transactionOuts,
+        transaction_date,
       },
       {
         headers: {
@@ -77,7 +81,8 @@ export const previewTransOut = async (
     productId: number;
     converted_qty: number;
   }[],
-  transInHeaderId: number
+  transInHeaderId: number,
+  transaction_date: string
 ) => {
   try {
     const token = Cookies.get("auth_token");
@@ -89,6 +94,7 @@ export const previewTransOut = async (
         clock_out: clockOut,
         transaction_outs: transactionOuts,
         transaction_in_headerId: transInHeaderId,
+        transaction_date,
       },
       {
         headers: {
@@ -110,7 +116,8 @@ export const previewTransOutFifo = async (
   transactionOuts: {
     productId: number;
     converted_qty: number;
-  }[]
+  }[],
+  transaction_date: string
 ) => {
   try {
     const token = Cookies.get("auth_token");
@@ -121,6 +128,7 @@ export const previewTransOutFifo = async (
         no_plat: noPlat,
         clock_out: clockOut,
         transaction_outs: transactionOuts,
+        transaction_date,
       },
       {
         headers: {

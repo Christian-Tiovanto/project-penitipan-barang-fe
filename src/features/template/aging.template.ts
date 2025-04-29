@@ -1,15 +1,12 @@
-export function generateTransInHtml(
-  transInHeader: any,
-  formattedDate: string,
-  time: string,
+export function generateAgingHtml(
+  customerName: string,
   tableRows: string,
-  totalQty: number,
   totalKg: number
 ) {
   return `
         <html>
           <head>
-            <title>SURAT TANDA TERIMA BARANG</title>
+            <title>LAPORAN AGING BARANG TITIPAN PER CUSTOMER</title>
             <style>
               @page { size: A4 landscape; margin: 2cm; }
               body { font-family: "Courier New", monospace; font-size: 15px; margin: 0; padding: 0; }
@@ -30,50 +27,28 @@ export function generateTransInHtml(
           <body>
             <h1 class="big-title">BFAP</h1>
             <div class="flex-row">
-              <div>No Trans In&emsp;: ${transInHeader.code}</div>
-              <div>Dari&emsp;: ${transInHeader.customer.name}</div>
-            </div>
-            <div class="flex-row">
-              <div>Tgl Trans In : ${formattedDate} Jam : ${time} WIB</div>
+              <div>Customer&emsp;: ${customerName}</div>
             </div>
     
-            <h1>SURAT TANDA TERIMA BARANG</h1>
+            <h1>LAPORAN AGING BARANG TITIPAN PER CUSTOMER</h1>
     
             <table>
               <tr>
                 <th>No</th>
                 <th>KETERANGAN BARANG</th>
-                <th>QTY</th>
-                <th>UNIT</th>
+                <th>DATE STORE</th>
+                <th>NO JOB</th>
+                <th>QTY LEFT</th>
                 <th>VOL/KG</th>
               </tr>
               ${tableRows}
               <tr>
-                <th colspan="2">TOTAL</th>
-                <th class="number">${totalQty}</th>
+                <th colspan="3">TOTAL</th>
+                <th></th>
                 <th></th>
                 <th class="number">${totalKg.toLocaleString()}</th>
               </tr>
             </table>
-    
-            <table class="signature">
-              <tr>
-                <td>Diterima Oleh,</td>
-                <td>Petugas Telly,</td>
-              </tr>
-              <tr>
-                <td></td>
-                <td></td>
-              </tr>
-              <tr>
-                <td>((Admin Gudang)</td>
-                <td>(Nama Jelas & T/T)</td>
-              </tr>
-            </table>
-    
-            <div class="footer-note">
-              NB: Barang diatas sudah diterima dengan cukup & baik.
-            </div>
     
             <script>
               window.onload = function() {
