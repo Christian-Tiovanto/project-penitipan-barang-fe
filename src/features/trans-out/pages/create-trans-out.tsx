@@ -31,6 +31,7 @@ import {
   getTransInHeaderById,
 } from "../../trans-in/services/trans-in.service";
 import RadioToggle from "../../../components/radio-toggle";
+import { formatLocalDate } from "../../../utils/date";
 
 interface Product {
   id: number;
@@ -293,14 +294,15 @@ const CreateTransOutForm: React.FC = () => {
           is_charge: form.isCharge,
         }));
 
-      const clockOut = selectedDate ? selectedDate.toISOString() : "";
+      const clockOut = selectedDate ? formatLocalDate(selectedDate) : "";
 
       if (form.type == "fifo") {
         await createTransOutFifo(
           parseInt(form.customerId, 10),
           form.no_plat,
           clockOut,
-          payload
+          payload,
+          clockOut
         );
       } else {
         await createTransOut(
@@ -308,7 +310,8 @@ const CreateTransOutForm: React.FC = () => {
           form.no_plat,
           clockOut,
           payload,
-          parseInt(form.transInHeaderId, 10)
+          parseInt(form.transInHeaderId, 10),
+          clockOut
         );
       }
 
@@ -335,13 +338,15 @@ const CreateTransOutForm: React.FC = () => {
             is_charge: form.isCharge,
           }));
 
-        const clockOut = selectedDate ? selectedDate.toISOString() : "";
+        const clockOut = selectedDate ? formatLocalDate(selectedDate) : "";
+
         if (form.type == "fifo") {
           const invoice = await previewTransOutFifo(
             parseInt(form.customerId, 10),
             form.no_plat,
             clockOut,
-            payload
+            payload,
+            clockOut
           );
 
           const productModal = products.filter((p) => p.qty > 0);
@@ -357,7 +362,8 @@ const CreateTransOutForm: React.FC = () => {
             form.no_plat,
             clockOut,
             payload,
-            parseInt(form.transInHeaderId, 10)
+            parseInt(form.transInHeaderId, 10),
+            clockOut
           );
 
           const productModal = products.filter((p) => p.qty > 0);
@@ -391,6 +397,7 @@ const CreateTransOutForm: React.FC = () => {
         errorMessage={errors.customerId}
         icon={<FaClipboardUser />}
       />
+
       <div className="row g-3">
         <div className="col-md-6">
           <Dropdown

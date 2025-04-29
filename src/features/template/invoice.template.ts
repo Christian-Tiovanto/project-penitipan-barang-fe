@@ -131,6 +131,10 @@ export function generateJastipInvoiceTemplate({
             <td>Disetujui Oleh,</td>
           </tr>
           <tr>
+            <td></td>
+            <td></td>
+          </tr>
+          <tr>
             <td>((Admin Gudang)</td>
             <td>Admin Kantor</td>
           </tr>
