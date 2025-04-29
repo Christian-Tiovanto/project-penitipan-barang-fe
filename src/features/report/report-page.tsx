@@ -56,6 +56,11 @@ const menuItems = [
     icon: <IoDocumentText className="me-2" />,
   },
   {
+    label: "Aging Report",
+    path: "/report/aging-report",
+    icon: <IoDocumentText className="me-2" />,
+  },
+  {
     label: "Ar List",
     path: "/report/ar-list",
     icon: <FaListAlt className="me-2" />,
