@@ -124,7 +124,7 @@ function EnhancedTableHead(props: EnhancedTableProps<TableData>) {
         {columns.slice(1).map((col) => (
           <TableCell
             className="fw-bold text-nowrap"
-            key={col.field}
+            key={col.headerName} // saya ubah menjadi col.headername karena col.field memiliki value yang sama
             sortDirection={orderBy === col.field ? order : false}
             sx={{
               width: col.headerStyle?.width,
@@ -268,6 +268,13 @@ export function AgingReportPage() {
           return order === "asc"
             ? a.remaining_qty - b.remaining_qty
             : b.remaining_qty - a.remaining_qty;
+
+        case "created_at":
+          return order === "asc"
+            ? new Date(a.created_at).getTime() -
+                new Date(b.created_at).getTime()
+            : new Date(b.created_at).getTime() -
+                new Date(a.created_at).getTime();
 
         default:
           return 0;
