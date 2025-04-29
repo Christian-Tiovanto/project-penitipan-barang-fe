@@ -5,6 +5,7 @@ import {
 } from "../../../components/date-picker";
 import {
   Box,
+  IconButton,
   Paper,
   Table,
   TableBody,
@@ -25,24 +26,28 @@ import DropdownSecondStyle from "../../../components/dropdown-2";
 import { Customer } from "../../customer-payment/pages/update-customer-payment";
 import { getAllCustomers } from "../../customer/services/customer.service";
 import { useStockReport } from "../hooks/stock-report.hooks";
-import { FaBox } from "react-icons/fa6";
+import { FaBox, FaPrint, FaUser } from "react-icons/fa6";
 import React from "react";
 import { useStockInvoiceReport } from "../hooks/stock-invoice-report.hooks";
 import { Invoice } from "./invoice-list";
 import { StockInvoiceReportService } from "../services/stock-invoice-report.service";
 import PageLayout from "../../../components/page-location";
 import { useToast } from "../../../contexts/toastContexts";
-export interface IStockInvoiceReportData {
-  invoiceId: string;
+import { useAgingReport } from "../hooks/aging-report.hooks";
+import { AgingReportService } from "../services/aging-report.service";
+import { data } from "react-router";
+import { formatDateReport } from "../../../utils/date";
+import { generateAgingHtml } from "../../template/aging.template";
+export interface IAgingReportData {
+  code: string;
   product_name: string;
   customer_name: string;
-  invoice_no: string;
-  product_in: number;
-  product_out: number;
-  product_remaining: number;
+  unit: string;
+  remaining_qty: number;
+  conversion_to_kg: number;
   created_at: Date;
 }
-type TableData = IStockInvoiceReportData & {
+type TableData = IAgingReportData & {
   row_no: number;
   final_qty: number;
 };
@@ -56,55 +61,42 @@ const columns: HeadCell<TableData>[] = [
     },
   },
   {
-    field: "invoice_no",
-    headerName: "Invoice No",
-    headerStyle: {
-      width: "20%",
-    },
-  },
-  {
     field: "product_name",
-    headerName: "Product",
+    headerName: "Stock Description",
     headerStyle: {
       width: "20%",
     },
   },
-  {
-    field: "customer_name",
-    headerName: "Customer",
-    headerStyle: {
-      width: "20%",
-    },
-  },
-  {
-    field: "product_in",
-    headerName: "Product In",
-    headerStyle: {
-      width: "10%",
-      textWrap: "nowrap",
-    },
-  },
-  {
-    field: "product_out",
-    headerName: "Product Out",
-    headerStyle: {
-      width: "10%",
-      textWrap: "nowrap",
-    },
-  },
-  {
-    field: "product_remaining",
-    headerName: "Product Remaining",
-    headerStyle: {
-      width: "10%",
-      textWrap: "nowrap",
-    },
-  },
+
   {
     field: "created_at",
-    headerName: "Tanggal Invoice",
+    headerName: "Date Store",
     headerStyle: {
-      width: "10%",
+      width: "20%",
+      textWrap: "nowrap",
+    },
+  },
+  {
+    field: "code",
+    headerName: "No Job",
+    headerStyle: {
+      width: "20%",
+      textWrap: "nowrap",
+    },
+  },
+  {
+    field: "remaining_qty",
+    headerName: "Qty Left",
+    headerStyle: {
+      width: "20%",
+      textWrap: "nowrap",
+    },
+  },
+  {
+    field: "remaining_qty",
+    headerName: "Vol / Kg",
+    headerStyle: {
+      width: "20%",
       textWrap: "nowrap",
     },
   },
@@ -132,7 +124,7 @@ function EnhancedTableHead(props: EnhancedTableProps<TableData>) {
         {columns.slice(1).map((col) => (
           <TableCell
             className="fw-bold text-nowrap"
-            key={col.field}
+            key={col.headerName} // saya ubah menjadi col.headername karena col.field memiliki value yang sama
             sortDirection={orderBy === col.field ? order : false}
             sx={{
               width: col.headerStyle?.width,
@@ -160,16 +152,16 @@ function EnhancedTableHead(props: EnhancedTableProps<TableData>) {
   );
 }
 
-export function StockInvoiceReportPage() {
-  const [invoiceId, setInvoiceId] = useState<string>("");
-  const [invoices, setInvoices] = useState<Invoice[]>([]);
+export function AgingReportPage() {
+  const [customerId, setCustomerId] = useState<string>("");
+  const [customers, setCustomers] = useState<Customer[]>([]);
   //   const [endDate, setEndDate] = useState(startOfTomorrow());
   const [order, setOrder] = useState<Order>("asc");
   const [orderBy, setOrderBy] = useState<keyof TableData>("product_name");
-  const stockInvoiceReportService = new StockInvoiceReportService();
+  const agingReportService = new AgingReportService();
   const { showToast } = useToast();
 
-  const { data, isLoading } = useStockInvoiceReport({ invoice: invoiceId });
+  const { data, isLoading } = useAgingReport({ customer: customerId });
 
   const handleRequestSort = (
     event: React.MouseEvent<unknown>,
@@ -179,10 +171,11 @@ export function StockInvoiceReportPage() {
     setOrder(isAsc ? "desc" : "asc");
     setOrderBy(property);
   };
-  const fetchInvoices = async () => {
+  const fetchCustomers = async () => {
     try {
-      const invoices = await stockInvoiceReportService.getAllInvoices();
-      setInvoices(invoices);
+      const customers = await agingReportService.getAllCustomers();
+      setCustomers(customers);
+      setCustomerId(customers[0].id.toString());
     } catch (err) {
       const finalMessage = `Failed to get data.\n${
         err?.response?.data?.message || err?.message || "Unknown error"
@@ -192,53 +185,96 @@ export function StockInvoiceReportPage() {
     }
   };
 
-  const handleInvoiceDropdownChange = (value: string) => {
-    setInvoiceId(value);
+  const handleCustomerDropdownChange = (value: string) => {
+    setCustomerId(value);
+  };
+
+  const handlePrint = async () => {
+    // const agingData = data;
+    const customer = customers.find(
+      (cust) => cust.id === parseInt(customerId, 10)
+    );
+    const customerName = customer.name;
+
+    const agingData = data.map((row: any) => ({
+      ...row,
+      remaining_qty: Number(row.remaining_qty),
+    }));
+    // Build rows
+    let totalKg: number = 0;
+
+    const tableRows = agingData
+      .map((item, i) => {
+        const name = item.product_name || "-";
+        const volume = item.remaining_qty;
+        const qtyLeft = item.remaining_qty / item.conversion_to_kg;
+        const qtyLeftString = `${qtyLeft.toLocaleString()} ${item.unit}`;
+        const code = item.code || "";
+
+        const dateStore = formatDateReport(item.created_at);
+        totalKg += parseInt(volume, 10);
+
+        return `
+          <tr>
+            <td class="number">${i + 1}</td>
+            <td class="text">${name.toUpperCase()}</td>
+            <td class="number">${dateStore}</td>
+            <td class="text">${code}</td>
+            <td class="number">${qtyLeftString}</td>
+            <td class="number">${volume.toLocaleString()}</td>
+          </tr>`;
+      })
+      .join("\n");
+
+    const printWindow = window.open("", "_blank", "width=800,height=600");
+
+    if (!printWindow) {
+      alert("Popup blocked!");
+      return;
+    }
+
+    const htmlContent = generateAgingHtml(customerName, tableRows, totalKg);
+
+    printWindow.document.open();
+    printWindow.document.write(htmlContent);
+    printWindow.document.close();
   };
 
   useEffect(() => {
-    fetchInvoices();
+    fetchCustomers();
   }, []);
 
   const sortedStockReport = React.useMemo(() => {
     if (!data) return [];
     const processedData = data.map((item) => ({
       ...item,
-      final_qty: item.product_in - item.product_out,
+      //   final_qty: item.product_in - item.product_out,
     }));
 
     return processedData.sort((a, b) => {
       // Sorting logic for each column
       switch (orderBy) {
-        case "invoice_no":
+        case "code":
           return order === "asc"
-            ? a.invoice_no.localeCompare(b.invoice_no)
-            : b.invoice_no.localeCompare(a.invoice_no);
+            ? a.code.localeCompare(b.code)
+            : b.code.localeCompare(a.code);
 
         case "product_name":
           return order === "asc"
             ? a.product_name.localeCompare(b.product_name)
             : b.product_name.localeCompare(a.product_name);
 
-        case "customer_name":
+        case "remaining_qty":
           return order === "asc"
-            ? a.customer_name.localeCompare(b.customer_name)
-            : b.customer_name.localeCompare(a.customer_name);
+            ? a.remaining_qty - b.remaining_qty
+            : b.remaining_qty - a.remaining_qty;
 
-        case "product_in":
+        case "created_at":
           return order === "asc"
-            ? a.product_in - b.product_in
-            : b.product_in - a.product_in;
-
-        case "product_out":
-          return order === "asc"
-            ? a.product_out - b.product_out
-            : b.product_out - a.product_out;
-
-        case "product_remaining":
-          return order === "asc"
-            ? a.product_remaining - b.product_remaining
-            : b.product_remaining - a.product_remaining;
+            ? new Date(a.created_at).getTime() -
+                new Date(b.created_at).getTime()
+            : new Date(b.created_at).getTime() -
+                new Date(a.created_at).getTime();
 
         default:
           return 0;
@@ -247,34 +283,34 @@ export function StockInvoiceReportPage() {
   }, [data, order, orderBy]);
   return (
     <>
-      <PageLayout title="Report" items={["Stock Invoice Report"]}>
+      <PageLayout title="Report" items={["Aging Report"]}>
         <div className="container-fluid m-0 p-0">
           <div className="row">
-            {/* <div className="col-md-6 position-relative">
-            <EndDatePicker
-              idDatePicker="tanggal-akhir"
-              titleText="Tanggal"
-              datetime={false}
-              value={endDate}
-              onDateClick={(date: Date) => {
-                setEndDate(date);
-              }}
-            />
-          </div> */}
             <div className="col-md-6 position-relative">
               <DropdownSecondStyle
-                id="invoice"
-                label="Invoice *"
-                value={invoiceId}
-                options={invoices.map((invoice) => ({
-                  value: invoice.id.toString(),
-                  label: invoice.invoice_no,
+                id="customer"
+                label="Customer *"
+                value={customerId}
+                options={customers.map((customer) => ({
+                  value: customer.id.toString(),
+                  label: customer.name,
                 }))}
-                onChange={handleInvoiceDropdownChange}
-                icon={<FaBox />}
+                onChange={handleCustomerDropdownChange}
+                icon={<FaUser />}
               />
             </div>
+            <div className="col-md-6 position-relative d-flex justify-content-end align-items-start">
+              <button
+                className="btn btn-light btn-lg text-dark"
+                onClick={handlePrint}
+                aria-label="Print"
+              >
+                <FaPrint className="me-2" />
+                Print
+              </button>
+            </div>
           </div>
+
           <div className="product-in-list w-100 d-flex flex-column">
             <div className="mui-table-container">
               <TableContainer component={Paper} sx={{ padding: 2 }}>
@@ -288,22 +324,19 @@ export function StockInvoiceReportPage() {
                     {sortedStockReport.map((value, index) => (
                       <TableRow key={index}>
                         <TableCell>{index + 1}</TableCell>
-                        <TableCell>{value.invoice_no}</TableCell>
                         <TableCell>{value.product_name}</TableCell>
-                        <TableCell>{value.customer_name}</TableCell>
-                        <TableCell>
-                          {Number(value.product_in).toLocaleString("id-ID")}
-                        </TableCell>
-                        <TableCell>
-                          {Number(value.product_out).toLocaleString("id-ID")}
-                        </TableCell>
-                        <TableCell>
-                          {Number(value.product_remaining).toLocaleString(
-                            "id-ID"
-                          )}
-                        </TableCell>
                         <TableCell>
                           {new Date(value.created_at).toDateString()}
+                        </TableCell>
+                        <TableCell>{value.code}</TableCell>
+                        <TableCell>
+                          {Number(
+                            value.remaining_qty / value.conversion_to_kg
+                          ).toLocaleString("id-ID")}{" "}
+                          {value.unit}
+                        </TableCell>
+                        <TableCell>
+                          {Number(value.remaining_qty).toLocaleString("id-ID")}
                         </TableCell>
                       </TableRow>
                     ))}
