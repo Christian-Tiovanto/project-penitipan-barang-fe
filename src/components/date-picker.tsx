@@ -268,8 +268,8 @@ const EndDatePicker = ({
   onDateClick: Function;
 }) => {
   const [showPicker, setShowPicker] = useState(false);
-  const [currentMonth, setCurrentMonth] = useState(new Date().getMonth());
-  const [currentYear, setCurrentYear] = useState(new Date().getFullYear());
+  const [currentMonth, setCurrentMonth] = useState(value.getMonth());
+  const [currentYear, setCurrentYear] = useState(value.getFullYear());
   const [tempDate, setTempDate] = useState(value);
   const [originalDate, setOriginalDate] = useState(new Date());
   const [originalMonth, setOriginalMonth] = useState(new Date().getMonth());
@@ -319,7 +319,6 @@ const EndDatePicker = ({
     const lastOfCurrentMonth = new Date(currentYear, currentMonth + 1, 0);
     for (let day = 1; day <= lastOfCurrentMonth.getDate(); day++) {
       const date = new Date(currentYear, currentMonth, day);
-      date.setDate(date.getDate() + 1);
       date.setHours(7, 0, 0, 0);
       dates.push({
         day,

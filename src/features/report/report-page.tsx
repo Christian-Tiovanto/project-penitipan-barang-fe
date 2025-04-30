@@ -61,6 +61,11 @@ const menuItems = [
     icon: <IoDocumentText className="me-2" />,
   },
   {
+    label: "Customer Product Mutation",
+    path: "/report/customer-product-mutation",
+    icon: <IoDocumentText className="me-2" />,
+  },
+  {
     label: "Ar List",
     path: "/report/ar-list",
     icon: <FaListAlt className="me-2" />,

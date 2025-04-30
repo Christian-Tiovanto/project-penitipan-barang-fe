@@ -53,6 +53,7 @@ import CreateTransOutPage from "./features/trans-out/pages/create-trans-out";
 import ReportPage from "./features/report/report-page";
 import { StockInvoiceReportPage } from "./features/report/pages/stock-invoice-report";
 import { AgingReportPage } from "./features/report/pages/aging-report";
+import { CustomerProductMutationPage } from "./features/report/pages/customer-product-mutation";
 // import CreateTrans from "./features/trans-in/pages/create-trans";
 
 const router = createBrowserRouter([
@@ -104,6 +105,10 @@ const router = createBrowserRouter([
           {
             path: "aging-report",
             element: <AgingReportPage />,
+          },
+          {
+            path: "customer-product-mutation",
+            element: <CustomerProductMutationPage />,
           },
         ],
       },
