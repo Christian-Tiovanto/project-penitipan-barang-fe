@@ -305,7 +305,7 @@ const EndDatePicker = ({
     const lastOfPrevMonth = new Date(currentYear, currentMonth, 0);
     for (let i = 0; i <= lastOfPrevMonth.getDay(); i++) {
       const day = lastOfPrevMonth.getDate() - lastOfPrevMonth.getDay() + i;
-      const date = new Date(currentYear, currentMonth - 1, day);
+      const date = new Date(currentYear, currentMonth - 1, day + 1);
       dates.push({
         day,
         date,
@@ -318,7 +318,7 @@ const EndDatePicker = ({
     // Current month days
     const lastOfCurrentMonth = new Date(currentYear, currentMonth + 1, 0);
     for (let day = 1; day <= lastOfCurrentMonth.getDate(); day++) {
-      const date = new Date(currentYear, currentMonth, day);
+      const date = new Date(currentYear, currentMonth, day + 1);
       date.setHours(7, 0, 0, 0);
       dates.push({
         day,
