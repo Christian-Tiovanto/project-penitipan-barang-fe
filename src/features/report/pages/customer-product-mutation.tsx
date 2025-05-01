@@ -21,7 +21,7 @@ import {
   EnhancedTableProps,
   HeadCell,
 } from "../../../components/table-component";
-import { format, startOfToday, startOfTomorrow } from "date-fns";
+import { format, formatDate, startOfToday, startOfTomorrow } from "date-fns";
 import { Order } from "../../../enum/SortOrder";
 import PageLayout from "../../../components/page-location";
 import { useCustomerProductMutation } from "../hooks/customer-product-mutation.hooks";
@@ -30,7 +30,9 @@ import { Customer } from "../../customer-payment/pages/update-customer-payment";
 import { getAllCustomers } from "../../customer/services/customer.service";
 import { useToast } from "../../../contexts/toastContexts";
 import DropdownSecondStyle from "../../../components/dropdown-2";
-import { FaBox } from "react-icons/fa6";
+import { FaBox, FaPrint } from "react-icons/fa6";
+import { generateMutationHtml } from "../../template/mutation.template";
+import { formatDateReport } from "../../../utils/date";
 
 export interface ICustomerProductMutation {
   productId: number;
@@ -150,6 +152,100 @@ export function CustomerProductMutationPage() {
       console.error("Error fetching customers:", err);
     }
   };
+
+  const handlePrint = async () => {
+    try {
+      if (!customerId || customerId.trim() === "") {
+        throw new Error("Customer ID Has not been selected");
+      }
+      const customer = customers.find(
+        (cust) => cust.id === parseInt(customerId, 10)
+      );
+
+      const customerName = customer.name;
+
+      const mutationData = response;
+      // Build rows
+
+      const tableRows = mutationData
+        .map((item, i) => {
+          let htmlContent = ``;
+
+          const name = item.productName || "-";
+          let totalQtyIn = 0;
+          let totalQtyOut = 0;
+          let totalRemainingQty = 0;
+
+          htmlContent += `
+          <tr>
+            <td colspan="4"><strong>${name}</strong></td>
+          </tr>`;
+
+          item.records.forEach((record) => {
+            totalQtyIn += record.qty_in;
+            totalQtyOut += record.qty_out;
+            const remainingQty = record.qty_in - record.qty_out;
+            totalRemainingQty += remainingQty;
+
+            htmlContent += `
+            <tr>
+              <td class="number">${formatDateReport(record.date)}</td>
+              <td class="number">${record.qty_in}</td>
+              <td class="number">${record.qty_out}</td>
+              <td class="number">${record.qty_in - record.qty_out}</td>
+            </tr>`;
+          });
+
+          htmlContent += `
+          <tr>
+            <td class="number"><strong>Subtotal ${name}</strong></td>
+            <td class="number">${totalQtyIn}</td>
+            <td class="number">${totalQtyOut}</td>
+            <td class="number">${totalRemainingQty}</td>
+          </tr>`;
+
+          return htmlContent;
+        })
+        .join("\n");
+
+      //   return `
+      //   <tr>
+      //     <td class="number">${i + 1}</td>
+      //     <td class="text">${name.toUpperCase()}</td>
+      //     <td class="number">${dateStore}</td>
+      //     <td class="text">${code}</td>
+      //     <td class="number">${qtyLeftString}</td>
+      //     <td class="number">${volume.toLocaleString()}</td>
+      //   </tr>`;
+      // })
+      // .join("\n");
+
+      const printWindow = window.open("", "_blank", "width=800,height=600");
+
+      if (!printWindow) {
+        alert("Popup blocked!");
+        return;
+      }
+
+      const htmlContent = generateMutationHtml(
+        startDate,
+        endDate,
+        customerName,
+        tableRows
+      );
+
+      printWindow.document.open();
+      printWindow.document.write(htmlContent);
+      printWindow.document.close();
+    } catch (err) {
+      const finalMessage = `Failed to print.\n${
+        err?.response?.data?.message || err?.message || "Unknown error"
+      }`;
+      showToast(finalMessage, "danger");
+
+      console.error("Error handle print:", err);
+    }
+  };
   useEffect(() => {
     fetchCustomers();
   }, []);
@@ -198,6 +294,16 @@ export function CustomerProductMutationPage() {
                 onChange={handleCustomerDropdownChange}
                 icon={<FaBox />}
               />
+            </div>
+            <div className="col-md-6 col-lg-4 position-relative mb-3">
+              <button
+                className="btn btn-light btn-lg text-dark"
+                onClick={handlePrint}
+                aria-label="Print"
+              >
+                <FaPrint className="me-2" />
+                Print
+              </button>
             </div>
           </div>
 
