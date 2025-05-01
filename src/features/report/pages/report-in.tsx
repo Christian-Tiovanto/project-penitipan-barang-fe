@@ -41,6 +41,7 @@ export interface ITransactionInData {
   qty: number;
   converted_qty: number;
   unit: string;
+  created_at: Date;
 }
 
 const columns: HeadCell<ITransactionInData>[] = [
@@ -142,8 +143,9 @@ export function ReportInPage() {
   const [rowsPerPage, setRowsPerPage] = useState(5);
   const [startDate, setStartDate] = useState(startOfToday());
   const [endDate, setEndDate] = useState(startOfTomorrow());
-  const [order, setOrder] = useState<Order>("asc");
-  const [orderBy, setOrderBy] = useState<keyof ITransactionInData>("product");
+  const [order, setOrder] = useState<Order>("desc");
+  const [orderBy, setOrderBy] =
+    useState<keyof ITransactionInData>("created_at");
 
   const handleRequestSort = (
     event: React.MouseEvent<unknown>,

@@ -63,16 +63,16 @@ const MuiTable: React.FC<Props> = ({
   const [data, setData] = useState<any[]>([]);
   const [totalRows, setTotalRows] = useState(0);
   const [loading, setLoading] = useState(false);
-  const [sortField, setSortField] = useState<string | null>(null);
-  const [sortOrder, setSortOrder] = useState<"asc" | "desc">("asc");
+  const [sortField, setSortField] = useState<string | null>("created_at");
+  const [sortOrder, setSortOrder] = useState<"asc" | "desc">("desc");
 
   const loadData = async () => {
     setLoading(true);
     try {
       const result = await fetchData(page, rowsPerPage, searchQuery, {
         ...filters,
-        sort: sortField ?? undefined,
-        order: sortField ? sortOrder : undefined,
+        sort: sortField ?? "created_at",
+        order: sortField ? sortOrder : "desc",
       });
       setData(result.data);
       setTotalRows(result.total);
@@ -167,6 +167,7 @@ const MuiTable: React.FC<Props> = ({
       "customer.name": "customer",
       "product.name": "product",
       "payment_method.name": "payment_method",
+      "transaction_in[0].is_charge": "is_charge",
       // tambahkan mapping lainnya kalau ada
     };
 
@@ -258,6 +259,7 @@ const MuiTable: React.FC<Props> = ({
                           acc && acc[key] !== undefined ? acc[key] : undefined,
                         row
                       );
+
                     return (
                       <TableCell key={col.field}>
                         {typeof value === "boolean"
