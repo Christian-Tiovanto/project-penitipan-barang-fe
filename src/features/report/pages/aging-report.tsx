@@ -190,31 +190,32 @@ export function AgingReportPage() {
   };
 
   const handlePrint = async () => {
-    // const agingData = data;
-    const customer = customers.find(
-      (cust) => cust.id === parseInt(customerId, 10)
-    );
-    const customerName = customer.name;
+    try {
+      // const agingData = data;
+      const customer = customers.find(
+        (cust) => cust.id === parseInt(customerId, 10)
+      );
+      const customerName = customer.name;
 
-    const agingData = data.map((row: any) => ({
-      ...row,
-      remaining_qty: Number(row.remaining_qty),
-    }));
-    // Build rows
-    let totalKg: number = 0;
+      const agingData = data.map((row: any) => ({
+        ...row,
+        remaining_qty: Number(row.remaining_qty),
+      }));
+      // Build rows
+      let totalKg: number = 0;
 
-    const tableRows = agingData
-      .map((item, i) => {
-        const name = item.product_name || "-";
-        const volume = item.remaining_qty;
-        const qtyLeft = item.remaining_qty / item.conversion_to_kg;
-        const qtyLeftString = `${qtyLeft.toLocaleString()} ${item.unit}`;
-        const code = item.code || "";
+      const tableRows = agingData
+        .map((item, i) => {
+          const name = item.product_name || "-";
+          const volume = item.remaining_qty;
+          const qtyLeft = item.remaining_qty / item.conversion_to_kg;
+          const qtyLeftString = `${qtyLeft.toLocaleString()} ${item.unit}`;
+          const code = item.code || "";
 
-        const dateStore = formatDateReport(item.created_at);
-        totalKg += parseInt(volume, 10);
+          const dateStore = formatDateReport(item.created_at);
+          totalKg += parseInt(volume, 10);
 
-        return `
+          return `
           <tr>
             <td class="number">${i + 1}</td>
             <td class="text">${name.toUpperCase()}</td>
@@ -223,21 +224,29 @@ export function AgingReportPage() {
             <td class="number">${qtyLeftString}</td>
             <td class="number">${volume.toLocaleString()}</td>
           </tr>`;
-      })
-      .join("\n");
+        })
+        .join("\n");
 
-    const printWindow = window.open("", "_blank", "width=800,height=600");
+      const printWindow = window.open("", "_blank", "width=800,height=600");
 
-    if (!printWindow) {
-      alert("Popup blocked!");
-      return;
+      if (!printWindow) {
+        alert("Popup blocked!");
+        return;
+      }
+
+      const htmlContent = generateAgingHtml(customerName, tableRows, totalKg);
+
+      printWindow.document.open();
+      printWindow.document.write(htmlContent);
+      printWindow.document.close();
+    } catch (err) {
+      const finalMessage = `Failed to print.\n${
+        err?.response?.data?.message || err?.message || "Unknown error"
+      }`;
+      showToast(finalMessage, "danger");
+
+      console.error("Error handle print:", err);
     }
-
-    const htmlContent = generateAgingHtml(customerName, tableRows, totalKg);
-
-    printWindow.document.open();
-    printWindow.document.write(htmlContent);
-    printWindow.document.close();
   };
 
   useEffect(() => {
