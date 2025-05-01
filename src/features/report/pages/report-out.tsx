@@ -43,6 +43,7 @@ export interface ITransactionOutData {
   is_charge: boolean;
   converted_qty: number;
   total_days: number;
+  created_at: Date;
 }
 const columns: HeadCell<ITransactionOutData>[] = [
   {
@@ -137,8 +138,9 @@ export function ReportOutPage() {
   const [rowsPerPage, setRowsPerPage] = useState(5);
   const [startDate, setStartDate] = useState(startOfToday());
   const [endDate, setEndDate] = useState(startOfTomorrow());
-  const [order, setOrder] = useState<Order>("asc");
-  const [orderBy, setOrderBy] = useState<keyof ITransactionOutData>("product");
+  const [order, setOrder] = useState<Order>("desc");
+  const [orderBy, setOrderBy] =
+    useState<keyof ITransactionOutData>("created_at");
 
   const handleRequestSort = (
     event: React.MouseEvent<unknown>,
