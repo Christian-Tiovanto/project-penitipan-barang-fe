@@ -98,14 +98,6 @@ const columns: HeadCell<TableData>[] = [
     },
   },
   {
-    field: "final_qty",
-    headerName: "Final Qty (Kg)",
-    headerStyle: {
-      width: "13%",
-      // textWrap: "nowrap",
-    },
-  },
-  {
     field: "product_unit",
     headerName: "Final Qty (Unit)",
     headerStyle: {
@@ -340,16 +332,10 @@ export function StockReportPage() {
                         </TableCell>
                         <TableCell>
                           {Number(
-                            value.product_in - value.product_out
-                          ).toLocaleString("id-ID")}
-                        </TableCell>
-                        <TableCell>
-                          {Number(
                             (value.product_in - value.product_out) /
                               (products.get(value.productId)[0]
                                 ?.conversion_to_kg ?? 1)
                           ).toLocaleString("id-ID")}{" "}
-                          {products.get(value.productId)[0].name ?? "Unit"}
                         </TableCell>
                       </TableRow>
                     ))}
