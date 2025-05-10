@@ -75,7 +75,7 @@ interface Invoice {
   fine: number;
   discount: number;
   total_order: number;
-  total_order_converted: number;
+  total_order_a: number;
   tax: number;
   status: InvoiceStatus;
 }
@@ -290,7 +290,7 @@ const CreateTransOutForm: React.FC = () => {
         .filter((p) => p.qty > 0)
         .map((p) => ({
           productId: p.id,
-          converted_qty: p.qty,
+          qty: p.qty,
           is_charge: form.isCharge,
         }));
 
@@ -334,7 +334,7 @@ const CreateTransOutForm: React.FC = () => {
           .filter((p) => p.qty > 0)
           .map((p) => ({
             productId: p.id,
-            converted_qty: p.qty,
+            qty: p.qty,
             is_charge: form.isCharge,
           }));
 

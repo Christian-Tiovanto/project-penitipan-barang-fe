@@ -9,7 +9,7 @@ export const createTransOut = async (
   clockOut: string, // ISO date string
   transactionOuts: {
     productId: number;
-    converted_qty: number;
+    qty: number;
   }[],
   transInHeaderId: number,
   transaction_date: string
@@ -45,7 +45,7 @@ export const createTransOutFifo = async (
   clockOut: string, // ISO date string
   transactionOuts: {
     productId: number;
-    converted_qty: number;
+    qty: number;
   }[],
   transaction_date: string
 ) => {
@@ -79,7 +79,7 @@ export const previewTransOut = async (
   clockOut: string, // ISO date string
   transactionOuts: {
     productId: number;
-    converted_qty: number;
+    qty: number;
   }[],
   transInHeaderId: number,
   transaction_date: string
@@ -115,7 +115,7 @@ export const previewTransOutFifo = async (
   clockOut: string, // ISO date string
   transactionOuts: {
     productId: number;
-    converted_qty: number;
+    qty: number;
   }[],
   transaction_date: string
 ) => {
