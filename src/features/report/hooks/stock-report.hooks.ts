@@ -12,6 +12,11 @@ export const useStockReport = (query: { endDate: Date; customer: string }) => {
   const abortControllerRef = useRef<AbortController | null>(null);
 
   useEffect(() => {
+    if (!customer || customer === "") {
+      setData([]); // Clear previous data
+      return;
+    }
+
     const fetchData = async () => {
       abortControllerRef.current?.abort();
       const controller = new AbortController();
