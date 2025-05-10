@@ -108,7 +108,7 @@ export function generateJastipInvoiceTemplate({
             <th>JLH HARI</th>
             <th>VOL/KG</th>
             <th>JASTIP</th>
-            <th>TOTAL FINE</th>
+            <th>TOTAL DENDA LEWAT HARI</th>
             <th>TOTAL JASTIP</th>
             <th>Total</th>
           </tr>
