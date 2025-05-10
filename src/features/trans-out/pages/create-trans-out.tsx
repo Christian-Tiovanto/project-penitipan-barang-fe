@@ -469,7 +469,7 @@ const CreateTransOutForm: React.FC = () => {
         {/* Search Field */}
         <div className="mb-3">
           <InputField
-            label="Product List * Kg"
+            label="Product List * Pack"
             type="text"
             name="search"
             value={searchTerm}
