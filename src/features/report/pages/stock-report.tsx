@@ -306,7 +306,9 @@ export function StockReportPage() {
                     {sortedStockReport.map((value, index) => (
                       <TableRow key={index}>
                         <TableCell>{index + 1}</TableCell>
-                        <TableCell>{value.product_name}</TableCell>
+                        <TableCell sx={{ textWrap: "nowrap" }}>
+                          {value.product_name}
+                        </TableCell>
                         {/* <TableCell>{value.customer_name}</TableCell> */}
                         <TableCell>
                           {Number(value.product_in).toLocaleString("id-ID")}
@@ -316,8 +318,7 @@ export function StockReportPage() {
                             value.product_in /
                               (products.get(value.productId)[0]
                                 ?.conversion_to_kg ?? 1)
-                          ).toLocaleString("id-ID")}{" "}
-                          {products.get(value.productId)[0].name ?? "Unit"}
+                          ).toLocaleString("id-ID")}
                         </TableCell>
                         <TableCell>
                           {Number(value.product_out).toLocaleString("id-ID")}
@@ -327,8 +328,7 @@ export function StockReportPage() {
                             value.product_out /
                               (products.get(value.productId)[0]
                                 ?.conversion_to_kg ?? 1)
-                          ).toLocaleString("id-ID")}{" "}
-                          {products.get(value.productId)[0].name ?? "Unit"}
+                          ).toLocaleString("id-ID")}
                         </TableCell>
                         <TableCell>
                           {Number(
