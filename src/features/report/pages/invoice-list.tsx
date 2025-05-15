@@ -88,6 +88,14 @@ export interface Invoice {
   total_amount: number;
 }
 
+interface AggregatedItem {
+  productId: number;
+  productName: string;
+  unit: string;
+  totalQty: number;
+  totalConvertedQty: number;
+}
+
 type Order = "asc" | "desc";
 
 type TableData = Invoice & {
@@ -254,9 +262,38 @@ export default function InvoiceListPage() {
 
   const handlePrintSpb = async (invoiceId: number) => {
     const spb: Spb = await new InvoiceListService().getSpb(invoiceId);
-    const items: TransactionOut[] = await new InvoiceListService().getTransOut(
-      invoiceId
+    const transOuts: TransactionOut[] =
+      await new InvoiceListService().getTransOut(invoiceId);
+
+    const mappedTransOut = transOuts.map((transOut) => ({
+      productId: transOut.productId,
+      productName: transOut.product.name,
+      unit: transOut.unit,
+      qty: transOut.qty,
+      convertedQty: transOut.converted_qty,
+    }));
+
+    const itemsObj: Record<number, AggregatedItem> = mappedTransOut.reduce(
+      (acc, item) => {
+        const id = item.productId;
+        if (!acc[id]) {
+          acc[id] = {
+            productId: id,
+            productName: item.productName,
+            unit: item.unit,
+            totalQty: 0,
+            totalConvertedQty: 0,
+          };
+        }
+        acc[id].totalQty += item.qty || 0;
+        acc[id].totalConvertedQty += item.convertedQty || 0;
+        return acc;
+      },
+      {} as Record<number, AggregatedItem>
     );
+
+    const items: AggregatedItem[] = Object.values(itemsObj);
+    console.log(items);
 
     const date = new Date(spb.clock_out);
 
@@ -277,16 +314,16 @@ export default function InvoiceListPage() {
 
     const tableRows = items
       .map((item, i) => {
-        const name = item.product.name || "-";
-        const volume = item.converted_qty;
-        totalQty += item.qty;
+        const name = item.productName || "-";
+        const volume = item.totalConvertedQty;
+        totalQty += item.totalQty;
         totalKg += volume;
 
         return `
           <tr>
             <td class="number">${i + 1}</td>
             <td class="text">${name.toUpperCase()}</td>
-            <td class="number">${item.qty}</td>
+            <td class="number">${item.totalQty}</td>
             <td class="text">${item.unit}</td>
             <td class="number">${volume.toLocaleString()}</td>
           </tr>`;
@@ -338,6 +375,7 @@ export default function InvoiceListPage() {
     let totalKg = 0;
     let totalPrice = 0;
     let totalFine = 0;
+    let totalCharge = 0;
 
     const tableRows = items
       .map((item, i) => {
@@ -347,6 +385,7 @@ export default function InvoiceListPage() {
         totalKg += volume;
         totalPrice += item.total_price;
         totalFine += item.total_fine;
+        totalCharge += item.total_charge;
 
         const date = new Date(item.created_at);
         date.setDate(date.getDate() - item.total_days);
@@ -365,10 +404,11 @@ export default function InvoiceListPage() {
             <td class="number">${item.total_days}</td>
             <td class="number">${volume.toLocaleString()}</td>
             <td class="number">${item.price.toLocaleString()}</td>
-            <td class="number">${item.total_fine.toLocaleString()}</td>
-            <td class="number">${item.total_price.toLocaleString()}</td>
+            <td class="number">${item.total_charge.toLocaleString()}</td>
             <td class="number">${(
-              item.total_price + item.total_fine
+              item.total_price +
+              item.total_fine +
+              item.total_charge
             ).toLocaleString()}</td
           </tr>`;
       })
@@ -388,6 +428,7 @@ export default function InvoiceListPage() {
       totalKg,
       totalPrice,
       totalFine,
+      totalCharge,
       formattedDate,
       time,
     });

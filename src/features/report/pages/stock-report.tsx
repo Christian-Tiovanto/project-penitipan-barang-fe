@@ -305,32 +305,32 @@ export function StockReportPage() {
                   <TableBody>
                     {sortedStockReport.map((value, index) => (
                       <TableRow key={index}>
-                        <TableCell>{index + 1}</TableCell>
-                        <TableCell>{value.product_name}</TableCell>
+                        <TableCell sx={{ py: 0.5 }}>{index + 1}</TableCell>
+                        <TableCell sx={{ textWrap: "nowrap", py: 0.5 }}>
+                          {value.product_name}
+                        </TableCell>
                         {/* <TableCell>{value.customer_name}</TableCell> */}
-                        <TableCell>
+                        <TableCell sx={{ py: 0.5 }}>
                           {Number(value.product_in).toLocaleString("id-ID")}
                         </TableCell>
-                        <TableCell>
+                        <TableCell sx={{ py: 0.5 }}>
                           {Number(
                             value.product_in /
                               (products.get(value.productId)[0]
                                 ?.conversion_to_kg ?? 1)
-                          ).toLocaleString("id-ID")}{" "}
-                          {products.get(value.productId)[0].name ?? "Unit"}
+                          ).toLocaleString("id-ID")}
                         </TableCell>
-                        <TableCell>
+                        <TableCell sx={{ py: 0.5 }}>
                           {Number(value.product_out).toLocaleString("id-ID")}
                         </TableCell>
-                        <TableCell>
+                        <TableCell sx={{ py: 0.5 }}>
                           {Number(
                             value.product_out /
                               (products.get(value.productId)[0]
                                 ?.conversion_to_kg ?? 1)
-                          ).toLocaleString("id-ID")}{" "}
-                          {products.get(value.productId)[0].name ?? "Unit"}
+                          ).toLocaleString("id-ID")}
                         </TableCell>
-                        <TableCell>
+                        <TableCell sx={{ py: 0.5 }}>
                           {Number(
                             (value.product_in - value.product_out) /
                               (products.get(value.productId)[0]

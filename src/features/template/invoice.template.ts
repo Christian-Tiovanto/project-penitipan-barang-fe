@@ -5,6 +5,7 @@ export function generateJastipInvoiceTemplate({
   totalKg,
   totalPrice,
   totalFine,
+  totalCharge,
   formattedDate,
   time,
 }: {
@@ -14,6 +15,7 @@ export function generateJastipInvoiceTemplate({
   totalKg: number;
   totalPrice: number;
   totalFine: number;
+  totalCharge: number;
   formattedDate: string;
   time: string;
 }) {
@@ -102,15 +104,14 @@ export function generateJastipInvoiceTemplate({
         <table>
           <tr>
             <th>No</th>
-            <th>KETERANGAN BARANG</th>
+            <th style="width: 350px;">KETERANGAN BARANG</th>
             <th>TITIP</th>
             <th>QTY PACK</th>
             <th>JLH HARI</th>
             <th>VOL/KG</th>
             <th>JASTIP</th>
-            <th>TOTAL DENDA LEWAT HARI</th>
+            <th>TOTAL CH</th>
             <th>TOTAL JASTIP</th>
-            <th>Total</th>
           </tr>
           ${tableRows}
           <tr>
@@ -119,9 +120,12 @@ export function generateJastipInvoiceTemplate({
             <th></th>
             <th class="number">${totalKg.toLocaleString()}</th>
             <th></th>
-            <th class="number">${totalFine.toLocaleString()}</th>
-            <th class="number">${totalPrice.toLocaleString()}</th>
-            <th class"number">${(totalPrice + totalFine).toLocaleString()}</th>
+            <th class="number">${totalCharge.toLocaleString()}</th>
+            <th class="number">${(
+              totalPrice +
+              totalFine +
+              totalCharge
+            ).toLocaleString()}</th>
           </tr>
         </table>
   
