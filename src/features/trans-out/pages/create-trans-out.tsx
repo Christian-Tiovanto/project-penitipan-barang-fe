@@ -11,7 +11,13 @@ import {
 } from "react-icons/fa";
 import { useNavigate } from "react-router";
 import { useToast } from "../../../contexts/toastContexts";
-import { FaBox, FaClipboardUser, FaTruck } from "react-icons/fa6";
+import {
+  FaBox,
+  FaClipboardUser,
+  FaListOl,
+  FaTag,
+  FaTruck,
+} from "react-icons/fa6";
 import Dropdown from "../../../components/dropdown";
 import { getAllCustomers } from "../../customer/services/customer.service";
 import { getAllProducts } from "../../product/services/product.service";
@@ -32,6 +38,8 @@ import {
 } from "../../trans-in/services/trans-in.service";
 import RadioToggle from "../../../components/radio-toggle";
 import { formatLocalDate } from "../../../utils/date";
+import InputFieldNumber from "../../../components/inputfieldnumber";
+import { FormatListNumbered, NorthWestRounded } from "@mui/icons-material";
 
 interface Product {
   id: number;
@@ -112,6 +120,11 @@ const CreateTransOutForm: React.FC = () => {
     transInHeaderId: "",
     type: "fifo",
     isCharge: false,
+    product_name: "",
+    product_qty: 0,
+    product_price: 0,
+    product_total_price: 0,
+    brgLuar: false,
   });
 
   const [errors, setErrors] = useState({
@@ -120,6 +133,10 @@ const CreateTransOutForm: React.FC = () => {
     transInHeaderId: "",
     type: "",
     isCharge: "",
+    product_name: "",
+    product_qty: "",
+    product_price: "",
+    product_total_price: "",
   });
 
   const [searchTerm, setSearchTerm] = useState("");
@@ -230,6 +247,14 @@ const CreateTransOutForm: React.FC = () => {
       newErrors.transInHeaderId = "Please Select a Transaction In";
     }
 
+    if (!form.product_name && form.brgLuar != false) {
+      newErrors.product_name = "This field is required";
+    }
+
+    if (form.product_qty < 1 && form.brgLuar != false) {
+      newErrors.product_qty = "Qty must be greater than 0";
+    }
+
     if (!form.no_plat.trim()) {
       newErrors.no_plat = "This field is required";
     }
@@ -284,6 +309,28 @@ const CreateTransOutForm: React.FC = () => {
     setForm({ ...form, isCharge: value });
   };
 
+  const handleBrgLuarChange = (value: boolean) => {
+    setForm({ ...form, brgLuar: value });
+  };
+
+  const handlePriceChange = (newValue: number) => {
+    const totalPrice = form.product_qty * newValue;
+    setForm({
+      ...form,
+      product_price: newValue,
+      product_total_price: totalPrice,
+    });
+  };
+
+  const handleQtyChange = (newValue: number) => {
+    const totalPrice = form.product_price * newValue;
+    setForm({
+      ...form,
+      product_qty: newValue,
+      product_total_price: totalPrice,
+    });
+  };
+
   const handleCreateInvoice = async () => {
     try {
       const payload = products
@@ -291,8 +338,23 @@ const CreateTransOutForm: React.FC = () => {
         .map((p) => ({
           productId: p.id,
           qty: p.qty,
+          productName: p.name,
           is_charge: form.isCharge,
         }));
+      let payloadBrgLuar = [];
+      if (form.brgLuar == true) {
+        payloadBrgLuar = [
+          {
+            productId: null,
+            qty: 0,
+            productName: form.product_name,
+            is_charge: false,
+            price: form.product_price,
+            total_price: form.product_total_price,
+            converted_qty: form.product_qty,
+          },
+        ];
+      }
 
       const clockOut = selectedDate ? formatLocalDate(selectedDate) : "";
 
@@ -302,6 +364,7 @@ const CreateTransOutForm: React.FC = () => {
           form.no_plat,
           clockOut,
           payload,
+          payloadBrgLuar,
           clockOut
         );
       } else {
@@ -310,6 +373,7 @@ const CreateTransOutForm: React.FC = () => {
           form.no_plat,
           clockOut,
           payload,
+          payloadBrgLuar,
           parseInt(form.transInHeaderId, 10),
           clockOut
         );
@@ -335,8 +399,24 @@ const CreateTransOutForm: React.FC = () => {
           .map((p) => ({
             productId: p.id,
             qty: p.qty,
+            productName: p.name,
             is_charge: form.isCharge,
           }));
+
+        let payloadBrgLuar = [];
+        if (form.brgLuar == true) {
+          payloadBrgLuar = [
+            {
+              productId: null,
+              qty: 0,
+              productName: form.product_name,
+              is_charge: false,
+              price: form.product_price,
+              total_price: form.product_total_price,
+              converted_qty: form.product_qty,
+            },
+          ];
+        }
 
         const clockOut = selectedDate ? formatLocalDate(selectedDate) : "";
 
@@ -346,10 +426,11 @@ const CreateTransOutForm: React.FC = () => {
             form.no_plat,
             clockOut,
             payload,
+            payloadBrgLuar,
             clockOut
           );
 
-          const productModal = products.filter((p) => p.qty > 0);
+          const productModal = [...products.filter((p) => p.qty > 0)];
 
           setModalData(() => ({
             products: productModal,
@@ -362,6 +443,7 @@ const CreateTransOutForm: React.FC = () => {
             form.no_plat,
             clockOut,
             payload,
+            payloadBrgLuar,
             parseInt(form.transInHeaderId, 10),
             clockOut
           );
@@ -503,125 +585,208 @@ const CreateTransOutForm: React.FC = () => {
             )}
           </div>
         </div>
-
-        {/* Modal */}
-        {isModalOpen && modalData && (
-          <div
-            className="modal fade show d-flex align-items-center justify-content-center"
-            id="paidoff-form"
-            tabIndex={-1}
-            aria-labelledby="paidoffFormLabel"
-            aria-hidden="false"
-            style={{
-              display: "block",
-              position: "fixed",
-              top: 0,
-              left: 0,
-              right: 0,
-              bottom: 0,
-              zIndex: 1050,
-            }}
-          >
-            <div className="modal-dialog">
-              <div className="modal-content">
-                <div className="modal-header">
-                  <h5 className="modal-title" id="paidoffFormLabel">
-                    Estimated invoice Details
-                  </h5>
-                  <button
-                    type="button"
-                    className="btn-close"
-                    onClick={closeModal}
-                    aria-label="Close"
-                  ></button>
-                </div>
-                <div className="modal-body">
-                  <table className="table table-striped">
-                    <thead>
-                      <tr>
-                        <th>Product</th>
-                        <th>Price</th>
-                        <th>Qty</th>
-                        <th>Total</th>
+      </div>
+      {/* Modal */}
+      {isModalOpen && modalData && (
+        <div
+          className="modal fade show d-flex align-items-center justify-content-center"
+          id="paidoff-form"
+          tabIndex={-1}
+          aria-labelledby="paidoffFormLabel"
+          aria-hidden="false"
+          style={{
+            display: "block",
+            position: "fixed",
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            zIndex: 1050,
+          }}
+        >
+          <div className="modal-dialog">
+            <div className="modal-content">
+              <div className="modal-header">
+                <h5 className="modal-title" id="paidoffFormLabel">
+                  Estimated invoice Details
+                </h5>
+                <button
+                  type="button"
+                  className="btn-close"
+                  onClick={closeModal}
+                  aria-label="Close"
+                ></button>
+              </div>
+              <div className="modal-body">
+                <table className="table table-striped">
+                  <thead>
+                    <tr>
+                      <th>Product</th>
+                      <th>Price</th>
+                      <th>Qty</th>
+                      <th>Total</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {modalData.products.map((product, index) => (
+                      <tr key={index}>
+                        <td>{product.name}</td>
+                        <td>
+                          {new Intl.NumberFormat("id-ID").format(product.price)}
+                        </td>
+                        <td>{product.qty}</td>
+                        <td>
+                          {new Intl.NumberFormat("id-ID").format(
+                            product.price * product.qty
+                          )}
+                        </td>
                       </tr>
-                    </thead>
-                    <tbody>
-                      {modalData.products.map((product, index) => (
-                        <tr key={index}>
-                          <td>{product.name}</td>
-                          <td>
-                            {new Intl.NumberFormat("id-ID").format(
-                              product.price
-                            )}
-                          </td>
-                          <td>{product.qty}</td>
-                          <td>
-                            {new Intl.NumberFormat("id-ID").format(
-                              product.price * product.qty
-                            )}
-                          </td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                  <div className="d-flex justify-content-between">
-                    <strong>Subtotal:</strong>
-                    <span>
-                      {new Intl.NumberFormat("id-ID").format(
-                        modalData.invoice.total_amount
-                      )}
-                    </span>
-                  </div>
-                  <div className="d-flex justify-content-between">
-                    <strong>Fine:</strong>
-                    <span>
-                      {" "}
-                      {new Intl.NumberFormat("id-ID").format(
-                        modalData.invoice.fine
-                      )}
-                    </span>
-                  </div>
-                  <div className="d-flex justify-content-between">
-                    <strong>Charge:</strong>
-                    <span>
-                      {" "}
-                      {new Intl.NumberFormat("id-ID").format(
+                    ))}
+                    {form.brgLuar != false && (
+                      <tr key={products.length}>
+                        <td>{form.product_name}</td>
+                        <td>
+                          {new Intl.NumberFormat("id-ID").format(
+                            form.product_price
+                          )}
+                        </td>
+                        <td>{form.product_qty}</td>
+                        <td>
+                          {new Intl.NumberFormat("id-ID").format(
+                            form.product_price * form.product_qty
+                          )}
+                        </td>
+                      </tr>
+                    )}
+                  </tbody>
+                </table>
+                <div className="d-flex justify-content-between">
+                  <strong>Subtotal:</strong>
+                  <span>
+                    {new Intl.NumberFormat("id-ID").format(
+                      modalData.invoice.total_amount
+                    )}
+                  </span>
+                </div>
+                <div className="d-flex justify-content-between">
+                  <strong>Fine:</strong>
+                  <span>
+                    {" "}
+                    {new Intl.NumberFormat("id-ID").format(
+                      modalData.invoice.fine
+                    )}
+                  </span>
+                </div>
+                <div className="d-flex justify-content-between">
+                  <strong>Charge:</strong>
+                  <span>
+                    {" "}
+                    {new Intl.NumberFormat("id-ID").format(
+                      modalData.invoice.charge
+                    )}
+                  </span>
+                </div>
+                <div className="d-flex justify-content-between">
+                  <strong>Total:</strong>
+                  <span>
+                    {new Intl.NumberFormat("id-ID").format(
+                      modalData.invoice.total_amount +
+                        modalData.invoice.fine +
                         modalData.invoice.charge
-                      )}
-                    </span>
-                  </div>
-                  <div className="d-flex justify-content-between">
-                    <strong>Total:</strong>
-                    <span>
-                      {new Intl.NumberFormat("id-ID").format(
-                        modalData.invoice.total_amount +
-                          modalData.invoice.fine +
-                          modalData.invoice.charge
-                      )}
-                    </span>
-                  </div>
+                    )}
+                  </span>
                 </div>
-                <div className="modal-footer">
-                  <button
-                    type="button"
-                    className="btn btn-secondary"
-                    onClick={closeModal}
-                  >
-                    Close
-                  </button>
-                  <button
-                    type="button"
-                    className="btn btn-primary"
-                    onClick={handleCreateInvoice}
-                  >
-                    Create Invoice
-                  </button>
-                </div>
+              </div>
+              <div className="modal-footer">
+                <button
+                  type="button"
+                  className="btn btn-secondary"
+                  onClick={closeModal}
+                >
+                  Close
+                </button>
+                <button
+                  type="button"
+                  className="btn btn-primary"
+                  onClick={handleCreateInvoice}
+                >
+                  Create Invoice
+                </button>
               </div>
             </div>
           </div>
-        )}
-      </div>
+        </div>
+      )}
+      <br></br>
+      <RadioToggle
+        label="Barang Luar *"
+        name="brg_luar"
+        isActive={form.brgLuar}
+        onChange={handleBrgLuarChange}
+        error={false}
+      />
+      {form.brgLuar !== false && (
+        <div
+          className="container flex flex-wrap overflow-y-auto space-y-3 bg-gray-50 border border-gray-300 rounded-lg p-3 scrollbar-thin scrollbar-thumb-gray-400 scrollbar-track-gray-200 mt-3"
+          style={{ maxHeight: "250px" }}
+        >
+          <h6>Barang Luar</h6>
+          <div className="row g-3">
+            <div className="col-md-6">
+              <InputField
+                label="Product Name *"
+                type="text"
+                name="product_name"
+                value={form.product_name}
+                onChange={handleChange}
+                onBlur={handleBlur}
+                error={!!errors.product_name}
+                errorMessage={errors.product_name}
+                icon={<FaBox />}
+              />
+            </div>
+            <div className="col-md-6">
+              <InputFieldNumber
+                label="Product Price *"
+                name="product_price"
+                value={form.product_price}
+                onChange={handlePriceChange}
+                onBlur={handleBlur}
+                error={!!errors.product_price}
+                errorMessage={errors.product_price}
+                icon={<FaTag />}
+              />
+            </div>
+          </div>
+          <div className="row g-3">
+            <div className="col-md-6">
+              <InputFieldNumber
+                label="Product Qty *"
+                name="product_qty"
+                value={form.product_qty}
+                onChange={handleQtyChange}
+                onBlur={handleBlur}
+                error={!!errors.product_qty}
+                errorMessage={errors.product_qty}
+                icon={<FaListOl />}
+              />
+            </div>
+            <div className="col-md-6">
+              <InputFieldNumber
+                label="Total *"
+                name="product_total_price"
+                value={form.product_total_price}
+                // onChange={handleQtyChange}
+                // onBlur={handleBlur}
+                // error={!!errors.product_qty}
+                // errorMessage={errors.product_qty}
+                readOnly
+                icon={<FaTag />}
+              />
+            </div>
+          </div>
+        </div>
+      )}
 
       <div className="text-end mt-3">
         <button type="submit" className="btn btn-primary px-4">

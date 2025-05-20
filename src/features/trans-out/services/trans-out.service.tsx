@@ -10,6 +10,15 @@ export const createTransOut = async (
   transactionOuts: {
     productId: number;
     qty: number;
+    productName: string;
+  }[],
+  transactionOutsBrgLuar: {
+    productId: number;
+    qty: number;
+    productName: string;
+    price: number;
+    total_price: number;
+    converted_qty: number;
   }[],
   transInHeaderId: number,
   transaction_date: string
@@ -23,6 +32,7 @@ export const createTransOut = async (
         no_plat: noPlat,
         clock_out: clockOut,
         transaction_outs: transactionOuts,
+        transaction_outs_brg_luar: transactionOutsBrgLuar,
         transaction_in_headerId: transInHeaderId,
         transaction_date,
       },
@@ -47,6 +57,14 @@ export const createTransOutFifo = async (
     productId: number;
     qty: number;
   }[],
+  transactionOutsBrgLuar: {
+    productId: number;
+    qty: number;
+    productName: string;
+    price: number;
+    total_price: number;
+    converted_qty: number;
+  }[],
   transaction_date: string
 ) => {
   try {
@@ -58,6 +76,7 @@ export const createTransOutFifo = async (
         no_plat: noPlat,
         clock_out: clockOut,
         transaction_outs: transactionOuts,
+        transaction_outs_brg_luar: transactionOutsBrgLuar,
         transaction_date,
       },
       {
@@ -81,6 +100,14 @@ export const previewTransOut = async (
     productId: number;
     qty: number;
   }[],
+  transactionOutsBrgLuar: {
+    productId: number;
+    qty: number;
+    productName: string;
+    price: number;
+    total_price: number;
+    converted_qty: number;
+  }[],
   transInHeaderId: number,
   transaction_date: string
 ) => {
@@ -93,6 +120,7 @@ export const previewTransOut = async (
         no_plat: noPlat,
         clock_out: clockOut,
         transaction_outs: transactionOuts,
+        transaction_outs_brg_luar: transactionOutsBrgLuar,
         transaction_in_headerId: transInHeaderId,
         transaction_date,
       },
@@ -117,6 +145,14 @@ export const previewTransOutFifo = async (
     productId: number;
     qty: number;
   }[],
+  transactionOutsBrgLuar: {
+    productId: number;
+    qty: number;
+    productName: string;
+    price: number;
+    total_price: number;
+    converted_qty: number;
+  }[],
   transaction_date: string
 ) => {
   try {
@@ -128,6 +164,7 @@ export const previewTransOutFifo = async (
         no_plat: noPlat,
         clock_out: clockOut,
         transaction_outs: transactionOuts,
+        transaction_outs_brg_luar: transactionOutsBrgLuar,
         transaction_date,
       },
       {

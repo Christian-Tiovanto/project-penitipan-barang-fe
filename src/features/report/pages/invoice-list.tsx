@@ -55,6 +55,7 @@ interface TransactionOut {
   id: number;
   product: Product;
   productId: number;
+  productName: string;
   customer: Customer;
   customerId: number;
   transaction_in: number;
@@ -353,9 +354,8 @@ export default function InvoiceListPage() {
 
   const handlePrintInvoice = async (invoiceId: number) => {
     const spb: Spb = await new InvoiceListService().getSpb(invoiceId);
-    const items: TransactionOut[] = await new InvoiceListService().getTransOut(
-      invoiceId
-    );
+    const items: TransactionOut[] =
+      await new InvoiceListService().getTransOutWithBrgLuar(invoiceId);
 
     const date = new Date(spb.clock_out);
 
@@ -376,12 +376,12 @@ export default function InvoiceListPage() {
     let totalPrice = 0;
     let totalFine = 0;
     let totalCharge = 0;
-
     const tableRows = items
       .map((item, i) => {
-        const name = item.product.name || "-";
-        const volume = item.converted_qty;
-        totalQty += item.qty;
+        const name = item.productName || "-";
+        const volume = item.productId ? item.converted_qty : 0;
+        const qty = item.productId ? item.qty : 0;
+        totalQty += item.productId ? item.qty : 0;
         totalKg += volume;
         totalPrice += item.total_price;
         totalFine += item.total_fine;
@@ -393,14 +393,13 @@ export default function InvoiceListPage() {
         const day = date.getDate().toString().padStart(2, "0");
         const month = (date.getMonth() + 1).toString().padStart(2, "0"); // 0-based index
         const year = date.getFullYear();
-        const formattedDate = `${day}/${month}/${year}`;
-
+        const formattedDate = item.productId ? `${day}/${month}/${year}` : "";
         return `
           <tr>
             <td class="number">${i + 1}</td>
             <td class="text">${name.toUpperCase()}</td>
             <td class="text">${formattedDate}</td>
-            <td class="number">${item.qty}</td>
+            <td class="number">${qty}</td>
             <td class="number">${item.total_days}</td>
             <td class="number">${volume.toLocaleString()}</td>
             <td class="number">${item.price.toLocaleString()}</td>
@@ -413,14 +412,12 @@ export default function InvoiceListPage() {
           </tr>`;
       })
       .join("\n");
-
     const printWindow = window.open("", "_blank", "width=800,height=600");
 
     if (!printWindow) {
       alert("Popup blocked!");
       return;
     }
-
     const htmlContent = generateJastipInvoiceTemplate({
       spb,
       tableRows,
