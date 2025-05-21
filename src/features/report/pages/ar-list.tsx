@@ -196,7 +196,8 @@ function InputPayment({
       const response = await new ArToPaidService().createBulkArPayment(
         selectedAr,
         paymentMethodId,
-        "123"
+        "123",
+        startDate
       );
       if (response.status === 201) {
         showToast("Data added successfully!", "success");
