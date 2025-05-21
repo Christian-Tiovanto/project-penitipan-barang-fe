@@ -64,7 +64,7 @@ export const useArToPaidReport = (query: {
     return () => {
       abortControllerRef.current?.abort();
     };
-  }, [customerId, startDate, endDate, order, sortBy]);
+  }, [customerId, startDate, endDate, order, sortBy, pageNo, pageSize]);
 
   return {
     response,
