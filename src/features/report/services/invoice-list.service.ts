@@ -97,4 +97,22 @@ export class InvoiceListService {
     );
     return response.data;
   }
+
+  async getTransOutWithBrgLuar(invoiceId: number, config?: AxiosRequestConfig) {
+    const token = Cookies.get("auth_token");
+
+    const queryParams: Record<string, string> = {};
+    const response = await axios.get(
+      `${URL}/api/v1/transaction-out/by-invoice-brg-luar/${invoiceId}`,
+      {
+        params: queryParams,
+        signal: config?.signal,
+        paramsSerializer: (params) => new URLSearchParams(params).toString(),
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+    return response.data;
+  }
 }
