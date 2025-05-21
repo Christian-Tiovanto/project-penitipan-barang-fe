@@ -51,7 +51,7 @@ export class ArListService {
     queryParams.with_payment = "true";
     // Build URL with filtered parameters
     const response = await axios.get<PaginationMetaData<AR>>(
-      `${URL}/api/v1/report/ar-paid-report`,
+      `${URL}/api/v1/report/ar`,
       {
         params: queryParams,
         signal: config?.signal,

@@ -59,7 +59,7 @@ export class ArToPaidService {
     queryParams.compact = "true";
     // Build URL with filtered parameters
     const response = await axios.get<PaginationMetaData<IArToPaidData>>(
-      `${URL}/api/v1/report/ar-paid-report`,
+      `${URL}/api/v1/report/to-paid-report`,
       {
         params: queryParams,
         signal: config?.signal,
@@ -75,13 +75,14 @@ export class ArToPaidService {
   async createBulkArPayment(
     listAr: AR[],
     paymentMethodId: string,
-    reference_no: string
+    reference_no: string,
+    transfer_date: Date
   ) {
     const token = Cookies.get("auth_token");
 
     const createBulkArPaymentDto: CreateBulkArPaymentDto = {
       payment_methodId: paymentMethodId,
-      transfer_date: new Date(),
+      transfer_date: transfer_date,
       data: listAr.map((ar) => ({ arId: ar.id, total_paid: ar.to_paid })),
       reference_no: "123",
     };
