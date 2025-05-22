@@ -16,7 +16,7 @@ import {
   TableSortLabel,
 } from "@mui/material";
 import { visuallyHidden } from "@mui/utils";
-import { startOfToday, startOfTomorrow } from "date-fns";
+import { format, startOfToday, startOfTomorrow } from "date-fns";
 import {
   EnhancedTableProps,
   HeadCell,
@@ -39,6 +39,7 @@ export interface IArReportPaidData {
   total_bill: number;
   total_paid: number;
   to_paid: number;
+  paid_date: Date;
 }
 const columns: HeadCell<IArReportPaidData & { row_no: number }>[] = [
   {
@@ -86,6 +87,13 @@ const columns: HeadCell<IArReportPaidData & { row_no: number }>[] = [
   {
     field: "to_paid",
     headerName: "To Paid",
+    headerStyle: {
+      width: "10%",
+    },
+  },
+  {
+    field: "paid_date",
+    headerName: "Payment Date",
     headerStyle: {
       width: "10%",
     },
@@ -278,6 +286,9 @@ export function ArReportPaidPage() {
                             </TableCell>
                             <TableCell>
                               {Number(value.to_paid).toLocaleString("id-ID")}
+                            </TableCell>
+                            <TableCell>
+                              {format(value.paid_date, "dd/MM/yyyy")}
                             </TableCell>
                           </TableRow>
                         ))}
