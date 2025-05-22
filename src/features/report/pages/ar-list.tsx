@@ -441,6 +441,7 @@ export default function ArListPage() {
                     id: ArStatus.PENDING,
                     name: "Unpaid",
                   },
+                  { id: ArStatus.PARTIAL, name: "Partial" },
                   { id: ArStatus.COMPLETED, name: "Paid" },
                 ].map((customer) => ({
                   value: customer.id.toString(),

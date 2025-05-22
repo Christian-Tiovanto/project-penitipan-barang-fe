@@ -2,8 +2,13 @@ import { useEffect, useRef, useState } from "react";
 import { useToast } from "../../../contexts/toastContexts";
 import { CostReportService } from "../services/cost-report.service";
 import { ICostReportData } from "../pages/cost-report";
-export const useCostReport = (query: { startDate: Date; endDate: Date }) => {
-  const { startDate, endDate } = query;
+import { CostReportFrom } from "../../../enum/CostReportStatus";
+export const useCostReport = (query: {
+  startDate: Date;
+  endDate: Date;
+  from: CostReportFrom;
+}) => {
+  const { startDate, endDate, from } = query;
   const [data, setData] = useState<ICostReportData>();
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<Error | null | any>(null);
@@ -19,7 +24,7 @@ export const useCostReport = (query: { startDate: Date; endDate: Date }) => {
         setIsLoading(true);
         setError(null);
         const stockBookReport = await new CostReportService().getCostReport(
-          { endDate, startDate },
+          { endDate, startDate, from },
           { signal: controller.signal }
         );
 
@@ -45,7 +50,7 @@ export const useCostReport = (query: { startDate: Date; endDate: Date }) => {
     return () => {
       abortControllerRef.current?.abort();
     };
-  }, [startDate, endDate]);
+  }, [startDate, endDate, from]);
 
   return {
     data,
