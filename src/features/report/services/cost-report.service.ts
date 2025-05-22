@@ -1,12 +1,14 @@
 import axios, { AxiosRequestConfig } from "axios";
 import Cookies from "js-cookie";
 import { ICostReportData } from "../pages/cost-report";
+import { CostReportFrom } from "../../../enum/CostReportStatus";
 const URL = import.meta.env.VITE_API_URL;
 export class CostReportService {
   async getCostReport(
     query?: {
       startDate: Date;
       endDate: Date;
+      from: CostReportFrom;
     },
     config?: AxiosRequestConfig
   ) {
@@ -19,6 +21,9 @@ export class CostReportService {
     }
     if (query?.endDate) {
       queryParams.end_date = query.endDate.toISOString();
+    }
+    if (query?.from) {
+      queryParams.from = query.from;
     }
     // Build URL with filtered parameters
     const response = await axios.get<ICostReportData>(

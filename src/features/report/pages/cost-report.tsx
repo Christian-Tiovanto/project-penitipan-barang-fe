@@ -24,6 +24,8 @@ import { Order } from "../../../enum/SortOrder";
 import React from "react";
 import { useCostReport } from "../hooks/cost-report.hooks";
 import PageLayout from "../../../components/page-location";
+import { CashflowFrom, CostReportFrom } from "../../../enum/CostReportStatus";
+import DropdownSecondStyle from "../../../components/dropdown-2";
 
 export interface ICostReportData {
   initial_balance: number;
@@ -31,6 +33,7 @@ export interface ICostReportData {
     date: Date;
     type: "in" | "out";
     amount: number;
+    desc: CashflowFrom;
   }[];
   final_balance: number;
 }
@@ -39,6 +42,7 @@ type TableData = ICostReportData & {
   date: Date;
   type: "in" | "out";
   amount: number;
+  from: CashflowFrom;
 };
 const columns: HeadCell<TableData>[] = [
   {
@@ -72,6 +76,14 @@ const columns: HeadCell<TableData>[] = [
   {
     field: "final_balance",
     headerName: "Final Balance",
+    headerStyle: {
+      width: "10%",
+      textAlign: "center",
+    },
+  },
+  {
+    field: "from",
+    headerName: "From",
     headerStyle: {
       width: "10%",
       textAlign: "center",
@@ -163,12 +175,14 @@ function EnhancedTableHead(props: EnhancedTableProps<TableData>) {
 export function CostReportPage() {
   const [startDate, setStartDate] = useState(startOfToday());
   const [endDate, setEndDate] = useState(startOfTomorrow());
+  const [from, setFrom] = useState<CostReportFrom>();
   const [order, setOrder] = useState<Order>("asc");
   const [orderBy, setOrderBy] = useState<keyof TableData>("date");
 
   const { data, isLoading } = useCostReport({
     startDate,
     endDate,
+    from,
   });
 
   const handleRequestSort = (
@@ -178,6 +192,10 @@ export function CostReportPage() {
     const isAsc = orderBy === property && order === "asc";
     setOrder(isAsc ? "desc" : "asc");
     setOrderBy(property);
+  };
+
+  const handleStatusDropdownChange = (value: string) => {
+    setFrom(value as CostReportFrom);
   };
 
   const sortedTransactions = React.useMemo(() => {
@@ -230,7 +248,7 @@ export function CostReportPage() {
       <PageLayout title="Report" items={["Cost Report"]}>
         <div className="container-fluid m-0 p-0">
           <div className="row">
-            <div className="col-md-6 position-relative mb-2">
+            <div className="col-md-6 col-lg-4 position-relative mb-2">
               <StartDatePicker
                 idDatePicker="tanggal-awal"
                 titleText="Start Date"
@@ -241,7 +259,7 @@ export function CostReportPage() {
                 }}
               />
             </div>
-            <div className="col-md-6 position-relative mb-2">
+            <div className="col-md-6 col-lg-4 position-relative mb-2">
               <EndDatePicker
                 idDatePicker="tanggal-akhir"
                 titleText="End Date"
@@ -250,6 +268,24 @@ export function CostReportPage() {
                 onDateClick={(date: Date) => {
                   setEndDate(date);
                 }}
+              />
+            </div>
+            <div className="col-md-6 col-lg-4 position-relative mb-2">
+              <DropdownSecondStyle
+                id="Status"
+                label="Status *"
+                value={from}
+                options={[
+                  {
+                    id: CostReportFrom.IN,
+                    name: "In",
+                  },
+                  { id: CostReportFrom.OUT, name: "Out" },
+                ].map((customer) => ({
+                  value: customer.id.toString(),
+                  label: customer.name,
+                }))}
+                onChange={handleStatusDropdownChange}
               />
             </div>
           </div>
@@ -332,6 +368,7 @@ export function CostReportPage() {
                               "id-ID"
                             )}
                           </TableCell>
+                          <TableCell className="text-center"></TableCell>
                         </TableRow>
 
                         {/* Transaction Rows */}
@@ -365,6 +402,9 @@ export function CostReportPage() {
                                 "id-ID"
                               )}
                             </TableCell>
+                            <TableCell className="text-center">
+                              {transaction.desc}
+                            </TableCell>
                           </TableRow>
                         ))}
 
@@ -381,6 +421,7 @@ export function CostReportPage() {
                           <TableCell className="text-center">
                             {Number(data.final_balance).toLocaleString("id-ID")}
                           </TableCell>
+                          <TableCell className="text-center"></TableCell>
                         </TableRow>
                       </>
                     ) : (
