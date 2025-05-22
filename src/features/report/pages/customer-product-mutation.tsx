@@ -260,7 +260,7 @@ export function CustomerProductMutationPage() {
       <PageLayout title="Report" items={["Customer Product Mutation"]}>
         <div className="container-fluid m-0 p-0">
           <div className="row">
-            <div className="col-md-6 col-lg-4 position-relative mb-2">
+            <div className="col-md-6 col-lg-4 position-relative">
               <StartDatePicker
                 idDatePicker="tanggal-awal-keluar-barang"
                 titleText="Start Date"
@@ -271,7 +271,7 @@ export function CustomerProductMutationPage() {
                 }}
               />
             </div>
-            <div className="col-md-6 col-lg-4 position-relative mb-2">
+            <div className="col-md-6 col-lg-4 position-relative">
               <EndDatePicker
                 idDatePicker="tanggal-akhir-keluar-barang"
                 titleText="End Date"

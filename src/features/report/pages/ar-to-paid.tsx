@@ -24,10 +24,13 @@ import {
   EnhancedTableProps,
   HeadCell,
 } from "../../../components/table-component";
-import { FaBox } from "react-icons/fa6";
+import { FaBox, FaPrint } from "react-icons/fa6";
 import { Order } from "../../../enum/SortOrder";
 import { useArToPaidReport } from "../hooks/ar-to-paid.hooks";
 import PageLayout from "../../../components/page-location";
+import { formatDateReport } from "../../../utils/date";
+import { generateToPaidHtml } from "../../template/topaid.template";
+import { useToast } from "../../../contexts/toastContexts";
 export interface IArToPaidData {
   id: number;
   created_at: Date;
@@ -133,6 +136,7 @@ export function ArToPaidPage() {
   const [orderBy, setOrderBy] = useState<keyof TableData>("ar_no");
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(5);
+  const { showToast } = useToast();
 
   const { response, isLoading } = useArToPaidReport({
     startDate,
@@ -155,6 +159,73 @@ export function ArToPaidPage() {
 
   const handleChangePage = (_: unknown, newPage: number) => {
     setPage(newPage + 1);
+  };
+
+  const handlePrint = async () => {
+    try {
+      // if (!customerId || customerId.trim() === "") {
+      //   throw new Error("Customer ID Has not been selected");
+      // }
+      // const customer = customers.find(
+      //   (cust) => cust.id === parseInt(customerId, 10)
+      // );
+
+      // const customerName = customer.name;
+      formatDateReport;
+      const toPaidData = response.data;
+      // Build rows
+      let invoiceTotalBill = 0;
+      let invoiceTotalToPaid = 0;
+
+      const tableRows = toPaidData
+        .map((item, i) => {
+          const invoiceNo = item.ar_no || "-";
+          const customerName = item.customer.name;
+          const totalBill = item.total_bill;
+          const toPaid = item.to_paid;
+          const invoiceDate = formatDateReport(item.created_at);
+
+          invoiceTotalBill += totalBill;
+          invoiceTotalToPaid += toPaid;
+
+          return `
+        <tr>
+          <td class="number">${i + 1}</td>
+          <td class="text">${invoiceDate}</td>
+          <td class="text">${invoiceNo}</td>
+          <td class="text">${customerName.toUpperCase()}</td>
+          <td class="number">${totalBill.toLocaleString()}</td>
+          <td class="number">${toPaid.toLocaleString()}</td>
+        </tr>`;
+        })
+        .join("\n");
+
+      const printWindow = window.open("", "_blank", "width=800,height=600");
+
+      if (!printWindow) {
+        alert("Popup blocked!");
+        return;
+      }
+
+      const htmlContent = generateToPaidHtml(
+        startDate,
+        endDate,
+        tableRows,
+        invoiceTotalBill,
+        invoiceTotalToPaid
+      );
+
+      printWindow.document.open();
+      printWindow.document.write(htmlContent);
+      printWindow.document.close();
+    } catch (err) {
+      const finalMessage = `Failed to print.\n${
+        err?.response?.data?.message || err?.message || "Unknown error"
+      }`;
+      showToast(finalMessage, "danger");
+
+      console.error("Error handle print:", err);
+    }
   };
 
   const handleChangeRowsPerPage = (
@@ -218,6 +289,16 @@ export function ArToPaidPage() {
                 onChange={handleCustomerDropdownChange}
                 icon={<FaBox />}
               />
+            </div>
+            <div className="col-md-6 col-lg-4 position-relative mb-3">
+              <button
+                className="btn btn-light btn-lg text-dark"
+                onClick={handlePrint}
+                aria-label="Print"
+              >
+                <FaPrint className="me-2" />
+                Print
+              </button>
             </div>
           </div>
           <div className="product-in-list w-100 d-flex flex-column">
