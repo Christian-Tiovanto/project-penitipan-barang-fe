@@ -7,7 +7,7 @@ import { getAllProductsPagination } from "../../product/services/product.service
 import MuiTableTrans from "../../../components/table-mui-trans";
 import { getAllTransInsPaginationByHeaderId } from "../services/trans-in.service";
 import MuiTableHistory from "../../../components/table-mui-history";
-import { getUserByIdToken } from "../../auth/services/auth.service";
+import { getSecurityPin } from "../../auth/services/auth.service";
 
 interface FetchFilters {
   sort?: string;

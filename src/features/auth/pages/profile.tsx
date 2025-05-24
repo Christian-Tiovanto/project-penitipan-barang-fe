@@ -3,10 +3,7 @@ import Breadcrumb from "../../../components/breadcrumb";
 import { FaSave, FaArrowLeft, FaEnvelope, FaUser } from "react-icons/fa";
 import InputField from "../../../components/inputfield";
 import { useNavigate } from "react-router";
-import {
-  getUserByIdToken,
-  updateUserByIdToken,
-} from "../services/auth.service";
+import { getSecurityPin, updateUserByIdToken } from "../services/auth.service";
 import { useToast } from "../../../contexts/toastContexts";
 import Dropdown from "../../../components/dropdown";
 
@@ -28,7 +25,7 @@ const ProfileForm: React.FC = () => {
 
   const fetchUserByIdToken = async () => {
     try {
-      const userData = await getUserByIdToken();
+      const userData = await getSecurityPin();
       setForm({
         email: userData.email || "",
         fullName: userData.fullname || "",

@@ -15,7 +15,7 @@ import { getProductUnitsByProductId } from "../../product-unit/services/product-
 import { getAllCustomers } from "../../customer/services/customer.service";
 import { getProductById } from "../../product/services/product.service";
 import RadioToggle from "../../../components/radio-toggle";
-import { getUserByIdToken } from "../../auth/services/auth.service";
+import { getSecurityPin } from "../../auth/services/auth.service";
 
 interface Product {
   id: number;
@@ -327,8 +327,8 @@ const UpdateTransInPage: React.FC = () => {
 
     try {
       if (pin.trim()) {
-        const user = await getUserByIdToken();
-        if (user.pin === pin) {
+        const securityPin = await getSecurityPin();
+        if (securityPin.setting_value === pin) {
           showToast("Pin validated successfully!", "success");
           setIsPinModalOpen(false);
         } else {

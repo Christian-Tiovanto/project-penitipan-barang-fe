@@ -11,7 +11,7 @@ import InputField from "../../../components/inputfield";
 import { useNavigate } from "react-router";
 import { FaUnlock } from "react-icons/fa6";
 import {
-  getUserByIdToken,
+  getSecurityPin,
   updatePasswordByIdToken,
 } from "../services/auth.service";
 import { useToast } from "../../../contexts/toastContexts";
@@ -39,7 +39,7 @@ const ChangePasswordForm: React.FC = () => {
 
   const fetchUserByIdToken = async () => {
     try {
-      const userData = await getUserByIdToken();
+      const userData = await getSecurityPin();
       setForm({
         email: userData.email || "",
         fullName: userData.fullname || "",

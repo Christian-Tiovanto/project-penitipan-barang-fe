@@ -122,7 +122,7 @@ export const getUserById = async (id: number) => {
   }
 };
 
-export const getUserByIdToken = async () => {
+export const getSecurityPin = async () => {
   try {
     const token = Cookies.get("auth_token"); // Ambil token dari cookie
 
@@ -134,11 +134,14 @@ export const getUserByIdToken = async () => {
     const decoded: any = jwtDecode(token);
     const id: number = decoded.id;
 
-    const response = await axios.get(`${API_URL}/api/v1/user/${id}`, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    });
+    const response = await axios.get(
+      `${API_URL}/api/v1/app-settings/security-pin`,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
     return response.data;
   } catch (error: any) {
     throw error.response?.data || "get User by id token failed";

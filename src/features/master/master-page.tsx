@@ -57,6 +57,11 @@ const menuItems = [
     path: "/master/charge",
     icon: <FaMoneyCheckAlt className="me-2" />,
   },
+  {
+    label: "Security Pin",
+    path: "/master/security-pin",
+    icon: <FaMoneyCheckAlt className="me-2" />,
+  },
 ];
 
 const MasterPage: React.FC = () => {
