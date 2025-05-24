@@ -42,11 +42,11 @@ const menuItems = [
     path: "/master/customer",
     icon: <FaClipboardUser className="me-2" />,
   },
-  {
-    label: "Customer Payment",
-    path: "/master/customer-payment",
-    icon: <FaCreditCard className="me-2" />,
-  },
+  // {
+  //   label: "Customer Payment",
+  //   path: "/master/customer-payment",
+  //   icon: <FaCreditCard className="me-2" />,
+  // },
   {
     label: "Payment Method",
     path: "/master/payment-method",

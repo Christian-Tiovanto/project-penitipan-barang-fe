@@ -102,6 +102,7 @@ const MuiTable: React.FC<Props> = ({
       const transInHeader = await getTransInHeaderById(row.id);
 
       const items = transInHeader.transaction_in;
+      const desc = transInHeader.desc ?? "";
 
       const date = new Date(transInHeader.created_at);
 
@@ -151,7 +152,8 @@ const MuiTable: React.FC<Props> = ({
         time,
         tableRows,
         totalQty,
-        totalKg
+        totalKg,
+        desc
       );
 
       printWindow.document.open();

@@ -125,7 +125,7 @@ export function NettIncomeReportPage() {
                         </TableRow>
                         <TableRow>
                           <TableCell className="nett-income-table-border p-0 ps-4">
-                            Total Input Cashflow
+                            Total Pendapatan Lain Lain
                           </TableCell>
                           <TableCell className="nett-income-table-border p-0 text-end pe-2">
                             {Number(data?.earning.input).toLocaleString(
@@ -149,7 +149,7 @@ export function NettIncomeReportPage() {
                           </TableCell>
                           <TableCell className="nett-income-table-border p-0"></TableCell>
                         </TableRow>
-                        {data?.spending.map((value, index) => (
+                        {/* {data?.spending.map((value, index) => (
                           <TableRow key={index}>
                             <TableCell className="nett-income-table-border p-0 ps-4">
                               {value.description}
@@ -158,7 +158,7 @@ export function NettIncomeReportPage() {
                               {Number(value.amount).toLocaleString("id-ID")}
                             </TableCell>
                           </TableRow>
-                        ))}
+                        ))} */}
                         <TableRow className="gray">
                           <TableCell className="nett-income-table-border fw-bold p-0 text-end pe-2">
                             Total Spending
@@ -178,10 +178,12 @@ export function NettIncomeReportPage() {
                           </TableCell>
                           <TableCell className="border border-top-0 border-black fw-bold p-0 text-end pe-2">
                             {Number(
-                              data?.spending.reduce(
-                                (sum, item) => sum + item.amount,
-                                0
-                              )
+                              data?.earning.input +
+                                data?.earning.payment -
+                                data?.spending.reduce(
+                                  (sum, item) => sum + item.amount,
+                                  0
+                                )
                             ).toLocaleString("id-ID")}
                           </TableCell>
                         </TableRow>

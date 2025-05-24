@@ -85,7 +85,7 @@ export function generateJastipChargeTemplate({
           </style>
         </head>
         <body>
-          <h1 class="big-title">BFAP</h1>
+          <h1 class="big-title">BHC</h1>
           <div class="flex-row">
             <div>No D/O&emsp;: ${spb.invoice.invoice_no}</div>
             <div>Kepada&emsp;: ${spb.customer.name}</div>

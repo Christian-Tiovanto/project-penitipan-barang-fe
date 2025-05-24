@@ -1,17 +1,16 @@
-import { formatDate } from "date-fns";
 import { formatDateReport } from "../../utils/date";
-import { Satellite } from "@mui/icons-material";
 
-export function generateMutationHtml(
+export function generateArMixedHtml(
   startDate: Date,
   endDate: Date,
-  customerName: string,
-  tableRows: string
+  tableRows: string,
+  totalBill: number,
+  totalToPaid: number
 ) {
   return `
           <html>
             <head>
-              <title>LAPORAN SUMMARY MUTASI BARANG TITIPAN PER CUSTOMER</title>
+              <title>LAPORAN PIUTANG GABUNGAN DENGAN CUSTOMER</title>
               <style>
                 @page { size: A4 landscape; margin: 2cm; }
                 body { font-family: "Courier New", monospace; font-size: 15px; margin: 0; padding: 0; }
@@ -27,6 +26,13 @@ export function generateMutationHtml(
                 .big-title { font-size: 50px; }
                 td.number , th.number { text-align: right; }
                 td.text , th.text { text-align: left; }
+
+                @media print {
+                  * {
+                    -webkit-print-color-adjust: exact !important; /* Chrome, Safari */
+                    print-color-adjust: exact !important;         /* Firefox */
+                  }
+                }
               </style>
             </head>
             <body>
@@ -35,19 +41,25 @@ export function generateMutationHtml(
               <div>From Period&emsp;: ${formatDateReport(
                 startDate
               )} To : ${formatDateReport(endDate)}</div>
-                <div>Customer&emsp;: ${customerName}</div>
               </div>
       
-              <h1>LAPORAN SUMMARY MUTASI BARANG TITIPAN PER CUSTOMER</h1>
+              <h1>LAPORAN PIUTANG GABUNGAN DENGAN CUSTOMER</h1>
       
               <table>
                 <tr>
-                  <th>Tanggal</th>
-                  <th>Masuk</th>
-                  <th>Keluar</th>
-                  <th>SISA</th>
+                  <th>No</th>
+                  <th>INVOICE DATE</th>
+                  <th>INVOICE NO</th>
+                  <th>CUSTOMER</th>
+                  <th>TOTAL BILL</th>
+                  <th>TO PAID</th>
                 </tr>
                 ${tableRows}
+                <tr>
+                  <th colspan="4">TOTAL</th>
+                  <th class="number">${totalBill.toLocaleString()}</th>
+                  <th class="number">${totalToPaid.toLocaleString()}</th>
+                </tr>
               </table>
       
               <script>

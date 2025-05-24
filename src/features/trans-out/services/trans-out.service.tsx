@@ -22,6 +22,7 @@ export const createTransOut = async (
   }[],
   transInHeaderId: number,
   transaction_date: string
+  // spbDesc: string
 ) => {
   try {
     const token = Cookies.get("auth_token");
@@ -31,6 +32,7 @@ export const createTransOut = async (
         customerId,
         no_plat: noPlat,
         clock_out: clockOut,
+        // desc: spbDesc,
         transaction_outs: transactionOuts,
         transaction_outs_brg_luar: transactionOutsBrgLuar,
         transaction_in_headerId: transInHeaderId,
@@ -66,6 +68,7 @@ export const createTransOutFifo = async (
     converted_qty: number;
   }[],
   transaction_date: string
+  // spbDesc: string
 ) => {
   try {
     const token = Cookies.get("auth_token");
@@ -75,6 +78,7 @@ export const createTransOutFifo = async (
         customerId,
         no_plat: noPlat,
         clock_out: clockOut,
+        // desc: spbDesc,
         transaction_outs: transactionOuts,
         transaction_outs_brg_luar: transactionOutsBrgLuar,
         transaction_date,

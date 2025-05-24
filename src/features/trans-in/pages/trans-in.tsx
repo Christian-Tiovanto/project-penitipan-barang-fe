@@ -20,6 +20,7 @@ const TransInPage: React.FC = () => {
   const columns = [
     { field: "id", headerName: "ID" },
     { field: "code", headerName: "No Trans In" },
+    { field: "desc", headerName: "Desc" },
     { field: "transaction_in[0].is_charge", headerName: "Charge" },
     { field: "created_at", headerName: "Date" },
   ];

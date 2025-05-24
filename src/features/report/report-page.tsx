@@ -25,6 +25,11 @@ const menuItems = [
     path: "/report/ar-to-paid",
     icon: <IoDocumentText className="me-2" />,
   },
+  {
+    label: "Ar Mixed Report",
+    path: "/report/ar-mixed-report",
+    icon: <IoDocumentText className="me-2" />,
+  },
   // {
   //   label: "Customer Product Stock",
   //   path: "/report/customer-product-stock",

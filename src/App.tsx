@@ -54,6 +54,7 @@ import ReportPage from "./features/report/report-page";
 import { StockInvoiceReportPage } from "./features/report/pages/stock-invoice-report";
 import { AgingReportPage } from "./features/report/pages/aging-report";
 import { CustomerProductMutationPage } from "./features/report/pages/customer-product-mutation";
+import { ArMixedPage } from "./features/report/pages/ar-mixed-report";
 // import CreateTrans from "./features/trans-in/pages/create-trans";
 
 const router = createBrowserRouter([
@@ -93,6 +94,10 @@ const router = createBrowserRouter([
           {
             path: "ar-list",
             element: <ArListPage />,
+          },
+          {
+            path: "ar-mixed-report",
+            element: <ArMixedPage />,
           },
           {
             path: "invoice-list",

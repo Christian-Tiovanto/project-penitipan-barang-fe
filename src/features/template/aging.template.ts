@@ -25,7 +25,7 @@ export function generateAgingHtml(
             </style>
           </head>
           <body>
-            <h1 class="big-title">BFAP</h1>
+            <h1 class="big-title">BHC</h1>
             <div class="flex-row">
               <div>Customer&emsp;: ${customerName}</div>
             </div>

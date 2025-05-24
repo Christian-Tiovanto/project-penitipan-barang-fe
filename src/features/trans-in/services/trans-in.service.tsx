@@ -26,6 +26,7 @@ interface GetAllTransInHeaderPaginationParams {
 
 export const createTransIn = async (data: any) => {
   try {
+    console.log(data);
     const token = Cookies.get("auth_token");
     const response = await axios.post(
       `${API_URL}/api/v1/transaction-in/bulk`,
