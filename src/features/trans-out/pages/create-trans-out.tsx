@@ -8,6 +8,8 @@ import {
   FaArrowCircleDown,
   FaExchangeAlt,
   FaStream,
+  FaStickyNote,
+  FaFileAlt,
 } from "react-icons/fa";
 import { useNavigate } from "react-router";
 import { useToast } from "../../../contexts/toastContexts";
@@ -125,6 +127,7 @@ const CreateTransOutForm: React.FC = () => {
     product_price: 0,
     product_total_price: 0,
     brgLuar: false,
+    spbDesc: "",
   });
 
   const [errors, setErrors] = useState({
@@ -137,6 +140,7 @@ const CreateTransOutForm: React.FC = () => {
     product_qty: "",
     product_price: "",
     product_total_price: "",
+    spbDesc: "",
   });
 
   const [searchTerm, setSearchTerm] = useState("");
@@ -366,6 +370,7 @@ const CreateTransOutForm: React.FC = () => {
           payload,
           payloadBrgLuar,
           clockOut
+          // form.spbDesc
         );
       } else {
         await createTransOut(
@@ -376,6 +381,7 @@ const CreateTransOutForm: React.FC = () => {
           payloadBrgLuar,
           parseInt(form.transInHeaderId, 10),
           clockOut
+          // form.spbDesc
         );
       }
 
@@ -546,6 +552,17 @@ const CreateTransOutForm: React.FC = () => {
           />
         </div>
       </div>
+      {/* <InputField
+        label="Desc *"
+        type="text"
+        name="spbDesc"
+        value={form.spbDesc}
+        onChange={handleChange}
+        onBlur={handleBlur}
+        error={!!errors.spbDesc}
+        errorMessage={errors.spbDesc}
+        icon={<FaFileAlt />}
+      /> */}
 
       <div className="max-w-md mx-auto p-4 bg-white rounded-xl shadow-md border border-gray-200">
         {/* Search Field */}

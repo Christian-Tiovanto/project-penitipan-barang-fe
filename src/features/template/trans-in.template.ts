@@ -4,7 +4,8 @@ export function generateTransInHtml(
   time: string,
   tableRows: string,
   totalQty: number,
-  totalKg: number
+  totalKg: number,
+  desc: string
 ) {
   return `
         <html>
@@ -21,6 +22,7 @@ export function generateTransInHtml(
               .signature { margin-top: 5px; width: 100%; text-align: center; table-layout: fixed; }
               .signature td { height: 35px; width: 33.33%; word-wrap: break-word; border: none; font-size: 15px; }
               .footer-note { font-size: 15px; font-weight: bold; }
+              .desc-note { font-size: 15px;}
               .underline { text-decoration: underline; }
               .big-title { font-size: 50px; }
               td.number , th.number { text-align: right; }
@@ -28,7 +30,7 @@ export function generateTransInHtml(
             </style>
           </head>
           <body>
-            <h1 class="big-title">BFAP</h1>
+            <h1 class="big-title">BHC</h1>
             <div class="flex-row">
               <div>No Trans In&emsp;: ${transInHeader.code}</div>
               <div>Dari&emsp;: ${transInHeader.customer.name}</div>
@@ -55,18 +57,23 @@ export function generateTransInHtml(
                 <th class="number">${totalKg.toLocaleString()}</th>
               </tr>
             </table>
-    
+            <div class="desc-note">
+              NB : ${desc}
+            </div>
             <table class="signature">
               <tr>
                 <td>Diterima Oleh,</td>
+                <td>DiSerahkan Oleh,</td>
                 <td>Petugas Telly,</td>
               </tr>
               <tr>
                 <td></td>
                 <td></td>
+                <td></td>
               </tr>
               <tr>
                 <td>((Admin Gudang)</td>
+                <td>Supir</td>
                 <td>(Nama Jelas & T/T)</td>
               </tr>
             </table>

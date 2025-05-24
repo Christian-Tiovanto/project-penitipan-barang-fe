@@ -59,13 +59,13 @@ const columns: HeadCell<TableData>[] = [
       width: "10%",
     },
   },
-  {
-    field: "type",
-    headerName: "Type",
-    headerStyle: {
-      width: "10%",
-    },
-  },
+  // {
+  //   field: "type",
+  //   headerName: "Type",
+  //   headerStyle: {
+  //     width: "10%",
+  //   },
+  // },
   {
     field: "amount",
     headerName: "Amount",
@@ -83,7 +83,7 @@ const columns: HeadCell<TableData>[] = [
   },
   {
     field: "from",
-    headerName: "From",
+    headerName: "Keterangan",
     headerStyle: {
       width: "10%",
       textAlign: "center",
@@ -290,7 +290,7 @@ export function CostReportPage() {
             </div>
           </div>
           <div className="container-fluid d-flex my-4 flex-wrap justify-content-center gap-2">
-            <div
+            {/* <div
               className="badge rounded-pill text-black p-2 px-4 fw-normal blue-lighten"
               style={{
                 fontSize: "13px",
@@ -301,7 +301,7 @@ export function CostReportPage() {
               {summary?.initial
                 ? Number(summary.initial).toLocaleString("id-ID")
                 : 0}
-            </div>
+            </div> */}
             <div
               className="badge rounded-pill text-black p-2 px-4 fw-normal green-lighten"
               style={{
@@ -326,7 +326,7 @@ export function CostReportPage() {
                 ? Number(summary.totalOut).toLocaleString("id-ID")
                 : 0}
             </div>
-            <div
+            {/* <div
               className="badge rounded-pill teal-lighten text-black p-2 px-4 fw-normal"
               style={{
                 fontSize: "13px",
@@ -337,7 +337,7 @@ export function CostReportPage() {
               {summary?.final
                 ? Number(summary.final).toLocaleString("id-ID")
                 : 0}
-            </div>
+            </div> */}
           </div>
           <div className="product-in-list w-100 d-flex flex-column">
             <div className="mui-table-container">
@@ -352,7 +352,7 @@ export function CostReportPage() {
                     {!isLoading && data ? (
                       <>
                         {/* Initial Stock Row */}
-                        <TableRow className="blue-lighten">
+                        {/* <TableRow className="blue-lighten">
                           <TableCell>1</TableCell>
                           <TableCell>
                             {new Date().toLocaleString("en-GB")}
@@ -369,7 +369,7 @@ export function CostReportPage() {
                             )}
                           </TableCell>
                           <TableCell className="text-center"></TableCell>
-                        </TableRow>
+                        </TableRow> */}
 
                         {/* Transaction Rows */}
                         {sortedTransactions.map((transaction, index) => (
@@ -381,15 +381,15 @@ export function CostReportPage() {
                                 : "red-lighten"
                             }`}
                           >
-                            <TableCell>{index + 2}</TableCell>
+                            <TableCell>{index + 1}</TableCell>
                             <TableCell>
                               {new Date(transaction.date).toLocaleString(
                                 "en-GB"
                               )}
                             </TableCell>
-                            <TableCell>
+                            {/* <TableCell>
                               {`${transaction.type === "in" ? "In" : "Out"}`}
-                            </TableCell>
+                            </TableCell> */}
                             <TableCell className="text-start">
                               {`${
                                 transaction.type === "in" ? "+" : "-"
@@ -409,7 +409,7 @@ export function CostReportPage() {
                         ))}
 
                         {/* Final Stock Row */}
-                        <TableRow className="blue-lighten">
+                        {/* <TableRow className="blue-lighten">
                           <TableCell>{sortedTransactions.length + 2}</TableCell>
                           <TableCell>
                             {new Date().toLocaleString("en-GB")}
@@ -422,7 +422,7 @@ export function CostReportPage() {
                             {Number(data.final_balance).toLocaleString("id-ID")}
                           </TableCell>
                           <TableCell className="text-center"></TableCell>
-                        </TableRow>
+                        </TableRow> */}
                       </>
                     ) : (
                       <TableRow>

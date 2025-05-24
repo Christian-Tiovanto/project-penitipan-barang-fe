@@ -60,6 +60,10 @@ body {
   background-color: #c8e6c9 !important;
 }
 
+.black-lighten {
+  background-color: #888 !important;
+}
+
 .teal-lighten {
   background-color: #47cec0 !important;
 }

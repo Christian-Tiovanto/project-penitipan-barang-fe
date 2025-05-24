@@ -1,6 +1,12 @@
 import React, { useEffect, useState } from "react";
 import Breadcrumb from "../../../components/breadcrumb";
-import { FaSave, FaArrowLeft, FaSearch, FaCalendarAlt } from "react-icons/fa";
+import {
+  FaSave,
+  FaArrowLeft,
+  FaSearch,
+  FaCalendarAlt,
+  FaFileAlt,
+} from "react-icons/fa";
 import { useNavigate } from "react-router";
 import { useToast } from "../../../contexts/toastContexts";
 import { FaBox, FaClipboardUser, FaTruck } from "react-icons/fa6";
@@ -71,11 +77,13 @@ const CreateTransForm: React.FC = () => {
   const [form, setForm] = useState({
     customerId: "",
     isCharge: false,
+    desc: "",
   });
 
   const [errors, setErrors] = useState({
     customerId: "",
     isCharge: "",
+    desc: "",
   });
 
   const [searchTerm, setSearchTerm] = useState("");
@@ -151,6 +159,13 @@ const CreateTransForm: React.FC = () => {
         ? formatLocalDate(selectedDate)
         : "";
 
+      let desc = "";
+      if (form.desc.trim() === "") {
+        desc = null;
+      } else {
+        desc = form.desc;
+      }
+
       const payload = {
         customerId: form.customerId, // ganti sesuai dengan variabel customer ID yang kamu pakai
         data: products
@@ -162,6 +177,7 @@ const CreateTransForm: React.FC = () => {
             is_charge: form.isCharge,
           })),
         transaction_date,
+        desc,
       };
 
       await createTransIn(payload);
@@ -218,6 +234,18 @@ const CreateTransForm: React.FC = () => {
     setSelectedDate(date);
   };
 
+  const handleBlur = (e: React.FocusEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+    setErrors((prevErrors) => ({
+      ...prevErrors,
+      [name]: !value.trim() ? "This field is required" : "",
+    }));
+  };
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setForm({ ...form, [e.target.name]: e.target.value });
+  };
+
   return (
     <form onSubmit={handleSubmit}>
       <div className="row g-3">
@@ -247,6 +275,18 @@ const CreateTransForm: React.FC = () => {
           />
         </div>
       </div>
+
+      <InputField
+        label="Desc *"
+        type="text"
+        name="desc"
+        value={form.desc}
+        onChange={handleChange}
+        onBlur={handleBlur}
+        error={!!errors.desc}
+        errorMessage={errors.desc}
+        icon={<FaFileAlt />}
+      />
       <RadioToggle
         label="Charge *"
         name="is_charge"
