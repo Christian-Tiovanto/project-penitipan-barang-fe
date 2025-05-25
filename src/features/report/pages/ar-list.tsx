@@ -164,8 +164,13 @@ function InputPayment({
   onPaymentSuccess: () => void;
 }) {
   const modalRef = React.useRef<HTMLDivElement>(null);
+  const totalAr = React.useMemo(() => {
+    return data
+      .filter((value) => selected.includes(value.id))
+      .reduce((sum, ar) => sum + ar.to_paid, 0);
+  }, [data, selected]); // Recalculates when data or selected changes
   const [startDate, setStartDate] = React.useState(startOfToday());
-  const [nominal, setNominal] = React.useState(0);
+  const [nominal, setNominal] = React.useState(totalAr);
   const [isLoading, setIsLoading] = React.useState(false);
   const [paymentMethodId, setPaymentMethodId] = React.useState<string>("");
   const [paymentMethods, setpaymentMethods] = React.useState<PaymentMethod[]>(
@@ -222,13 +227,13 @@ function InputPayment({
       // Reset selection in parent component
     }
   };
-  React.useEffect(() => {
-    fetchPaymentMethods();
-  }, []);
 
-  const totalAr = data
-    .filter((value) => selected.includes(value.id))
-    .reduce((sum, ar) => sum + ar.to_paid, 0);
+  React.useEffect(() => {
+    if (selected.length > 0) {
+      setNominal(totalAr);
+    }
+    fetchPaymentMethods();
+  }, [totalAr, selected.length]);
 
   return (
     <div
