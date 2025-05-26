@@ -10,38 +10,128 @@ export function generateTransInHtml(
   return `
         <html>
           <head>
-            <title>SURAT TANDA TERIMA BARANG</title>
+            <title>SURAT PENERIMAAN BARANG</title>
             <style>
-              @page { size: A4 landscape; margin: 2cm; }
-              body { font-family: "Courier New", monospace; font-size: 15px; margin: 0; padding: 0; }
-              h1, h2, h3, p { margin: 4px 0; text-align: center; }
-              table { width: 100%; border-collapse: collapse; margin-top: 20px; }
-              td, th { border: 1px solid #000; padding: 4px; vertical-align: top; }
-              .no-border { border: none !important; }
-              .flex-row { display: flex; justify-content: space-between; margin: 4px 0; padding: 0 20px; }
-              .signature { margin-top: 5px; width: 100%; text-align: center; table-layout: fixed; }
-              .signature td { height: 35px; width: 33.33%; word-wrap: break-word; border: none; font-size: 15px; }
-              .footer-note { font-size: 15px; font-weight: bold; }
-              .desc-note { font-size: 15px;}
-              .underline { text-decoration: underline; }
-              .big-title { font-size: 50px; }
-              td.number , th.number { text-align: right; }
-              td.text , th.text { text-align: left; }
+            @page {
+              size: A4 landscape;
+              margin: 2cm;
+            }
+            body {
+              font-family: "Courier New", monospace;
+              font-size: 15px;
+              margin: 0;
+              padding: 0;
+            }
+            h1,
+            h2,
+            h3,
+            p {
+              margin: 4px 0;
+              text-align: center;
+            }
+            .content-table {
+              width: 100%;
+              border-collapse: collapse;
+              margin-top: 20px;
+            }
+            .content-table td,
+            .content-table th {
+              border: 1px solid #000;
+              padding: 4px;
+              vertical-align: top;
+            }
+            .no-border {
+              border: none !important;
+            }
+            .flex-row {
+              display: flex;
+              justify-content: space-between;
+              max-width: 70%;
+              margin: 4px auto;
+              padding: 0 20px;
+            }
+            .signature {
+              margin-top: 5px;
+              width: 100%;
+              text-align: center;
+              table-layout: fixed;
+            }
+            .signature td {
+              height: 35px;
+              width: 33.33%;
+              word-wrap: break-word;
+              border: none;
+              font-size: 15px;
+            }
+            .footer-note {
+              font-size: 15px;
+              font-weight: bold;
+            }
+            .desc-note {
+              font-size: 15px;
+            }
+            .underline {
+              text-decoration: underline;
+            }
+            h1.big-title {
+              font-size: 50px;
+              margin: 0;
+            }
+            td.number,
+            th.number {
+              text-align: right;
+            }
+            td.text,
+            th.text {
+              text-align: left;
+            }
+            .header-table tr td:first-child {
+              width: 10%;
+              /* opsional supaya text di kiri */
+              vertical-align: middle;
+            }
+            .header-table tr td:last-child {
+              width: 10%;
+              /* opsional supaya text di kiri */
+              vertical-align: middle;
+            }
+            .header-table {
+              width: 100%;
+              border-collapse: collapse;
+              margin-top: 20px;
+            }
+            .header-table td,
+            .header-table th {
+              padding: 0;
+              vertical-align: bottom;
+            }
             </style>
           </head>
           <body>
-            <h1 class="big-title">BHC</h1>
-            <div class="flex-row">
-              <div>No Trans In&emsp;: ${transInHeader.code}</div>
-              <div>Dari&emsp;: ${transInHeader.customer.name}</div>
-            </div>
-            <div class="flex-row">
-              <div>Tgl Trans In : ${formattedDate} Jam : ${time} WIB</div>
-            </div>
-    
-            <h1>SURAT TANDA TERIMA BARANG</h1>
-    
-            <table>
+            <table class="header-table">
+            <tr>
+              <td>
+                <h1 class="big-title">BHC</h1>
+              </td>
+              <td>
+                <div class="flex-row">
+                  <div>
+                    <div>No Job&nbsp;&nbsp;: ${transInHeader.code}</div>
+                    <div>Tgl Job&nbsp;: ${formattedDate}</div>
+                  </div>
+                  <div>
+                    <div>Pemilik&nbsp;&nbsp;&nbsp;: ${
+                      transInHeader.customer.name
+                    }</div>
+                    <div>Jam Masuk&nbsp;: ${time}</div>
+                  </div>
+                </div>
+                <h1>SURAT PENERIMAAN BARANG</h1>
+              </td>
+              <td></td>
+            </tr>
+          </table>
+            <table class="content-table">
               <tr>
                 <th>No</th>
                 <th>KETERANGAN BARANG</th>

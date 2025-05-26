@@ -220,6 +220,26 @@ export const getTransInById = async (id: number) => {
   }
 };
 
+export const updateTransInHeaderById = async (id: number, data: any) => {
+  try {
+    const token = Cookies.get("auth_token");
+
+    const response = await axios.patch(
+      `${API_URL}/api/v1/transaction-in-header/${id}`,
+      data,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+      }
+    );
+    return response.data;
+  } catch (error: any) {
+    throw error.response?.data || "Update TransIn Header by id failed";
+  }
+};
+
 export const updateTransInById = async (id: number, data: any) => {
   try {
     const token = Cookies.get("auth_token");

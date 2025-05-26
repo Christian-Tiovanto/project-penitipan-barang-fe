@@ -11,6 +11,7 @@ import InputField from "../../../components/inputfield";
 import { useNavigate } from "react-router";
 import { FaUnlock } from "react-icons/fa6";
 import {
+  getSecurityPin,
   getUserByIdToken,
   updatePasswordByIdToken,
 } from "../services/auth.service";

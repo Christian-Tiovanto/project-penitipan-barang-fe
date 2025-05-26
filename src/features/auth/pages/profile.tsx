@@ -4,6 +4,8 @@ import { FaSave, FaArrowLeft, FaEnvelope, FaUser } from "react-icons/fa";
 import InputField from "../../../components/inputfield";
 import { useNavigate } from "react-router";
 import {
+  getSecurityPin,
+  getUserById,
   getUserByIdToken,
   updateUserByIdToken,
 } from "../services/auth.service";

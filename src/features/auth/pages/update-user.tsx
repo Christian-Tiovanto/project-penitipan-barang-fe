@@ -23,12 +23,12 @@ const UpdateUserForm: React.FC = () => {
   const [form, setForm] = useState({
     email: "",
     fullname: "",
-    pin: "",
+    // pin: "",
     // role: "",
   });
 
   const [errors, setErrors] = useState({
-    pin: "",
+    // pin: "",
     email: "",
     fullname: "",
     // role: "",
@@ -47,7 +47,7 @@ const UpdateUserForm: React.FC = () => {
       setForm({
         email: userData.email || "",
         fullname: userData.fullname || "",
-        pin: userData.pin || "",
+        // pin: userData.pin || "",
         // role: userData.role || "",
       });
     } catch (error) {
@@ -68,9 +68,9 @@ const UpdateUserForm: React.FC = () => {
       newErrors.fullname = "This field is required";
     }
 
-    if (!form.pin.trim()) {
-      newErrors.pin = "This field is required";
-    }
+    // if (!form.pin.trim()) {
+    //   newErrors.pin = "This field is required";
+    // }
 
     // if (!form.role) {
     //   newErrors.role = "Please Select a Role";
@@ -163,7 +163,7 @@ const UpdateUserForm: React.FC = () => {
         </div>
       </div>
 
-      <InputField
+      {/* <InputField
         label="Pin *"
         type="text" // gunakan "text" atau "password", bukan "pin"
         name="pin"
@@ -173,7 +173,7 @@ const UpdateUserForm: React.FC = () => {
         error={!!errors.pin}
         errorMessage={errors.pin}
         icon={<MdPin />}
-      />
+      /> */}
 
       <div className="text-end mt-3">
         <button type="submit" className="btn btn-primary px-4">

@@ -35,7 +35,7 @@ export const logout = () => {
 export const register = async (
   email: string,
   fullname: string,
-  pin: string,
+  // pin: string,
   password: string
   // role: string
 ) => {
@@ -43,7 +43,12 @@ export const register = async (
     const token = Cookies.get("auth_token");
     const response = await axios.post(
       `${API_URL}/api/v1/auth/register`,
-      { email, fullname, pin, password },
+      {
+        email,
+        fullname,
+        // pin,
+        password,
+      },
       {
         headers: {
           Authorization: `Bearer ${token}`,
@@ -124,7 +129,7 @@ export const getUserById = async (id: number) => {
 
 export const getUserByIdToken = async () => {
   try {
-    const token = Cookies.get("auth_token"); // Ambil token dari cookie
+    const token = Cookies.get("auth_token");
 
     if (!token) {
       console.error("Token is missing");
@@ -137,8 +142,35 @@ export const getUserByIdToken = async () => {
     const response = await axios.get(`${API_URL}/api/v1/user/${id}`, {
       headers: {
         Authorization: `Bearer ${token}`,
+        "Content-Type": "application/json",
       },
     });
+    return response.data;
+  } catch (error: any) {
+    throw error.response?.data || "Update User by id token failed";
+  }
+};
+
+export const getSecurityPin = async () => {
+  try {
+    const token = Cookies.get("auth_token"); // Ambil token dari cookie
+
+    if (!token) {
+      console.error("Token is missing");
+      return null;
+    }
+
+    const decoded: any = jwtDecode(token);
+    const id: number = decoded.id;
+
+    const response = await axios.get(
+      `${API_URL}/api/v1/app-settings/security-pin`,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
     return response.data;
   } catch (error: any) {
     throw error.response?.data || "get User by id token failed";

@@ -136,6 +136,20 @@ const MuiTable: React.FC<Props> = ({
             {data[0]?.transaction_in_header?.code ??
               "Not Found Trans In Detail"}
           </h4>
+          <Button
+            variant="contained"
+            color="primary"
+            startIcon={<EditIcon />}
+            onClick={onAdd}
+            sx={{
+              textTransform: "none",
+              fontSize: "0.9rem",
+              padding: "8px 16px",
+              mb: { xs: 2, sm: 0 },
+            }}
+          >
+            Update Header
+          </Button>
           <TextField
             label="Search..."
             variant="standard"

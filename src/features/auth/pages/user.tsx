@@ -21,7 +21,7 @@ const UserPage: React.FC = () => {
     { field: "id", headerName: "ID" },
     { field: "email", headerName: "Email" },
     { field: "fullname", headerName: "Full Name" },
-    { field: "pin", headerName: "Pin" },
+    // { field: "pin", headerName: "Pin" },
   ];
 
   const fetchTableData = async (
