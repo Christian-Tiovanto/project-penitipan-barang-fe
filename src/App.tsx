@@ -56,6 +56,7 @@ import { AgingReportPage } from "./features/report/pages/aging-report";
 import { CustomerProductMutationPage } from "./features/report/pages/customer-product-mutation";
 import { ArMixedPage } from "./features/report/pages/ar-mixed-report";
 import SecurityPinPage from "./features/security_pin/security";
+import UpdateTransInHeaderPage from "./features/trans-in/pages/update-trans-in-headers";
 // import CreateTrans from "./features/trans-in/pages/create-trans";
 
 const router = createBrowserRouter([
@@ -237,6 +238,10 @@ const router = createBrowserRouter([
       {
         path: "transaction/in/edit-in/:id",
         element: <UpdateTransInPage />,
+      },
+      {
+        path: "transaction/in/edit-header-in/:id",
+        element: <UpdateTransInHeaderPage />,
       },
       {
         path: "transaction/out/create-out",

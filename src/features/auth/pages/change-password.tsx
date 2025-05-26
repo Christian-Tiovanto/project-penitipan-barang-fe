@@ -12,6 +12,7 @@ import { useNavigate } from "react-router";
 import { FaUnlock } from "react-icons/fa6";
 import {
   getSecurityPin,
+  getUserByIdToken,
   updatePasswordByIdToken,
 } from "../services/auth.service";
 import { useToast } from "../../../contexts/toastContexts";
@@ -39,7 +40,7 @@ const ChangePasswordForm: React.FC = () => {
 
   const fetchUserByIdToken = async () => {
     try {
-      const userData = await getSecurityPin();
+      const userData = await getUserByIdToken();
       setForm({
         email: userData.email || "",
         fullName: userData.fullname || "",

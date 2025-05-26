@@ -21,13 +21,13 @@ export const getSecurityPin = async () => {
   }
 };
 
-export const updateSecurityPin = async (data: { setting_value: number }) => {
+export const updateSecurityPin = async (data: { setting_value: string }) => {
   try {
     const token = Cookies.get("auth_token");
 
     const response = await axios.patch(
       `${API_URL}/api/v1/app-settings/security-pin`,
-      { setting_value: data.setting_value.toString() },
+      { setting_value: data.setting_value },
       {
         headers: {
           Authorization: `Bearer ${token}`,

@@ -5,13 +5,15 @@ import { useNavigate } from "react-router";
 import { useToast } from "../../contexts/toastContexts";
 import InputFieldNumber from "../../components/inputfieldnumber";
 import { getSecurityPin, updateSecurityPin } from "./services/security.service";
+import InputField from "../../components/inputfield";
+import { MdPin } from "react-icons/md";
 
 const SecurityPinForm: React.FC = () => {
   const { showToast } = useToast();
   const [exist, setExist] = useState<boolean>(true);
 
   const [form, setForm] = useState({
-    setting_value: 0,
+    setting_value: "",
   });
 
   const [errors, setErrors] = useState({
@@ -19,14 +21,15 @@ const SecurityPinForm: React.FC = () => {
   });
 
   useEffect(() => {
-    fetchChargeById();
+    fetchSecurityPinById();
   }, []);
 
-  const fetchChargeById = async () => {
+  const fetchSecurityPinById = async () => {
     try {
-      const ChargeData = await getSecurityPin();
+      const pinData = await getSecurityPin();
+      console.log(pinData);
       setForm({
-        setting_value: ChargeData.amount || 0,
+        setting_value: pinData.setting_value || 0,
       });
       setExist(true);
     } catch (error: any) {
@@ -36,15 +39,12 @@ const SecurityPinForm: React.FC = () => {
       showToast(finalMessage, "danger");
 
       setExist(false);
-      console.error("Error fetching Charge:", error);
+      console.error("Error fetching Pin:", error);
     }
   };
 
-  const handleAmountChange = (newValue: number) => {
-    setForm({
-      ...form,
-      setting_value: newValue,
-    });
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setForm({ ...form, [e.target.name]: e.target.value });
   };
 
   const validateForm = () => {
@@ -83,15 +83,16 @@ const SecurityPinForm: React.FC = () => {
 
   return (
     <form onSubmit={handleSubmit}>
-      <InputFieldNumber
+      <InputField
         label="Security Pin *"
-        name="Security Pin"
+        name="setting_value"
+        type="text" // gunakan "text" atau "password", bukan "pin"
         value={form.setting_value}
-        onChange={handleAmountChange}
+        onChange={handleChange}
         onBlur={handleBlur}
         error={!!errors.setting_value}
         errorMessage={errors.setting_value}
-        icon={<FaMoneyCheckAlt />}
+        icon={<MdPin />}
       />
 
       <div className="text-end mt-3">

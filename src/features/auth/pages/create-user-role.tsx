@@ -73,12 +73,12 @@ const CreateUserRole: React.FC = () => {
       name: UserRoleEnum.CUSTOMER,
       status: false,
     },
-    {
-      id: 5,
-      label: "Customer Payment *",
-      name: UserRoleEnum.CUSTOMER_PAYMENT,
-      status: false,
-    },
+    // {
+    //   id: 5,
+    //   label: "Customer Payment *",
+    //   name: UserRoleEnum.CUSTOMER_PAYMENT,
+    //   status: false,
+    // },
     {
       id: 6,
       label: "Invoice *",

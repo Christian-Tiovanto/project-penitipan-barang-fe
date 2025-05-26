@@ -49,9 +49,9 @@ const CreateUserForm: React.FC = () => {
       newErrors.fullname = "This field is required";
     }
 
-    if (!form.pin.trim()) {
-      newErrors.pin = "This field is required";
-    }
+    // if (!form.pin.trim()) {
+    //   newErrors.pin = "This field is required";
+    // }
 
     if (!form.password.trim()) {
       newErrors.password = "This field is required";
@@ -113,7 +113,7 @@ const CreateUserForm: React.FC = () => {
         await register(
           form.email,
           form.fullname,
-          form.pin,
+          // form.pin,
           form.password
           // form.role
         );
@@ -172,7 +172,7 @@ const CreateUserForm: React.FC = () => {
         icon={<FaUser />}
       /> */}
 
-      <InputField
+      {/* <InputField
         label="Pin *"
         type="text" // gunakan "text" atau "password", bukan "pin"
         name="pin"
@@ -182,7 +182,7 @@ const CreateUserForm: React.FC = () => {
         error={!!errors.pin}
         errorMessage={errors.pin}
         icon={<MdPin />}
-      />
+      /> */}
 
       <InputField
         label="Password *"

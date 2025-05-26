@@ -80,6 +80,10 @@ const TransInHistoryPage: React.FC = () => {
     }, 100);
   };
 
+  const handleAdd = () => {
+    navigate(`/transaction/in/edit-header-in/${id}`);
+  };
+
   return (
     <div className="container mt-4">
       <div className="d-flex justify-content-between align-items-center p-3 mb-3">
@@ -103,6 +107,7 @@ const TransInHistoryPage: React.FC = () => {
             columns={columns}
             fetchData={fetchTableData}
             onEdit={handleEdit}
+            onAdd={handleAdd}
           />
         )}
       </div>
