@@ -10,6 +10,7 @@ import {
 } from "react-icons/fa";
 import { FaBox, FaClipboardUser, FaCreditCard } from "react-icons/fa6";
 import MenuItem from "../../components/menu-item";
+import { MdPin } from "react-icons/md";
 
 const menuItems = [
   {
@@ -60,7 +61,7 @@ const menuItems = [
   {
     label: "Security Pin",
     path: "/master/security-pin",
-    icon: <FaMoneyCheckAlt className="me-2" />,
+    icon: <MdPin className="me-2" />,
   },
 ];
 
