@@ -63,7 +63,10 @@ jobs:
           echo "Building Docker image: $FULL_IMAGE_NAME"
 
           # Build the docker image
-          docker build -t "$FULL_IMAGE_NAME" .
+          docker build \
+          --build-arg VITE_API_URL=${{ secrets.VITE_API_URL }} \
+          --build-arg VITE_MODE=${{ secrets.VITE_MODE }} \
+          -t "$FULL_IMAGE_NAME" .
 
           echo "Pushing Docker image to ECR: $FULL_IMAGE_NAME"
           # Push the docker image to ECR

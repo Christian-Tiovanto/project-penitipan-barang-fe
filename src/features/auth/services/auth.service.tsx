@@ -8,6 +8,7 @@ const API_URL = import.meta.env.VITE_API_URL; // Ganti dengan URL backend-mu
 export const login = async (email: string, password: string) => {
   try {
     console.log("`${API_URL}/api/v1/auth/login`");
+    console.log(API_URL);
     console.log(`${API_URL}/api/v1/auth/login`);
     const response = await axios.post(`${API_URL}/api/v1/auth/login`, {
       email,
