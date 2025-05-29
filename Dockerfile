@@ -4,7 +4,7 @@ WORKDIR /app
 # Copy only package manifests and install dependencies
 COPY package.json package-lock.json* ./
 # Use npm ci for reproducible builds and faster installs
-RUN npm ci --only=production
+RUN npm ci
 
 # Copy source and build
 COPY . .
