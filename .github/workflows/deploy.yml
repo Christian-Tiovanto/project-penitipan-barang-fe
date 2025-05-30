@@ -64,6 +64,7 @@ jobs:
             docker rm ${{ env.CONTAINER_NAME }} || true
             docker run -d \
               --name ${{ env.CONTAINER_NAME }} \
+              --network penitipan-barang-net \
               -p 80:80 \
               -e VITE_API_URL=${{ secrets.VITE_API_URL }} \
               -e VITE_MODE=${{ secrets.VITE_MODE }} \
